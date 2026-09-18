@@ -21,7 +21,11 @@ export function ContactModal() {
         <div className="contact-options">
           <article className="contact-option">
             <span className="contact-number">01</span>
-            <div><h3>Chat on WhatsApp</h3><p>Talk directly with Emmanuel.</p></div>
+            <div>
+              <h3>Chat on WhatsApp</h3>
+              <p>Talk directly with Emmanuel.</p>
+              <a className="contact-email" href="mailto:emmanuel@emmanuelgrowth.com">Prefer email? emmanuel@emmanuelgrowth.com</a>
+            </div>
             <a className="button button-dark" href={whatsappHref} target="_blank" rel="noreferrer">Open WhatsApp <Arrow /></a>
           </article>
           <article className="contact-option">

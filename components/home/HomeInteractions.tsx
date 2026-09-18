@@ -91,7 +91,10 @@ export function HomeInteractions({ children }: { children: ReactNode }) {
     const focusables = () => Array.from(dialog.querySelectorAll<HTMLElement>('button, input, select, textarea, [href], [tabindex]:not([tabindex="-1"])'));
     window.setTimeout(() => focusables()[0]?.focus(), 0);
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') contactOpen ? closeContact() : closeAva();
+      if (event.key === 'Escape') {
+        if (contactOpen) closeContact();
+        else closeAva();
+      }
       if (event.key !== 'Tab') return;
       const nodes = focusables();
       if (!nodes.length) return;
