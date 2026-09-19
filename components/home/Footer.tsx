@@ -16,7 +16,7 @@ export function Footer() {
         <p>Get found. Convert more enquiries. Stay connected.</p>
         <div className="footer-links">
           <nav aria-label="Footer navigation"><Link href="/#services">Services</Link><Link href="/#how-it-works">How It Works</Link><Link href="/#about">About</Link></nav>
-          <nav className="footer-legal" aria-label="Legal information"><Link href="/privacy-policy">Privacy</Link><Link href="/cookie-policy">Cookies</Link><Link href="/terms-of-use">Terms</Link>{analyticsEnabled ? <CookieSettingsButton /> : null}</nav>
+          <nav className="footer-legal" aria-label="Legal information"><a href="/privacy-policy">Privacy</a><a href="/cookie-policy">Cookies</a><a href="/terms-of-use">Terms</a>{analyticsEnabled ? <CookieSettingsButton /> : null}</nav>
         </div>
         <small>© {new Date().getFullYear()} Emmanuel Growth</small>
       </div>
