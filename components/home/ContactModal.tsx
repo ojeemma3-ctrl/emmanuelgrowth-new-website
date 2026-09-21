@@ -1,11 +1,24 @@
 'use client';
 
+import { useState, type FormEvent } from 'react';
 import { avaChoices, whatsappHref } from './content';
 import { useHomeInteractions } from './HomeInteractions';
 import { Arrow } from './shared';
 
 export function ContactModal() {
-  const { contactOpen, contactRef, closeContact, openAva, submitQuickMessage } = useHomeInteractions();
+  const { contactOpen, contactRef, closeContact, submitQuickMessage } = useHomeInteractions();
+  const [quickMessageStatus, setQuickMessageStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [quickMessageFeedback, setQuickMessageFeedback] = useState('');
+
+  const handleQuickMessageSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    setQuickMessageStatus('idle');
+    setQuickMessageFeedback('');
+    await submitQuickMessage(event, ({ success, message }) => {
+      setQuickMessageStatus(success ? 'success' : 'error');
+      setQuickMessageFeedback(message);
+    });
+  };
+
   if (!contactOpen) return null;
 
   return (
@@ -30,13 +43,16 @@ export function ContactModal() {
           </article>
           <article className="contact-option">
             <span className="contact-number">02</span>
-            <div><h3>Try Ava</h3><p>See how the AI Lead Concierge works.</p></div>
-            <button className="button button-outline" onClick={openAva} type="button">Try the Demo <Arrow /></button>
+            <div>
+              <h3>Email Emmanuel</h3>
+              <p>Send a direct email and we will get back to you.</p>
+            </div>
+            <a className="button button-outline" href="mailto:emmanuel@emmanuelgrowth.com">Email Emmanuel <Arrow /></a>
           </article>
           <article className="contact-option contact-form-option">
             <span className="contact-number">03</span>
             <div><h3>Send a quick message</h3><p>Leave your details and we will get back to you.</p></div>
-            <form className="quick-message-form" onSubmit={submitQuickMessage}>
+            <form className="quick-message-form" onSubmit={handleQuickMessageSubmit}>
               <label htmlFor="contact-name">Name</label>
               <input id="contact-name" name="name" autoComplete="name" required />
               <label htmlFor="contact-detail">Email or WhatsApp</label>
@@ -47,7 +63,9 @@ export function ContactModal() {
                 {avaChoices.map((item) => <option key={item}>{item}</option>)}
               </select>
               <button className="button button-dark" type="submit">Send Message <Arrow /></button>
-              <small>Your message will open in WhatsApp for you to review and send.</small>
+              <small style={{ color: quickMessageStatus === 'error' ? '#b42318' : quickMessageStatus === 'success' ? '#1d7a4e' : undefined }}>
+                {quickMessageFeedback || 'Your message will be sent directly to Emmanuel.'}
+              </small>
             </form>
           </article>
         </div>

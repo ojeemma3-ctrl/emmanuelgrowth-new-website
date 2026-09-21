@@ -3,6 +3,11 @@
 import { createContext, FormEvent, ReactNode, RefObject, useContext, useEffect, useRef, useState } from 'react';
 import { whatsappNumber } from './content';
 
+type QuickMessageResult = {
+  success: boolean;
+  message: string;
+};
+
 type HomeInteractionContextValue = {
   avaOpen: boolean;
   contactOpen: boolean;
@@ -20,7 +25,7 @@ type HomeInteractionContextValue = {
   setChoice: (choice: string) => void;
   setMessage: (message: string) => void;
   submitMessage: (event: FormEvent<HTMLFormElement>) => void;
-  submitQuickMessage: (event: FormEvent<HTMLFormElement>) => void;
+  submitQuickMessage: (event: FormEvent<HTMLFormElement>, onResult?: (result: QuickMessageResult) => void) => Promise<void>;
 };
 
 const HomeInteractionContext = createContext<HomeInteractionContextValue | null>(null);
@@ -76,11 +81,44 @@ export function HomeInteractions({ children }: { children: ReactNode }) {
     setChoice('Not sure yet');
     setMessage('');
   };
-  const submitQuickMessage = (event: FormEvent<HTMLFormElement>) => {
+  const submitQuickMessage = async (event: FormEvent<HTMLFormElement>, onResult?: (result: QuickMessageResult) => void) => {
     event.preventDefault();
+
     const data = new FormData(event.currentTarget);
-    const text = `Hi Emmanuel, I found your website.\n\nName: ${data.get('name')}\nEmail or WhatsApp: ${data.get('contact')}\nI need help with: ${data.get('help')}`;
-    window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
+    const name = String(data.get('name') ?? '').trim();
+    const contactValue = String(data.get('contact') ?? '').trim();
+    const help = String(data.get('help') ?? '').trim();
+
+    if (!name || !contactValue || !help) {
+      onResult?.({ success: false, message: 'Please complete all fields and try again.' });
+      return;
+    }
+
+    try {
+      const isEmail = contactValue.includes('@');
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          contact: contactValue,
+          help,
+          isEmail,
+        }),
+      });
+
+      const payload = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(payload?.error || 'Something went wrong while sending your message.');
+      }
+
+      event.currentTarget.reset();
+      onResult?.({ success: true, message: 'Thanks — your message has been sent.' });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Something went wrong while sending your message.';
+      onResult?.({ success: false, message });
+    }
   };
 
   useEffect(() => {
