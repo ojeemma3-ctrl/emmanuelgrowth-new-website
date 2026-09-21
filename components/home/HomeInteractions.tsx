@@ -83,8 +83,9 @@ export function HomeInteractions({ children }: { children: ReactNode }) {
   };
   const submitQuickMessage = async (event: FormEvent<HTMLFormElement>, onResult?: (result: QuickMessageResult) => void) => {
     event.preventDefault();
+    const form = event.currentTarget;
 
-    const data = new FormData(event.currentTarget);
+    const data = new FormData(form);
     const name = String(data.get('name') ?? '').trim();
     const contactValue = String(data.get('contact') ?? '').trim();
     const help = String(data.get('help') ?? '').trim();
@@ -113,7 +114,7 @@ export function HomeInteractions({ children }: { children: ReactNode }) {
         throw new Error(payload?.error || 'Something went wrong while sending your message.');
       }
 
-      event.currentTarget.reset();
+      form.reset();
       onResult?.({ success: true, message: 'Thanks — your message has been sent.' });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Something went wrong while sending your message.';
