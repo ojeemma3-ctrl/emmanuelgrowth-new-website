@@ -1,3 +1,5 @@
+import { env } from 'cloudflare:workers';
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -7,15 +9,14 @@ export async function POST(request: Request) {
     const isEmail = Boolean(body?.isEmail);
 
     if (!name || !contact || !help) {
-      return Response.json({ error: 'Missing required fields.' }, { status: 400 });
+      return Response.json({ success: false, error: 'Missing required fields.' }, { status: 400 });
     }
 
-    const apiKey = (globalThis as typeof globalThis & {
-      process?: { env?: Record<string, string | undefined> };
-    }).process?.env?.BREVO_API_KEY;
+    const apiKey = env.BREVO_API_KEY;
 
     if (!apiKey) {
-      return Response.json({ error: 'Brevo API key is not configured.' }, { status: 500 });
+      console.error('Brevo contact submission failed: BREVO_API_KEY is missing from the Cloudflare runtime env.');
+      return Response.json({ success: false, error: 'Brevo API key is not configured.' }, { status: 500 });
     }
 
     const payload = {
@@ -39,22 +40,30 @@ export async function POST(request: Request) {
       body: JSON.stringify(payload),
     });
 
-    const text = await response.text();
+    const responseText = await response.text();
 
     if (!response.ok) {
       let errorMessage = 'There was a problem sending your message.';
       try {
-        const parsed = JSON.parse(text);
+        const parsed = JSON.parse(responseText);
         if (parsed?.message) errorMessage = parsed.message;
       } catch {
-        // keep default
+        // keep default message
       }
-      return Response.json({ error: errorMessage }, { status: response.status || 500 });
+
+      console.error('Brevo contact submission failed:', {
+        status: response.status,
+        statusText: response.statusText,
+        body: responseText,
+        payload,
+      });
+
+      return Response.json({ success: false, error: errorMessage }, { status: response.status || 500 });
     }
 
     return Response.json({ success: true, message: 'Message sent successfully.' }, { status: 200 });
   } catch (error) {
     console.error('Brevo contact submission failed:', error);
-    return Response.json({ error: 'There was a problem sending your message.' }, { status: 500 });
+    return Response.json({ success: false, error: 'There was a problem sending your message.' }, { status: 500 });
   }
 }
