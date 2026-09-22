@@ -37,7 +37,6 @@ export function ContactModal() {
             <div>
               <h3>Chat on WhatsApp</h3>
               <p>Talk directly with Emmanuel.</p>
-              <a className="contact-email" href="mailto:emmanuel@emmanuelgrowth.com">Prefer email? emmanuel@emmanuelgrowth.com</a>
             </div>
             <a className="button button-dark" href={whatsappHref} target="_blank" rel="noreferrer">Open WhatsApp <Arrow /></a>
           </article>
