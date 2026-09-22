@@ -52,7 +52,7 @@ export async function POST(request: Request) {
           SMS: normalizedPhone,
           WHATSAPP: normalizedPhone,
         },
-        listIds: [],
+        listIds: [7],
         updateEnabled: true,
       };
 
@@ -96,7 +96,7 @@ export async function POST(request: Request) {
         SERVICE_INTEREST: help,
         LEAD_SOURCE: 'Website',
       },
-      listIds: [],
+      listIds: [7],
       updateEnabled: true,
     };
 
