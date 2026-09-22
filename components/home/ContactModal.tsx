@@ -46,8 +46,9 @@ export function ContactModal() {
             <div>
               <h3>Email Emmanuel</h3>
               <p>Send a direct email and we will get back to you.</p>
+              <a className="contact-email" href="mailto:emmanuel@emmanuelgrowth.com?subject=Enquiry%20from%20Emmanuel%20Growth%20Website">emmanuel@emmanuelgrowth.com</a>
             </div>
-            <a className="button button-outline" href="mailto:emmanuel@emmanuelgrowth.com">Email Emmanuel <Arrow /></a>
+            <a className="button button-outline" href="mailto:emmanuel@emmanuelgrowth.com?subject=Enquiry%20from%20Emmanuel%20Growth%20Website">Email Emmanuel <Arrow /></a>
           </article>
           <article className="contact-option contact-form-option">
             <span className="contact-number">03</span>
