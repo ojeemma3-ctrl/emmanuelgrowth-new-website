@@ -26,7 +26,8 @@ export default function PrivacyPolicyPage() {
       <section>
         <h2>2. Information we may receive</h2>
         <p>We may receive information that you choose to provide when you contact Emmanuel Growth. This can include your name, contact details, business information and anything you write in your message.</p>
-        <p>The quick-message form on this website prepares a WhatsApp message for you to review. The message is not sent until you choose to send it through WhatsApp.</p>
+        <p>When you use the quick-message form, your name, your contact details (email address or WhatsApp number) and the topic you need help with are sent to our website&apos;s contact service, which passes them to Brevo. Brevo processes this information on our behalf.</p>
+        <p>Emmanuel Growth (<a href="mailto:emmanuel@emmanuelgrowth.com">emmanuel@emmanuelgrowth.com</a>) is responsible for this information and uses it only to reply to your enquiry. We keep it for [RETENTION PERIOD - owner to decide]. You can ask to see or delete your information at any time by emailing us.</p>
         <p>Our hosting provider may process basic technical information, such as IP address, browser information, requested pages and security logs, to deliver and protect the website.</p>
       </section>
 
