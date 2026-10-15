@@ -1,4 +1,5 @@
 import { About } from '../components/home/About';
+import { FAQ } from '../components/home/FAQ';
 import { FinalCTA } from '../components/home/FinalCTA';
 import { Hero } from '../components/home/Hero';
 import { HowItWorks } from '../components/home/HowItWorks';
@@ -45,6 +46,7 @@ export default function Home() {
       <OfferSections />
       <HowItWorks />
       <Pricing />
+      <FAQ />
       <About />
       <FinalCTA />
     </SiteShell>

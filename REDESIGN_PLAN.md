@@ -39,7 +39,7 @@ Dark header, dark two-column hero with example dashboard panel, outcome strip.
   All placeholders live in one config object at the top of the pricing file.
 - Add "Pricing" to the nav.
 
-## Phase 4 — FAQ, About, final CTA, service pages  ← next
+## Phase 4 — FAQ, About, final CTA, service pages ✅
 - FAQ accordion, short About, final call-to-action band, footer tidy.
 - Carry the same components into /get-found, /convert-enquiries, /build-trust.
 - Mobile pass on every page.

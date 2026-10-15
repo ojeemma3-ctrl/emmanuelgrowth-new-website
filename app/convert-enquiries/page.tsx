@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { ConvertMoreEnquiries } from '../../components/home/ConvertMoreEnquiries';
 import { ServicePage } from '../../components/home/ServicePage';
 
 export const metadata: Metadata = {
@@ -11,11 +10,8 @@ export const metadata: Metadata = {
 export default function ConvertEnquiriesPage() {
   return (
     <ServicePage
-      eyebrow="02 / AI LEAD CONCIERGE"
-      title="Convert Enquiries"
-      description="Keep promising conversations moving with faster responses, clear next steps and a smooth handoff."
-    >
-      <ConvertMoreEnquiries />
-    </ServicePage>
+      offerId="convert-enquiries"
+      description="Reply faster, keep good enquiries moving and turn more of them into bookings."
+    />
   );
 }

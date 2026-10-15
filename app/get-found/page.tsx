@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { GetFound } from '../../components/home/GetFound';
 import { ServicePage } from '../../components/home/ServicePage';
 
 export const metadata: Metadata = {
@@ -11,11 +10,8 @@ export const metadata: Metadata = {
 export default function GetFoundPage() {
   return (
     <ServicePage
-      eyebrow="01 / LOCAL VISIBILITY + LEAD CAPTURE"
-      title="Get Found"
+      offerId="get-found"
       description="Help the right customers find your business and make it simple to call, message or book."
-    >
-      <GetFound />
-    </ServicePage>
+    />
   );
 }
