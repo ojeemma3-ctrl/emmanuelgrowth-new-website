@@ -24,7 +24,7 @@ export function OfferSection({ id, eyebrow, title, problem, body, items, visual,
           <p className="offer-problem">{problem}</p>
           <p>{body}</p>
           <CheckList items={items} />
-          <ContactTrigger className={`button ${dark ? 'button-light' : 'button-dark'}`}>Get Started <Arrow /></ContactTrigger>
+          <ContactTrigger className={`button ${dark ? 'button-light' : 'button-dark'}`}>Get a free visibility check <Arrow /></ContactTrigger>
         </div>
         <div className="offer-visual">{visual}</div>
       </div>

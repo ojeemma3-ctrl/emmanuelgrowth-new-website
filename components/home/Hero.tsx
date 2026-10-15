@@ -2,10 +2,10 @@ import { ContactTrigger } from './InteractionTriggers';
 import { Arrow } from './shared';
 
 const outcomes = [
-  { title: 'Found on Google', text: 'Show up when local customers search.' },
-  { title: 'Faster replies', text: 'Every enquiry gets a quick first answer.' },
-  { title: 'Follow-up that runs', text: 'Leads and past customers stay warm.' },
-  { title: 'Reviews after every job', text: 'Happy customers leave proof for you.' },
+  { title: 'Get Found', text: 'Show up when local customers search.', href: '#get-found' },
+  { title: 'Convert Enquiries', text: 'Every enquiry gets a quick first answer.', href: '#convert-enquiries' },
+  { title: 'Get More Reviews', text: 'Happy customers leave proof for you.', href: '#get-more-reviews' },
+  { title: 'One simple system', text: 'Set up for you, easy to run day to day.', href: '#journey' },
 ];
 
 export function Hero() {
@@ -17,7 +17,7 @@ export function Hero() {
           <h1>Get found.<br />Convert more enquiries.<br /><em>Get more reviews.</em></h1>
           <p>All the simple tools you need to turn searches into enquiries, enquiries into bookings, and customers into reviews.</p>
           <div className="button-row">
-            <ContactTrigger className="button button-growth">Get Started <Arrow /></ContactTrigger>
+            <ContactTrigger className="button button-growth">Get a free visibility check <Arrow /></ContactTrigger>
             <a className="button button-ghost" href="#services">See Our Services</a>
           </div>
         </div>
@@ -50,10 +50,10 @@ export function Hero() {
       </div>
       <div className="container hero-outcomes">
         {outcomes.map((item) => (
-          <div key={item.title}>
+          <a key={item.title} href={item.href}>
             <strong>{item.title}</strong>
             <span>{item.text}</span>
-          </div>
+          </a>
         ))}
       </div>
     </section>

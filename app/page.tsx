@@ -2,7 +2,7 @@ import { About } from '../components/home/About';
 import { CustomerJourney } from '../components/home/CustomerJourney';
 import { FinalCTA } from '../components/home/FinalCTA';
 import { Hero } from '../components/home/Hero';
-import { Services } from '../components/home/Services';
+import { OfferSections } from '../components/home/OfferSections';
 import { SiteShell } from '../components/home/SiteShell';
 
 const structuredData = {
@@ -41,7 +41,7 @@ export default function Home() {
       showAvaLauncher={false}
     >
       <Hero />
-      <Services />
+      <OfferSections />
       <CustomerJourney />
       <About />
       <FinalCTA />

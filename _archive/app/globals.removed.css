@@ -55,3 +55,21 @@
   .concierge-demo { min-height: 570px; margin-top: 48px; }
   .demo-messages { padding: 24px 18px; }
   .demo-action { flex-direction: column; }
+
+/* Old three-card Services section (replaced by OfferSections in phase 2). */
+.service-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 60px; }
+.service-card { min-height: 420px; padding: 32px; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; }
+.service-card-found { background: var(--forest); color: var(--white); }
+.service-card-convert { background: var(--growth); color: var(--ink); }
+.service-card-trust { background: var(--ink); color: var(--white); }
+.service-card-problem { min-height: 48px; margin-bottom: 14px; font-size: 15px; line-height: 24px; }
+.service-card h3 { margin-bottom: 16px; font-size: 30px; line-height: 36px; font-weight: 600; }
+.service-card-checklist { width: 100%; display: grid; gap: 12px; list-style: none; margin: 0 0 20px; padding: 0; }
+.service-card-checklist li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 10px; font-size: 14px; line-height: 21px; }
+.service-card-checklist li > span { font-size: 17px; line-height: 21px; font-weight: 700; }
+.service-card-outcome { margin: 0 0 20px; font-size: 15px; line-height: 22px; font-weight: 700; }
+.service-card .button { margin-top: auto; }
+.service-card-convert .button-outline { border-color: var(--ink); }
+  .service-cards { grid-template-columns: 1fr; gap: 12px; margin-top: 36px; }
+  .service-card { min-height: 420px; padding: 28px; }
+  .service-card-problem { min-height: 0; }
