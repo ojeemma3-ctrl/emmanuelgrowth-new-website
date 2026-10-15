@@ -1,7 +1,6 @@
 'use client';
 
 import { createContext, FormEvent, ReactNode, RefObject, useContext, useEffect, useRef, useState } from 'react';
-import { whatsappNumber } from './content';
 
 type QuickMessageResult = {
   success: boolean;
