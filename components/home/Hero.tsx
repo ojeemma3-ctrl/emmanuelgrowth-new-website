@@ -5,7 +5,7 @@ const outcomes = [
   { title: 'Get Found', text: 'Show up when local customers search.', href: '#get-found' },
   { title: 'Convert Enquiries', text: 'Every enquiry gets a quick first answer.', href: '#convert-enquiries' },
   { title: 'Get More Reviews', text: 'Happy customers leave proof for you.', href: '#get-more-reviews' },
-  { title: 'One simple system', text: 'Set up for you, easy to run day to day.', href: '#journey' },
+  { title: 'One simple system', text: 'Set up for you, easy to run day to day.', href: '#how-it-works' },
 ];
 
 export function Hero() {

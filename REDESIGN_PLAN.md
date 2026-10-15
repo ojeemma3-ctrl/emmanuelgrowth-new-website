@@ -22,7 +22,7 @@ Ground rules
 ## Phase 1 — Header + hero ✅
 Dark header, dark two-column hero with example dashboard panel, outcome strip.
 
-## Phase 2 — Intro line + three offer sections  ← current
+## Phase 2 — Intro line + three offer sections ✅
 - Full-width sections, image side alternates (right, left, right).
 - Each: number, owner's problem as a quote, the fix in 1–2 sentences,
   3 short "what you get" bullets, an image, ONE button "Fix this problem".
@@ -31,7 +31,7 @@ Dark header, dark two-column hero with example dashboard panel, outcome strip.
 - Nav: Get Found · Convert Enquiries · Get More Reviews · How It Works (+ Pricing in Phase 3).
 - Main CTA label becomes "Get a free visibility check" in header, hero and final CTA.
 
-## Phase 3 — How it works + Pricing
+## Phase 3 — How it works + Pricing ✅
 - How it works: 3 numbered steps in a row (their "Built to make things easier" rhythm).
 - Pricing: three offer cards + one dark highlighted "Complete system" card.
   Each card: large [PRICE] placeholder + "/month", one-line "who it's for",
@@ -39,7 +39,7 @@ Dark header, dark two-column hero with example dashboard panel, outcome strip.
   All placeholders live in one config object at the top of the pricing file.
 - Add "Pricing" to the nav.
 
-## Phase 4 — FAQ, About, final CTA, service pages
+## Phase 4 — FAQ, About, final CTA, service pages  ← next
 - FAQ accordion, short About, final call-to-action band, footer tidy.
 - Carry the same components into /get-found, /convert-enquiries, /build-trust.
 - Mobile pass on every page.

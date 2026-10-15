@@ -1,8 +1,9 @@
 import { About } from '../components/home/About';
-import { CustomerJourney } from '../components/home/CustomerJourney';
 import { FinalCTA } from '../components/home/FinalCTA';
 import { Hero } from '../components/home/Hero';
+import { HowItWorks } from '../components/home/HowItWorks';
 import { OfferSections } from '../components/home/OfferSections';
+import { Pricing } from '../components/home/Pricing';
 import { SiteShell } from '../components/home/SiteShell';
 
 const structuredData = {
@@ -42,7 +43,8 @@ export default function Home() {
     >
       <Hero />
       <OfferSections />
-      <CustomerJourney />
+      <HowItWorks />
+      <Pricing />
       <About />
       <FinalCTA />
     </SiteShell>

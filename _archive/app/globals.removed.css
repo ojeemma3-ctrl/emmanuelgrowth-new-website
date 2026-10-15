@@ -73,3 +73,17 @@
   .service-cards { grid-template-columns: 1fr; gap: 12px; margin-top: 36px; }
   .service-card { min-height: 420px; padding: 28px; }
   .service-card-problem { min-height: 0; }
+
+/* Old customer-journey section (replaced by HowItWorks in phase 3). */
+.journey-section { background: var(--leaf); }
+.journey-list { list-style: none; display: grid; grid-template-columns: repeat(5, 1fr); padding: 0; margin: 60px 0 0; border-top: 1px solid var(--sage); }
+.journey-list li { min-height: 178px; padding: 24px 20px 20px 0; border-right: 1px solid var(--sage); display: flex; flex-direction: column; justify-content: space-between; position: relative; }
+.journey-list li:not(:first-child) { padding-left: 20px; }
+.journey-list li:last-child { border-right: 0; }
+.journey-list li::before { content: ''; width: 10px; height: 10px; position: absolute; top: -5px; left: -1px; background: var(--deep-growth); border-radius: 50%; }
+.journey-list span { color: var(--muted); font-size: 12px; }
+.journey-list strong { max-width: 170px; font-family: var(--font-oswald), sans-serif; font-size: 22px; line-height: 28px; font-weight: 600; }
+  .journey-list { display: block; margin-top: 48px; border-top: 0; border-left: 1px solid var(--sage); }
+  .journey-list li, .journey-list li:not(:first-child) { min-height: 92px; padding: 0 0 24px 28px; border-right: 0; }
+  .journey-list li::before { top: 3px; left: -5px; }
+  .journey-list strong { margin-top: 10px; }

@@ -26,7 +26,8 @@ export function Header() {
           <Link href="/#get-found" onClick={() => setMenuOpen(false)}>Get Found</Link>
           <Link href="/#convert-enquiries" onClick={() => setMenuOpen(false)}>Convert Enquiries</Link>
           <Link href="/#get-more-reviews" onClick={() => setMenuOpen(false)}>Get More Reviews</Link>
-          <Link href="/#journey" onClick={() => setMenuOpen(false)}>How It Works</Link>
+          <Link href="/#how-it-works" onClick={() => setMenuOpen(false)}>How It Works</Link>
+          <Link href="/#pricing" onClick={() => setMenuOpen(false)}>Pricing</Link>
           <button className="button button-dark nav-button" onClick={startContact} type="button">Get a free visibility check <Arrow /></button>
         </nav>
       </div>
