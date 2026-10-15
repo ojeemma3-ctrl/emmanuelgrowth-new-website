@@ -27,7 +27,6 @@ export default function PrivacyPolicyPage() {
         <h2>2. Information we may receive</h2>
         <p>We may receive information that you choose to provide when you contact Emmanuel Growth. This can include your name, contact details, business information and anything you write in your message.</p>
         <p>The quick-message form on this website prepares a WhatsApp message for you to review. The message is not sent until you choose to send it through WhatsApp.</p>
-        <p>The Ava demonstration runs in your browser and is not designed to send your answers to Emmanuel Growth.</p>
         <p>Our hosting provider may process basic technical information, such as IP address, browser information, requested pages and security logs, to deliver and protect the website.</p>
       </section>
 
