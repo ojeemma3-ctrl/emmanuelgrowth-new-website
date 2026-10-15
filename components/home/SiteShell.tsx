@@ -6,11 +6,10 @@ import { InteractionLayer } from './InteractionLayer';
 
 type SiteShellProps = {
   children: ReactNode;
-  beforeMain?: ReactNode;
-  showAvaLauncher?: boolean;
+  beforeMain?: ReactNode;
 };
 
-export function SiteShell({ children, beforeMain, showAvaLauncher = true }: SiteShellProps) {
+export function SiteShell({ children, beforeMain }: SiteShellProps) {
   return (
     <HomeInteractions>
       <div>
@@ -19,7 +18,7 @@ export function SiteShell({ children, beforeMain, showAvaLauncher = true }: Site
         {beforeMain}
         <main id="main-content">{children}</main>
         <Footer />
-        <InteractionLayer showAvaLauncher={showAvaLauncher} />
+        <InteractionLayer />
       </div>
     </HomeInteractions>
   );

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, type FormEvent } from 'react';
-import { avaChoices, whatsappHref } from './content';
+import { helpOptions, whatsappHref } from './content';
 import { useHomeInteractions } from './HomeInteractions';
 import { Arrow } from './shared';
 
@@ -60,7 +60,7 @@ export function ContactModal() {
               <label htmlFor="contact-help">What do you need help with?</label>
               <select id="contact-help" name="help" defaultValue="" required>
                 <option value="" disabled>Choose one</option>
-                {avaChoices.map((item) => <option key={item}>{item}</option>)}
+                {helpOptions.map((item) => <option key={item}>{item}</option>)}
               </select>
               <button className="button button-dark" type="submit">Send Message <Arrow /></button>
               <small style={{ color: quickMessageStatus === 'error' ? '#b42318' : quickMessageStatus === 'success' ? '#1d7a4e' : undefined }}>
