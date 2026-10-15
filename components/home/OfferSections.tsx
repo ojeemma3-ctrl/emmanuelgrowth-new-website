@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { ContactTrigger } from './InteractionTriggers';
+import { Arrow } from './shared';
 
 export type Offer = {
   id: string;
@@ -129,7 +130,7 @@ export function OfferPanel({ offer, flipped = false, headingLevel = 'h3' }: { of
         <ul className="offer-bullets">
           {offer.bullets.map((item) => <li key={item}><span aria-hidden="true">✓</span>{item}</li>)}
         </ul>
-        <ContactTrigger className="button button-dark">Fix this problem <span aria-hidden="true">→</span></ContactTrigger>
+        <ContactTrigger className="button button-dark">Fix this problem <Arrow /></ContactTrigger>
       </div>
       <div className="offer-media">
         <span className="offer-media-label">Example</span>

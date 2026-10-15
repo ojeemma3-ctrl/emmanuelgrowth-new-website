@@ -37,8 +37,8 @@ h2 { font-size: 44px; line-height: 1.14; letter-spacing: -.02em; font-weight: 60
 section, [id] { scroll-margin-top: 100px; }
 
 /* One highlighted word per section: green marker under dark text on light sections, green text on dark sections. */
-h1 em, h2 em { font-style: normal; color: var(--text); background: linear-gradient(transparent 62%, var(--green) 62%); padding-inline: .06em; }
-.hero h1 em, .service-hero h1 em, .pricing-section h2 em, .final-cta-panel h2 em { color: var(--green); background: none; padding-inline: 0; }
+h1 em, h2 em { display: inline-block; font-style: normal; color: inherit; text-decoration: underline; text-decoration-color: var(--green); text-decoration-thickness: 6px; text-underline-offset: 4px; text-decoration-skip-ink: none; }
+.hero h1 em, .service-hero h1 em, .pricing-section h2 em, .final-cta-panel h2 em { color: var(--green); text-decoration: none; }
 
 /* Dark sections: black background, surface cards, border-dark lines. */
 .hero .kicker, .pricing-section .kicker, .final-cta-panel .kicker, .cookie-banner .kicker { color: var(--muted-dark); }
@@ -99,7 +99,6 @@ h1 em, h2 em { font-style: normal; color: var(--text); background: linear-gradie
 
 .offers-intro { padding-block: 112px 16px; text-align: center; background: var(--white); }
 .offers-intro h2 { margin: 0 auto; max-width: none; font-size: clamp(2.25rem, 4.4vw, 3.5rem); }
-.offers-intro h2 em { display: inline-block; color: inherit; background: none; padding-inline: 0; text-decoration: underline; text-decoration-color: var(--green); text-decoration-thickness: 6px; text-underline-offset: 4px; text-decoration-skip-ink: none; }
 .offer-block { padding-block: 112px; background: var(--white); }
 .offer-block.is-grey { background: var(--grey); }
 
