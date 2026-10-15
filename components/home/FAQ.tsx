@@ -28,7 +28,7 @@ export function FAQ() {
       <div className="container faq-grid">
         <div className="faq-heading">
           <p className="kicker">FAQ</p>
-          <h2>Questions, answered.</h2>
+          <h2>Questions, <em>answered.</em></h2>
           <p>Something else on your mind? Ask during your free visibility check.</p>
         </div>
         <div className="faq-list">

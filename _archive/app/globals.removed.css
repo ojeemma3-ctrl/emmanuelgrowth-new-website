@@ -254,3 +254,6 @@
   .ava-drawer { width: 100%; animation: none; }
   .ava-top { min-height: 64px; padding-inline: 20px; }
   .ava-body { padding: 24px 20px; }
+.captured { margin-block: 10px; padding: 16px; border-left: 3px solid var(--growth); background: var(--leaf); display: flex; flex-direction: column; }
+.captured span { font-size: 10px; letter-spacing: .12em; color: var(--deep-growth); }
+.captured strong { font-size: 14px; }

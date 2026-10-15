@@ -19,7 +19,7 @@ export function HowItWorks() {
       <div className="container">
         <div className="how-heading">
           <p className="kicker">How it works</p>
-          <h2>Three simple steps.</h2>
+          <h2>Three <em>simple</em> steps.</h2>
         </div>
         <ol className="how-steps">
           {steps.map((step, index) => (

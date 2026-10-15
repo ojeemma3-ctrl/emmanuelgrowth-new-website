@@ -14,7 +14,7 @@ export function Hero() {
       <div className="container hero-grid">
         <div className="hero-copy hero-reveal">
           <p className="hero-badge"><span aria-hidden="true">●</span>Practical marketing systems for real businesses</p>
-          <h1>Get found.<br />Convert more enquiries.<br /><em>Get more reviews.</em></h1>
+          <h1>Get found.<br />Convert more enquiries.<br />Get more <em>reviews.</em></h1>
           <p>All the simple tools you need to turn searches into enquiries, enquiries into bookings, and customers into reviews.</p>
           <div className="button-row">
             <ContactTrigger className="button button-growth">Get a free visibility check <Arrow /></ContactTrigger>

@@ -3,6 +3,7 @@ import { ContactTrigger } from './InteractionTriggers';
 // All pricing placeholders live here. Replace [PRICE] with real figures when ready.
 const pricing = {
   heading: 'Simple monthly plans.',
+  headingHighlight: 'monthly',
   intro: 'Start with the problem that costs you most, or put all three to work together.',
   period: '/month',
   plans: [
@@ -63,7 +64,7 @@ export function Pricing() {
       <div className="container">
         <div className="pricing-heading">
           <p className="kicker">Pricing</p>
-          <h2>{pricing.heading}</h2>
+          <h2>{pricing.heading.split(pricing.headingHighlight).flatMap((part, i) => (i === 0 ? [part] : [<em key={i}>{pricing.headingHighlight}</em>, part]))}</h2>
           <p>{pricing.intro}</p>
         </div>
         <div className="pricing-grid">

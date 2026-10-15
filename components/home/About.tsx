@@ -10,7 +10,7 @@ export function About() {
       <div className="container about-panel">
         <div>
           <p className="kicker">About Emmanuel Growth</p>
-          <h2>Simple marketing systems for real businesses.</h2>
+          <h2>Simple marketing systems for <em>real</em> businesses.</h2>
         </div>
         <div>
           <p>Emmanuel Growth combines practical sales and marketing experience with modern tools. We start with the business problem. Then we use the right system to help solve it.</p>
