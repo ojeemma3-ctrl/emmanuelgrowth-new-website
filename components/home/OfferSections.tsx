@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
 import { ContactTrigger } from './InteractionTriggers';
-import { Arrow } from './shared';
 
 export type Offer = {
   id: string;
@@ -66,7 +65,7 @@ export const offers: Offer[] = [
     fix: 'We make sure local customers can find you, understand what you do in seconds and contact you in one tap.',
     bullets: [
       'A simple website or landing page that explains what you do',
-      'Google Business Profile set up so you show up in local searches',
+      'Your business details set up clearly so you show up when locals search',
       'Call, WhatsApp and booking buttons on every page',
     ],
     details: [
@@ -130,7 +129,7 @@ export function OfferPanel({ offer, flipped = false, headingLevel = 'h3' }: { of
         <ul className="offer-bullets">
           {offer.bullets.map((item) => <li key={item}><span aria-hidden="true">✓</span>{item}</li>)}
         </ul>
-        <ContactTrigger className="button button-dark">Fix this problem <Arrow /></ContactTrigger>
+        <ContactTrigger className="button button-dark">Fix this problem <span aria-hidden="true">→</span></ContactTrigger>
       </div>
       <div className="offer-media">
         <span className="offer-media-label">Example</span>
@@ -149,7 +148,7 @@ export function OfferSections() {
         </div>
       </section>
       {offers.map((offer, index) => (
-        <section className="offer-block" id={offer.id} key={offer.id} aria-labelledby={`${offer.id}-title`}>
+        <section className={`offer-block${index % 2 === 0 ? ' is-grey' : ''}`} id={offer.id} key={offer.id} aria-labelledby={`${offer.id}-title`}>
           <OfferPanel offer={offer} flipped={index % 2 === 1} />
         </section>
       ))}
