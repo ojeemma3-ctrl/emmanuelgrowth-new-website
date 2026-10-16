@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { ContactTrigger } from './InteractionTriggers';
-import { Arrow, SourceChip } from './shared';
+import { ConvertVisual, FoundVisual, ReviewsVisual } from './OfferVisuals';
+import { Arrow } from './shared';
 
 export type Offer = {
   id: string;
@@ -13,50 +14,6 @@ export type Offer = {
   details: { title: string; text: string }[];
   visual: ReactNode;
 };
-
-function FoundVisual() {
-  return (
-    <div className="offer-ui" aria-hidden="true">
-      <div className="ui-search"><SourceChip source="google" />plumber near me</div>
-      <div className="ui-card ui-listing">
-        <div className="ui-listing-head">
-          <span className="ui-logo">Y</span>
-          <div><strong>Your Business</strong><small>Plumber · Open now</small></div>
-        </div>
-        <div className="ui-actions"><span>Call</span><span>WhatsApp</span><span>Book</span></div>
-      </div>
-      <div className="ui-card ui-float ui-float-right"><span className="ui-dot" />New visitor from local search</div>
-    </div>
-  );
-}
-
-function ConvertVisual() {
-  return (
-    <div className="offer-ui" aria-hidden="true">
-      <div className="ui-card ui-chat">
-        <div className="ui-chat-head"><SourceChip source="whatsapp" /><span>New message</span></div>
-        <p className="ui-msg ui-msg-in">Hi, can you fit me in this week?</p>
-        <p className="ui-msg ui-msg-out">Yes! Here are the free slots. Tap one to book.</p>
-        <div className="ui-slots"><span>Tue 10:00</span><span className="is-picked">Wed 14:30</span><span>Fri 09:00</span></div>
-      </div>
-      <div className="ui-card ui-float ui-float-left"><span className="ui-check">✓</span>Booking confirmed · reminder set</div>
-    </div>
-  );
-}
-
-function ReviewsVisual() {
-  return (
-    <div className="offer-ui" aria-hidden="true">
-      <div className="ui-card ui-chat">
-        <p className="ui-msg ui-msg-out">Thanks for choosing us today! Would you leave a quick review?</p>
-        <span className="ui-review-button">Leave a review</span>
-        <div className="ui-stars">★★★★★</div>
-        <div className="ui-sources"><span>Review on</span><SourceChip source="google" /><SourceChip source="trustpilot" /></div>
-      </div>
-      <div className="ui-card ui-float ui-float-right"><span className="ui-dot" />New review received</div>
-    </div>
-  );
-}
 
 export const offers: Offer[] = [
   {
