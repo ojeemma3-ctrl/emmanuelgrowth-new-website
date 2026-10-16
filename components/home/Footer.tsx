@@ -39,6 +39,7 @@ export function Footer() {
       </div>
       <div className="container footer-bottom">
         <small>© {new Date().getFullYear()} Emmanuel Growth</small>
+        <small>WhatsApp, Google and Trustpilot are trademarks of their respective owners. Emmanuel Growth is not affiliated with them.</small>
       </div>
     </footer>
   );

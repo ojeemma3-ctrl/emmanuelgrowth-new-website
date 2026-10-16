@@ -257,3 +257,17 @@
 .captured { margin-block: 10px; padding: 16px; border-left: 3px solid var(--growth); background: var(--leaf); display: flex; flex-direction: column; }
 .captured span { font-size: 10px; letter-spacing: .12em; color: var(--deep-growth); }
 .captured strong { font-size: 14px; }
+
+/* Static hero panel rows (replaced by the animated HeroStory). */
+.panel-row { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 14px 16px; border: 1px solid var(--border-dark); border-radius: 12px; background: var(--black); }
+.panel-row strong { display: block; font-size: 14px; line-height: 20px; }
+.panel-row small { display: block; font-size: 13px; line-height: 19px; color: var(--muted-dark); }
+.panel-row em { font-style: normal; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: var(--border-dark); color: var(--white); white-space: nowrap; }
+.panel-avatar { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; background: var(--border-dark); color: var(--white); font-weight: 700; }
+.panel-booking .panel-avatar { background: var(--green); color: var(--black); }
+.panel-review em { background: transparent; color: var(--amber); letter-spacing: .05em; }
+.panel-journey { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 6px; }
+.panel-journey span { position: relative; padding-top: 14px; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted-dark); }
+.panel-journey span::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 5px; border-radius: 999px; background: var(--green); }
+  .panel-row { grid-template-columns: 36px minmax(0, 1fr); }
+  .panel-row em { grid-column: 2; justify-self: start; }
