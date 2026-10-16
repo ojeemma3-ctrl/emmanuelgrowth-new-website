@@ -12,6 +12,8 @@ const cards: { at: number; source: Source; title: string; detail?: string; detai
   { at: 5, source: 'google', title: 'Review request sent', stars: true },
 ];
 
+const stages = ['Get Found', 'Convert Enquiries', 'Get More Reviews'];
+
 const FINAL_STEP = 5;
 const RESET_STEP = 6;
 // Time spent on each step before moving on (ms). Roughly 9 seconds per loop.
@@ -41,41 +43,58 @@ export function HeroStory() {
     return () => window.clearTimeout(timer.current);
   }, [animated, paused, step]);
 
+  const visible = step === RESET_STEP ? -1 : step;
+  const latest = cards.reduce((last, card, index) => (visible >= card.at ? index : last), -1);
+  // Which service the story is on: search → Get Found, WhatsApp → Convert Enquiries, review → Get More Reviews.
+  const activeStage = visible < 0 ? -1 : visible <= 1 ? 0 : visible <= 4 ? 1 : 2;
+
   return (
     <div
-      className={`hero-panel${paused ? ' is-paused' : ''}`}
+      className={`hero-stage${paused ? ' is-paused' : ''}`}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <div className="hero-panel-bar">
-        <span className="hero-panel-dots" aria-hidden="true"><i /><i /><i /></span>
-        <span>Your growth system</span>
-        <span className="hero-panel-label">Example</span>
-      </div>
-      <div
-        className="hero-panel-body"
-        role="img"
-        aria-label="Example: someone searches for a plumber and finds the business on Google, asks on WhatsApp about Friday, gets a reply in seconds, books Friday at 14:00, and is then asked for a five-star review."
-      >
-        {cards.map((card) => {
-          const shown = step !== RESET_STEP && step >= card.at;
-          const detailShown = shown && step >= (card.detailAt ?? card.at);
-          return (
-            <div className={`story-card${shown ? ' is-shown' : ''}`} key={card.title} aria-hidden="true">
-              <SourceChip source={card.source} />
-              <div className="story-text">
-                <strong>{card.title}</strong>
-                {card.detail ? <small className={detailShown ? 'is-shown' : ''}>{card.detail}</small> : null}
-                {card.stars ? (
-                  <span className={`story-stars${shown ? ' is-filling' : ''}`}>
-                    {[0, 1, 2, 3, 4].map((i) => <i key={i} style={{ animationDelay: `${300 + i * 200}ms` }}>★</i>)}
-                  </span>
-                ) : null}
+      <ul className="stage-tags" aria-hidden="true">
+        {stages.map((stage, index) => (
+          <li className={`stage-tag stage-tag-${index + 1}${activeStage === index ? ' is-active' : ''}`} key={stage}>
+            <span className="stage-dot" />{stage}
+          </li>
+        ))}
+      </ul>
+      <div className="hero-panel">
+        <div className="hero-panel-bar">
+          <span className="hero-panel-dots" aria-hidden="true"><i /><i /><i /></span>
+          <span>Your growth system</span>
+          <span className="story-progress" aria-hidden="true">
+            {cards.map((card) => <i className={visible >= card.at ? 'is-done' : ''} key={card.title} />)}
+          </span>
+          <span className="hero-panel-label">Example</span>
+        </div>
+        <div
+          className="hero-panel-body"
+          role="img"
+          aria-label="Example: someone searches for a plumber and finds the business on Google, asks on WhatsApp about Friday, gets a reply in seconds, books Friday at 14:00, and is then asked for a five-star review."
+        >
+          {cards.map((card, index) => {
+            const shown = visible >= card.at;
+            const detailShown = shown && visible >= (card.detailAt ?? card.at);
+            return (
+              <div className={`story-card${shown ? ' is-shown' : ''}${index === latest ? ' is-latest' : ''}`} key={card.title} aria-hidden="true">
+                <SourceChip source={card.source} />
+                <div className="story-text">
+                  <strong>{card.title}</strong>
+                  {card.detail ? <small className={detailShown ? 'is-shown' : ''}>{card.detail}</small> : null}
+                  {card.stars ? (
+                    <span className={`story-stars${shown ? ' is-filling' : ''}`}>
+                      {[0, 1, 2, 3, 4].map((i) => <i key={i} style={{ animationDelay: `${300 + i * 200}ms` }}>★</i>)}
+                    </span>
+                  ) : null}
+                </div>
+                {card.badge ? <em className={detailShown ? 'is-shown' : ''}>{card.badge}</em> : null}
               </div>
-              {card.badge ? <em className={detailShown ? 'is-shown' : ''}>{card.badge}</em> : null}
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     </div>
   );
