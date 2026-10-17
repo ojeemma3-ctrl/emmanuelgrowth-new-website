@@ -1,7 +1,7 @@
+import Link from 'next/link';
 import { FAQ } from './FAQ';
 import { FinalCTA } from './FinalCTA';
 import { HowItWorks } from './HowItWorks';
-import { ContactTrigger } from './InteractionTriggers';
 import { OfferPanel, offers } from './OfferSections';
 import { Pricing } from './Pricing';
 import { Arrow } from './shared';
@@ -24,7 +24,7 @@ export function ServicePage({ offerId, description }: ServicePageProps) {
           <h1>{offer.name}</h1>
           <p>{description}</p>
           <div className="button-row">
-            <ContactTrigger className="button button-growth">Get a free visibility check <Arrow /></ContactTrigger>
+            <Link className="button button-growth" href="/visibility-check">Get a free visibility check <Arrow /></Link>
             <a className="button button-ghost" href="#pricing">See pricing</a>
           </div>
         </div>

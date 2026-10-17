@@ -1,5 +1,5 @@
 import { HeroStory } from './HeroStory';
-import { ContactTrigger } from './InteractionTriggers';
+import Link from 'next/link';
 import { Arrow } from './shared';
 
 const outcomes = [
@@ -18,9 +18,10 @@ export function Hero() {
           <h1>Get found.<br />Convert more enquiries.<br />Get more <em>reviews.</em></h1>
           <p>All the simple tools you need to turn searches into enquiries, enquiries into bookings, and customers into reviews.</p>
           <div className="button-row">
-            <ContactTrigger className="button button-growth">Get a free visibility check <Arrow /></ContactTrigger>
+            <Link className="button button-growth" href="/visibility-check">Get a free visibility check <Arrow /></Link>
             <a className="button button-ghost" href="#services">See Our Services</a>
           </div>
+          <p className="hero-cta-note">Takes about 60 seconds</p>
         </div>
         <HeroStory />
       </div>

@@ -1,3 +1,6 @@
+import Link from 'next/link';
+import { Arrow } from './shared';
+
 const steps = [
   {
     title: 'Free visibility check',
@@ -30,6 +33,9 @@ export function HowItWorks() {
             </li>
           ))}
         </ol>
+        <div className="how-cta">
+          <Link className="button button-growth" href="/visibility-check">Get a free visibility check <Arrow /></Link>
+        </div>
       </div>
     </section>
   );

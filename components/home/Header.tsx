@@ -3,16 +3,10 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
-import { useHomeInteractions } from './HomeInteractions';
 import { Arrow } from './shared';
 
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { openContact } = useHomeInteractions();
-  const startContact = () => {
-    openContact();
-    setMenuOpen(false);
-  };
 
   return (
     <header className="site-header">
@@ -26,7 +20,7 @@ export function Header() {
           <Link href="/#services" onClick={() => setMenuOpen(false)}>Services</Link>
           <Link href="/#how-it-works" onClick={() => setMenuOpen(false)}>How It Works</Link>
           <Link href="/#pricing" onClick={() => setMenuOpen(false)}>Pricing</Link>
-          <button className="button button-dark nav-button" onClick={startContact} type="button">Get a free visibility check <Arrow /></button>
+          <Link className="button nav-button" href="/visibility-check" onClick={() => setMenuOpen(false)}>Get a free visibility check <Arrow /></Link>
         </nav>
       </div>
     </header>

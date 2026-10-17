@@ -16,7 +16,8 @@
   /* Active green. To switch, change var(--green-b) to var(--green-a) or var(--green-c). Earlier alternative: #7DC529. */
   --green: var(--green-b);
   --green-edge: color-mix(in srgb, var(--green) 55%, var(--black)); /* tactile button bottom edge, follows --green */
-  --amber: #F2B134; /* review stars only */
+  --amber: #F2B134; /* review stars, and the "Getting there" rating in the visibility check */
+  --red: #E5484D; /* visibility check "Needs attention" rating only */
   /* Derived from the tokens above (no new hex): hairlines and shadows on light sections. */
   --border-light: color-mix(in srgb, var(--text) 12%, var(--white));
   --shadow: color-mix(in srgb, var(--black) 18%, transparent);
@@ -177,6 +178,7 @@ h1 em, h2 em { display: inline-block; font-style: normal; color: inherit; text-d
 @keyframes star-pop { from { color: var(--border-dark); transform: scale(.6); } to { color: var(--amber); transform: none; } }
 @keyframes slot-pick { from { border-color: var(--border-light); background: transparent; color: var(--text); } to { border-color: var(--black); background: var(--black); color: var(--white); } }
 .hero-panel-body { display: grid; gap: 12px; padding: 20px; }
+.hero-cta-note { margin: 14px 0 0; font-size: 15px; line-height: 22px; color: var(--muted-dark); }
 .hero-outcomes { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 88px; border-top: 1px solid var(--border-dark); }
 .hero-outcomes > a { display: flex; flex-direction: column; gap: 4px; padding: 28px 24px 32px 0; }
 .hero-outcomes > a + a { padding-left: 24px; border-left: 1px solid var(--border-dark); }
@@ -209,6 +211,8 @@ h1 em, h2 em { display: inline-block; font-style: normal; color: inherit; text-d
 .how-step-number { position: relative; width: 48px; height: 48px; display: grid; place-items: center; margin: 0 auto 24px; border-radius: 50%; background: var(--green); color: var(--black); font-family: var(--font-oswald), sans-serif; font-size: 18px; font-weight: 700; }
 .how-steps h3 { margin-bottom: 12px; font-size: 24px; line-height: 30px; font-weight: 600; }
 .how-steps p { margin: 0 auto; max-width: 30ch; font-size: 15px; line-height: 24px; color: var(--muted-light); }
+
+.how-cta { display: flex; justify-content: center; margin-top: 48px; }
 
 .pricing-section { padding-block: 112px; background: var(--black); color: var(--white); }
 .pricing-heading > p:not(.kicker) { margin: 16px 0 0; font-size: 18px; line-height: 28px; color: var(--muted-dark); }
@@ -279,6 +283,42 @@ h1 em, h2 em { display: inline-block; font-style: normal; color: inherit; text-d
 .included-grid article > span { width: 36px; height: 36px; display: grid; place-items: center; margin-bottom: 20px; border-radius: 10px; background: var(--black); color: var(--green); font-weight: 700; }
 .included-grid h3 { margin-bottom: 8px; font-size: 20px; line-height: 26px; font-weight: 600; }
 .included-grid p { margin: 0; font-size: 15px; line-height: 24px; color: var(--text); }
+
+.vc-section { min-height: calc(100svh - 76px); padding-block: 72px 112px; background: var(--grey); }
+.vc-container { max-width: 760px; }
+.vc-card { padding: 48px; border: 1px solid var(--border-light); border-radius: 24px; background: var(--white); font-size: 17px; line-height: 27px; }
+.vc-card .kicker { margin-bottom: 16px; font-size: 16px; letter-spacing: .08em; }
+.vc-title { margin-bottom: 20px; font-size: clamp(2.25rem, 5vw, 3.25rem); line-height: 1.08; }
+.vc-lead { margin-bottom: 28px; font-size: 18px; line-height: 29px; color: var(--text); }
+.vc-note { margin: 16px 0 0; font-size: 16px; line-height: 24px; color: var(--muted-light); }
+.vc-progress-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; font-size: 16px; color: var(--muted-light); }
+.vc-area { padding: 4px 12px; border-radius: 999px; background: var(--grey); color: var(--text); font-weight: 600; }
+.vc-progress { height: 8px; border-radius: 999px; background: var(--grey); overflow: hidden; }
+.vc-progress span { display: block; height: 100%; border-radius: inherit; background: var(--text); transition: width .3s ease; }
+.vc-question { margin: 32px 0 28px; font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.2; outline: none; }
+.vc-answers { display: grid; gap: 12px; }
+.vc-answer { min-height: 64px; padding: 18px 22px; border: 2px solid var(--border-light); border-radius: 14px; background: var(--white); color: var(--text); font-size: 18px; line-height: 24px; font-weight: 600; text-align: left; cursor: pointer; transition: border-color .15s ease, background .15s ease; }
+.vc-answer:hover { border-color: var(--text); }
+.vc-answer.is-selected { border-color: var(--text); background: var(--grey); }
+.vc-back { margin-top: 24px; padding: 8px 0; border: 0; background: transparent; color: var(--text); font-size: 16px; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
+.vc-score { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 20px; margin-bottom: 16px; font-size: clamp(2rem, 5vw, 2.75rem); line-height: 1.1; outline: none; }
+.vc-score span { font-size: clamp(3.5rem, 10vw, 5rem); line-height: 1; }
+.vc-score small { font-size: .4em; color: var(--muted-light); }
+.vc-subhead { margin: 36px 0 12px; font-size: 24px; line-height: 30px; }
+.vc-areas { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--border-light); }
+.vc-areas li { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 14px; border-bottom: 1px solid var(--border-light); font-size: 18px; font-weight: 600; }
+.vc-rating { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 999px; color: var(--black); font-size: 16px; line-height: 20px; font-weight: 700; white-space: nowrap; }
+.vc-rating i { width: 8px; height: 8px; border-radius: 50%; background: var(--black); }
+.vc-rating.is-green { background: var(--green); }
+.vc-rating.is-amber { background: var(--amber); }
+.vc-rating.is-red { background: var(--red); }
+.vc-gaps { margin: 0; padding-left: 24px; }
+.vc-gaps li { margin-bottom: 18px; }
+.vc-gaps strong { display: block; font-size: 18px; line-height: 26px; }
+.vc-gaps p { margin: 4px 0 0; font-size: 17px; line-height: 26px; color: var(--muted-light); }
+.vc-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 36px; }
+/* Headings receive focus only so screen readers follow each step; they are not controls. */
+.vc-question:focus-visible, .vc-score:focus-visible { outline: none; }
 
 .site-footer { position: relative; z-index: 20; padding-block: 72px 0; background: var(--black); color: var(--white); }
 .site-footer .brand-label b { color: var(--green); }
@@ -380,6 +420,10 @@ h1 em, h2 em { display: inline-block; font-style: normal; color: inherit; text-d
 }
 
 @media (max-width: 767px) {
+  .vc-section { padding-block: 32px 72px; }
+  .vc-card { padding: 28px 20px; border-radius: 18px; }
+  .vc-actions { display: grid; }
+  .vc-actions .button { width: 100%; }
   .stage-tags { position: static; flex-wrap: wrap; justify-content: flex-start; gap: 8px; margin-bottom: 14px; }
   .stage-tag { animation: none; box-shadow: none; }
   .hero-panel-bar > span:nth-of-type(2) { display: none; }

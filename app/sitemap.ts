@@ -3,6 +3,7 @@ import type { MetadataRoute } from 'next';
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     ['', 1],
+    ['visibility-check', 0.9],
     ['get-found', 0.8],
     ['convert-enquiries', 0.8],
     ['build-trust', 0.8],
