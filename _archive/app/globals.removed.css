@@ -271,3 +271,34 @@
 .panel-journey span::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 5px; border-radius: 999px; background: var(--green); }
   .panel-row { grid-template-columns: 36px minmax(0, 1fr); }
   .panel-row em { grid-column: 2; justify-self: start; }
+
+/* Old 8-question quiz styles (replaced by the instant check). */
+.vc-progress-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; font-size: 16px; color: var(--muted-light); }
+.vc-area { padding: 4px 12px; border-radius: 999px; background: var(--grey); color: var(--text); font-weight: 600; }
+.vc-progress { height: 8px; border-radius: 999px; background: var(--grey); overflow: hidden; }
+.vc-progress span { display: block; height: 100%; border-radius: inherit; background: var(--text); transition: width .3s ease; }
+.vc-question { margin: 32px 0 28px; font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.2; outline: none; }
+.vc-answers { display: grid; gap: 12px; }
+.vc-answer { min-height: 64px; padding: 18px 22px; border: 2px solid var(--border-light); border-radius: 14px; background: var(--white); color: var(--text); font-size: 18px; line-height: 24px; font-weight: 600; text-align: left; cursor: pointer; transition: border-color .15s ease, background .15s ease; }
+.vc-answer:hover { border-color: var(--text); }
+.vc-answer.is-selected { border-color: var(--text); background: var(--grey); }
+.vc-score { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 20px; margin-bottom: 16px; font-size: clamp(2rem, 5vw, 2.75rem); line-height: 1.1; outline: none; }
+.vc-score span { font-size: clamp(3.5rem, 10vw, 5rem); line-height: 1; }
+.vc-score small { font-size: .4em; color: var(--muted-light); }
+.vc-subhead { margin: 36px 0 12px; font-size: 24px; line-height: 30px; }
+.vc-areas { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--border-light); }
+.vc-areas li { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 14px; border-bottom: 1px solid var(--border-light); font-size: 18px; font-weight: 600; }
+.vc-rating { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 999px; color: var(--black); font-size: 16px; line-height: 20px; font-weight: 700; white-space: nowrap; }
+.vc-rating i { width: 8px; height: 8px; border-radius: 50%; background: var(--black); }
+.vc-rating.is-green { background: var(--green); }
+.vc-rating.is-amber { background: var(--amber); }
+.vc-rating.is-red { background: var(--red); }
+.vc-gaps { margin: 0; padding-left: 24px; }
+.vc-gaps li { margin-bottom: 18px; }
+.vc-gaps strong { display: block; font-size: 18px; line-height: 26px; }
+.vc-gaps p { margin: 4px 0 0; font-size: 17px; line-height: 26px; color: var(--muted-light); }
+.vc-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 36px; }
+/* Headings receive focus only so screen readers follow each step; they are not controls. */
+.vc-question:focus-visible, .vc-score:focus-visible { outline: none; }
+  .vc-actions { display: grid; }
+  .vc-actions .button { width: 100%; }

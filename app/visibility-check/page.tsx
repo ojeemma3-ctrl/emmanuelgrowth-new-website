@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 import { SiteShell } from '../../components/home/SiteShell';
-import { VisibilityCheck } from '../../components/visibility-check/VisibilityCheck';
+import { InstantCheck } from '../../components/visibility-check/InstantCheck';
 
 export const metadata: Metadata = {
   title: 'Free Visibility Check | Emmanuel Growth',
-  description: 'Answer 8 quick questions to see where customers might be slipping away. A free self-check based on your answers — nothing is saved.',
+  description: 'Find your business and get instant automated checks of your public Google profile and website, with the top 3 fixes in plain words.',
   alternates: { canonical: '/visibility-check' },
 };
 
@@ -13,7 +13,7 @@ export default function VisibilityCheckPage() {
     <SiteShell>
       <section className="vc-section">
         <div className="container vc-container">
-          <VisibilityCheck />
+          <InstantCheck />
         </div>
       </section>
     </SiteShell>
