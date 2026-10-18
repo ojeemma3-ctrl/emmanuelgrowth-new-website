@@ -17,6 +17,7 @@ export type WebsiteReport = {
   title?: string;
   metaDescription?: string;
   h1s: string[];
+  h1Count: number;
   hasViewport: boolean;
   canonical?: string;
   noindex: boolean;
@@ -24,16 +25,23 @@ export type WebsiteReport = {
   sitemap: { found: boolean; source?: 'robots' | 'default' };
   aiCrawlers: Record<string, CrawlerRule>;
   schemaTypes: string[];
+  businessSchema: { found: boolean; name: boolean; address: boolean; phone: boolean; hours: boolean; website: boolean; image: boolean; socialLinks: boolean };
   openGraph: { title: boolean; description: boolean; image: boolean };
   telLinks: number;
   mailtoLinks: number;
   whatsappLinks: number;
+  bookingLinks: number;
   hasContactForm: boolean;
   socialLinks: string[];
   phonesFound: string[];
   namesFound: string[];
+  addressCheck?: { expected: string; found: boolean };
   truncated: boolean;
 };
+
+const BUSINESS_TYPE = /LocalBusiness|Organization|Store|Service|Contractor|Restaurant|Salon|Spa|Clinic|Dentist|Plumber|Electrician|Business|Shop|Agency|Practice|Studio|Gym|Cafe|Bakery|Hotel/;
+type BusinessSchema = WebsiteReport['businessSchema'];
+const emptyBusinessSchema = (): BusinessSchema => ({ found: false, name: false, address: false, phone: false, hours: false, website: false, image: false, socialLinks: false });
 
 const decode = (s: string) => s
   .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;|&apos;/g, "'").replace(/&nbsp;/g, ' ')
@@ -52,15 +60,36 @@ function metaContent(html: string, key: 'name' | 'property', value: string) {
   return undefined;
 }
 
-function collectSchema(node: unknown, types: Set<string>, names: Set<string>, phones: Set<string>) {
-  if (Array.isArray(node)) return node.forEach((n) => collectSchema(n, types, names, phones));
+function collectSchema(node: unknown, types: Set<string>, names: Set<string>, phones: Set<string>, business: BusinessSchema) {
+  if (Array.isArray(node)) return node.forEach((n) => collectSchema(n, types, names, phones, business));
   if (!node || typeof node !== 'object') return;
   const obj = node as Record<string, unknown>;
   const t = obj['@type'];
-  (Array.isArray(t) ? t : [t]).forEach((x) => typeof x === 'string' && types.add(x));
-  if (typeof obj.name === 'string' && (t === 'LocalBusiness' || t === 'Organization' || (typeof t === 'string' && /Business|Store|Service|Contractor|Restaurant|Salon|Clinic|Dentist|Plumber|Electrician/.test(t)))) names.add(obj.name);
+  const typeList = (Array.isArray(t) ? t : [t]).filter((x): x is string => typeof x === 'string');
+  typeList.forEach((x) => types.add(x));
+  const isBusiness = typeList.some((x) => BUSINESS_TYPE.test(x)) && !typeList.some((x) => /^(WebSite|WebPage|AggregateRating|Review|Offer)$/.test(x));
+  if (isBusiness) {
+    business.found = true;
+    if (typeof obj.name === 'string') { names.add(obj.name); business.name = true; }
+    if (obj.address) business.address = true;
+    if (obj.telephone) business.phone = true;
+    if (obj.openingHours || obj.openingHoursSpecification) business.hours = true;
+    if (obj.url) business.website = true;
+    if (obj.image || obj.logo) business.image = true;
+    if (obj.sameAs) business.socialLinks = true;
+  }
   if (typeof obj.telephone === 'string') phones.add(obj.telephone);
-  Object.values(obj).forEach((v) => typeof v === 'object' && collectSchema(v, types, names, phones));
+  Object.values(obj).forEach((v) => typeof v === 'object' && collectSchema(v, types, names, phones, business));
+}
+
+// Looks for the Google address on the page: the postcode if there is one, otherwise the longest word of the street line.
+function addressOnPage(pageText: string, expected: string) {
+  const text = pageText.toLowerCase().replace(/\s+/g, ' ');
+  const postcode = expected.match(/\b[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}\b/i)?.[0];
+  if (postcode) return text.replace(/\s/g, '').includes(postcode.toLowerCase().replace(/\s/g, ''));
+  const words = expected.split(',')[0].toLowerCase().replace(/[^a-z0-9 ]/g, ' ').split(' ').filter((w) => w.length >= 4);
+  const key = words.sort((a, b) => b.length - a.length)[0];
+  return key ? text.includes(key) : false;
 }
 
 function parseRobots(text: string) {
@@ -113,12 +142,12 @@ export function normaliseUrl(raw: string) {
   return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
 }
 
-export async function checkWebsite(rawUrl: string): Promise<WebsiteReport> {
+export async function checkWebsite(rawUrl: string, expectedAddress?: string): Promise<WebsiteReport> {
   const url = normaliseUrl(rawUrl);
   const empty: WebsiteReport = {
-    url, finalUrl: url, reachable: false, https: false, redirectCount: 0, h1s: [], hasViewport: false, noindex: false,
-    robotsTxt: { found: false, blocksAll: false }, sitemap: { found: false }, aiCrawlers: {}, schemaTypes: [],
-    openGraph: { title: false, description: false, image: false }, telLinks: 0, mailtoLinks: 0, whatsappLinks: 0,
+    url, finalUrl: url, reachable: false, https: false, redirectCount: 0, h1s: [], h1Count: 0, hasViewport: false, noindex: false,
+    robotsTxt: { found: false, blocksAll: false }, sitemap: { found: false }, aiCrawlers: {}, schemaTypes: [], businessSchema: emptyBusinessSchema(),
+    openGraph: { title: false, description: false, image: false }, telLinks: 0, mailtoLinks: 0, whatsappLinks: 0, bookingLinks: 0,
     hasContactForm: false, socialLinks: [], phonesFound: [], namesFound: [], truncated: false,
   };
 
@@ -170,9 +199,10 @@ export async function checkWebsite(rawUrl: string): Promise<WebsiteReport> {
   const types = new Set<string>();
   const schemaNames = new Set<string>();
   const phones = new Set<string>();
+  const business = emptyBusinessSchema();
   for (const block of html.match(/<script\b[^>]*type\s*=\s*["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>/gi) ?? []) {
     try {
-      collectSchema(JSON.parse(block.replace(/^<script\b[^>]*>|<\/script>$/gi, '')), types, schemaNames, phones);
+      collectSchema(JSON.parse(block.replace(/^<script\b[^>]*>|<\/script>$/gi, '')), types, schemaNames, phones, business);
     } catch { /* invalid JSON-LD is ignored */ }
   }
 
@@ -182,7 +212,9 @@ export async function checkWebsite(rawUrl: string): Promise<WebsiteReport> {
   const robotsMeta = metaContent(html, 'name', 'robots') ?? '';
   const title = clean(html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i)?.[1] ?? '') || undefined;
   const ogSite = metaContent(html, 'property', 'og:site_name');
-  const h1s = (html.match(/<h1\b[^>]*>[\s\S]*?<\/h1>/gi) ?? []).map(clean).filter(Boolean).slice(0, 5);
+  const h1All = (html.match(/<h1\b[^>]*>[\s\S]*?<\/h1>/gi) ?? []).map(clean).filter(Boolean);
+  const h1s = h1All.slice(0, 5);
+  const pageText = clean(html.replace(/<(script|style)\b[\s\S]*?<\/\1>/gi, ' '));
   const canonicalTag = (html.match(/<link\b[^>]*>/gi) ?? []).find((tag) => (attr(tag, 'rel') ?? '').toLowerCase() === 'canonical');
   const forms = html.match(/<form\b[\s\S]*?<\/form>/gi) ?? [];
 
@@ -197,6 +229,7 @@ export async function checkWebsite(rawUrl: string): Promise<WebsiteReport> {
     title,
     metaDescription: metaContent(html, 'name', 'description') || undefined,
     h1s,
+    h1Count: h1All.length,
     hasViewport: Boolean(metaContent(html, 'name', 'viewport')),
     canonical: canonicalTag ? attr(canonicalTag, 'href') : undefined,
     noindex: /noindex/i.test(robotsMeta),
@@ -204,6 +237,7 @@ export async function checkWebsite(rawUrl: string): Promise<WebsiteReport> {
     sitemap,
     aiCrawlers,
     schemaTypes: [...types].slice(0, 12),
+    businessSchema: business,
     openGraph: {
       title: Boolean(metaContent(html, 'property', 'og:title')),
       description: Boolean(metaContent(html, 'property', 'og:description')),
@@ -212,10 +246,12 @@ export async function checkWebsite(rawUrl: string): Promise<WebsiteReport> {
     telLinks: tel.length,
     mailtoLinks: anchors.filter((h) => /^mailto:/i.test(h)).length,
     whatsappLinks: anchors.filter((h) => /(wa\.me|api\.whatsapp\.com|whatsapp:\/\/)/i.test(h)).length,
+    bookingLinks: anchors.filter((h) => /(calendly\.com|booksy\.com|fresha\.com|treatwell\.|setmore\.com|acuityscheduling\.com|simplybook\.|squareup\.com\/appointments|square\.site|opentable\.|resdiary\.|vagaro\.com|timely\.|\/book(ing)?\b)/i.test(h)).length,
     hasContactForm: forms.some((f) => /type\s*=\s*["']?email|<textarea|contact|enquir|message/i.test(f)),
     socialLinks: SOCIAL.filter(([, re]) => anchors.some((h) => re.test(h))).map(([name]) => name),
     phonesFound: [...phones].slice(0, 6),
     namesFound: [title, ogSite, h1s[0], ...schemaNames].filter((n): n is string => Boolean(n)).slice(0, 6),
+    addressCheck: expectedAddress ? { expected: expectedAddress, found: addressOnPage(pageText, expectedAddress) } : undefined,
     truncated: page.truncated,
   };
 }

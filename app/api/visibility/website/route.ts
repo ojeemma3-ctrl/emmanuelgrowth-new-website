@@ -6,5 +6,5 @@ export async function POST(request: Request) {
   if (!ticket) return json({ error: 'expired' }, 401);
   if (!ticket.website) return json({ skipped: 'no_website' });
   if (ticket.social) return json({ skipped: 'social', platform: ticket.social });
-  return json({ report: await checkWebsite(ticket.website) });
+  return json({ report: await checkWebsite(ticket.website, ticket.address) });
 }

@@ -45,7 +45,7 @@ export async function POST(request: Request) {
   try {
     const place = await profile(placeId);
     const social = socialPlatform(place.website) ?? undefined;
-    const ticket = await signTicket({ placeId: place.placeId, name: place.name, town: place.town, category: place.category, categoryType: place.categoryType, website: place.website, social });
+    const ticket = await signTicket({ placeId: place.placeId, name: place.name, town: place.town, category: place.category, categoryType: place.categoryType, website: place.website, address: place.address, social });
     return json({ ticket, profile: place, website: place.website ?? null, social: social ?? null });
   } catch (error) {
     return json({ error: error instanceof PlacesError ? error.kind : 'upstream' }, 502);

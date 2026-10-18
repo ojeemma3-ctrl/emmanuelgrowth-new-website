@@ -5,7 +5,7 @@ import { Arrow } from '../home/shared';
 import { competitorArea, consistencyArea, contactArea, notChecked, profileArea, searchArea, speedArea, topFixes, websiteArea, type Area } from './findings';
 import type { CheckState } from './InstantCheck';
 
-const statusClass = { Good: 'is-good', 'Needs attention': 'is-attention', Problem: 'is-problem', 'Couldn’t check': 'is-unknown' } as const;
+const statusClass = { Good: 'is-good', 'Needs attention': 'is-attention', Problem: 'is-problem', 'Couldn’t check': 'is-unknown', 'Not checked automatically': 'is-unknown' } as const;
 
 function ProgressItem({ label, state }: { label: string; state: 'waiting' | 'done' | 'skipped' | 'failed' }) {
   const text = { waiting: 'Checking…', done: 'Done', skipped: 'Not applicable', failed: 'Could not check' }[state];
