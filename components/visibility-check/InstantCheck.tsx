@@ -26,7 +26,7 @@ export type CheckState = {
 
 const errorText: Record<string, string> = {
   daily_cap: 'We’ve reached today’s limit for free checks. Please come back tomorrow.',
-  ip_limit: 'You’ve already run 3 checks today. Please come back tomorrow.',
+  ip_limit: 'You’ve reached today’s limit for free checks. Please come back tomorrow.',
   not_configured: 'The automatic check isn’t switched on yet. Please message us on WhatsApp instead.',
   verification: 'Please complete the verification and try again.',
   bad_website: 'That website address can’t be checked. Please check it and try again.',

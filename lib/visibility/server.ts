@@ -8,13 +8,23 @@ export function getEnv(name: string): string | undefined {
   return typeof value === 'string' && value.trim() ? value.trim() : undefined;
 }
 
+const isDevelopment = () => (getEnv('NODE_ENV') ?? process.env.NODE_ENV) === 'development';
+
+// Whole number from an env variable, or the fallback when unset or invalid.
+function envLimit(names: string[], fallback: number) {
+  for (const name of names) {
+    const raw = Number(getEnv(name));
+    if (Number.isFinite(raw) && raw >= 0) return Math.floor(raw);
+  }
+  return fallback;
+}
+
 export const config = {
-  // Global number of full checks per UTC day. Override with VISIBILITY_DAILY_CAP.
-  dailyCap: () => {
-    const raw = Number(getEnv('VISIBILITY_DAILY_CAP'));
-    return Number.isFinite(raw) && raw >= 0 ? Math.floor(raw) : 40;
-  },
-  perIpChecks: 3,
+  // Full checks per UTC day. Production defaults: 40 in total, 3 per visitor IP.
+  // In development (NODE_ENV=development) the defaults are 200 and 50 so testing isn't blocked.
+  // Setting CHECK_DAILY_CAP / CHECK_LIMIT_PER_IP_PER_DAY always wins. VISIBILITY_DAILY_CAP is still read as an older name.
+  dailyCap: () => envLimit(['CHECK_DAILY_CAP', 'VISIBILITY_DAILY_CAP'], isDevelopment() ? 200 : 40),
+  perIpChecks: () => envLimit(['CHECK_LIMIT_PER_IP_PER_DAY'], isDevelopment() ? 50 : 3),
   perIpAutocomplete: 120,
   perIpPreviews: 20,
 };
@@ -72,7 +82,7 @@ export async function takeLimit(request: Request, kind: LimitKind): Promise<{ ok
   rollDay();
   const ipKey = `${kind}:${await sha256Hex(`${counterDay}:${clientIp(request)}`)}`;
   const ipCount = counters.get(ipKey) ?? 0;
-  const ipMax = kind === 'check' ? config.perIpChecks : kind === 'autocomplete' ? config.perIpAutocomplete : config.perIpPreviews;
+  const ipMax = kind === 'check' ? config.perIpChecks() : kind === 'autocomplete' ? config.perIpAutocomplete : config.perIpPreviews;
   if (kind === 'check') {
     const globalCount = counters.get('global:check') ?? 0;
     if (globalCount >= config.dailyCap()) return { ok: false, reason: 'daily_cap' };
