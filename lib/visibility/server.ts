@@ -116,6 +116,7 @@ export type Ticket = {
   category?: string;
   categoryType?: string;
   website?: string;
+  social?: string; // platform name when the "website" is a social or link-in-bio page
   exp: number;
 };
 

@@ -1,6 +1,7 @@
 import { PlacesError, profile } from '../../../../lib/visibility/places';
 import { assertPublicUrl, FetchBlocked } from '../../../../lib/visibility/safe-fetch';
 import { json, readJson, signTicket, str, takeLimit, verifyTurnstile } from '../../../../lib/visibility/server';
+import { socialPlatform } from '../../../../lib/visibility/social';
 import { normaliseUrl } from '../../../../lib/visibility/website';
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -36,14 +37,16 @@ export async function POST(request: Request) {
   if (!limit.ok) return json({ error: limit.reason }, 429);
 
   if (mode === 'manual') {
-    const ticket = await signTicket({ name: manualName, town: manualTown, website });
-    return json({ ticket, profile: null, website: website ?? null });
+    const social = socialPlatform(website) ?? undefined;
+    const ticket = await signTicket({ name: manualName, town: manualTown, website, social });
+    return json({ ticket, profile: null, website: website ?? null, social: social ?? null });
   }
 
   try {
     const place = await profile(placeId);
-    const ticket = await signTicket({ placeId: place.placeId, name: place.name, town: place.town, category: place.category, categoryType: place.categoryType, website: place.website });
-    return json({ ticket, profile: place, website: place.website ?? null });
+    const social = socialPlatform(place.website) ?? undefined;
+    const ticket = await signTicket({ placeId: place.placeId, name: place.name, town: place.town, category: place.category, categoryType: place.categoryType, website: place.website, social });
+    return json({ ticket, profile: place, website: place.website ?? null, social: social ?? null });
   } catch (error) {
     return json({ error: error instanceof PlacesError ? error.kind : 'upstream' }, 502);
   }

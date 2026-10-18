@@ -8,15 +8,17 @@ import type { WebsiteReport } from '../../lib/visibility/website';
 import { whatsappNumber } from '../home/content';
 import { Arrow } from '../home/shared';
 import { BusinessSearch } from './BusinessSearch';
+import type { Outcome } from './findings';
 import { ResultView } from './ResultView';
 
 type Stage = 'form' | 'running';
-type Load<T> = { state: 'waiting' } | { state: 'done'; data: T } | { state: 'skipped'; reason: string } | { state: 'failed'; reason: string };
+type Load<T> = Outcome<T>;
 
 export type CheckState = {
   businessName: string;
   profile: Profile | null;
   website: string | null;
+  social: string | null; // platform name when the "website" is a social or link-in-bio page
   competitors: Load<{ rows: Competitor[]; query?: string }>;
   site: Load<WebsiteReport>;
   speed: Load<PageSpeedReport>;
@@ -141,7 +143,7 @@ export function InstantCheck() {
       company_url: String(form.get('company_url') ?? ''),
       turnstileToken,
     };
-    const data = await post<{ ticket?: string; profile?: Profile | null; website?: string | null }>('start', payload);
+    const data = await post<{ ticket?: string; profile?: Profile | null; website?: string | null; social?: string | null }>('start', payload);
     setSubmitting(false);
     if (!data.ticket) {
       setError(errorText[data.error ?? ''] ?? 'Something went wrong. Please try again.');
@@ -152,6 +154,7 @@ export function InstantCheck() {
       businessName: data.profile?.name ?? payload.name,
       profile: data.profile ?? null,
       website: data.website ?? null,
+      social: data.social ?? null,
       competitors: { state: 'waiting' },
       site: { state: 'waiting' },
       speed: { state: 'waiting' },

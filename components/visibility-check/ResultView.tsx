@@ -5,7 +5,7 @@ import { Arrow } from '../home/shared';
 import { competitorArea, consistencyArea, contactArea, notChecked, profileArea, searchArea, speedArea, topFixes, websiteArea, type Area } from './findings';
 import type { CheckState } from './InstantCheck';
 
-const statusClass = { Good: 'is-good', 'Needs attention': 'is-attention', Problem: 'is-problem' } as const;
+const statusClass = { Good: 'is-good', 'Needs attention': 'is-attention', Problem: 'is-problem', 'Couldn’t check': 'is-unknown' } as const;
 
 function ProgressItem({ label, state }: { label: string; state: 'waiting' | 'done' | 'skipped' | 'failed' }) {
   const text = { waiting: 'Checking…', done: 'Done', skipped: 'Not applicable', failed: 'Could not check' }[state];
@@ -43,17 +43,16 @@ export function ResultView({ check, ticket, contact, headingRef, whatsappHref }:
 }) {
   const hasWebsite = Boolean(check.website);
   const site = check.site.state === 'done' ? check.site.data : null;
-  const speed = check.speed.state === 'done' ? check.speed.data : null;
   const competitorRows = check.competitors.state === 'done' ? check.competitors.data : null;
   const allDone = [check.competitors, check.site, check.speed].every((l) => l.state !== 'waiting');
 
   const areas: Area[] = [
-    profileArea(check.profile),
-    competitorArea(check.profile, competitorRows?.rows ?? null, competitorRows?.query),
-    check.site.state === 'waiting' ? null : websiteArea(site, hasWebsite),
+    profileArea(check.profile, check.social),
+    competitorArea(check.profile, check.competitors),
+    websiteArea(check.site, hasWebsite, check.social, Boolean(check.profile)),
     contactArea(site),
     searchArea(site),
-    speedArea(speed),
+    speedArea(check.speed),
     consistencyArea(check.profile, site),
   ].filter((a): a is Area => Boolean(a));
 
@@ -87,7 +86,7 @@ export function ResultView({ check, ticket, contact, headingRef, whatsappHref }:
         <ProgressItem label="Website speed (Google PageSpeed)" state={check.speed.state} />
       </ul>
 
-      {!hasWebsite ? <p className="ic-callout">No website was found for this business, so the website checks were skipped. Your Google profile and the comparison are below.</p> : null}
+      {check.social ? <p className="ic-callout">{check.profile ? `Your Google profile links to ${check.social}, not a website,` : `The address you gave is a ${check.social} page, not a website,`} so the website checks and speed test were skipped. Your Google profile and the comparison are below.</p> : !hasWebsite ? <p className="ic-callout">No website was found for this business, so the website checks were skipped. Your Google profile and the comparison are below.</p> : null}
 
       <section className="ic-block" aria-labelledby="ic-fixes">
         <h2 id="ic-fixes">Top 3 fixes</h2>
@@ -117,7 +116,6 @@ export function ResultView({ check, ticket, contact, headingRef, whatsappHref }:
         </section>
       ) : null}
 
-      {check.speed.state === 'failed' ? <p className="ic-hint">Google’s speed test didn’t finish this time, so speed isn’t included.</p> : null}
 
       <section className="ic-block" aria-labelledby="ic-not-checked">
         <h2 id="ic-not-checked">Not checked here</h2>
