@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from 'react';
 import type { Suggestion } from '../../lib/visibility/places';
+import { Icon } from './ui';
 
 // Accessible combobox backed by /api/visibility/autocomplete (Google key stays on the server).
 export function BusinessSearch({ sessionToken, onPick, onUnavailable }: { sessionToken: string; onPick: (s: Suggestion) => void; onUnavailable: () => void }) {
@@ -59,6 +60,8 @@ export function BusinessSearch({ sessionToken, onPick, onUnavailable }: { sessio
   return (
     <div className="ic-search">
       <label htmlFor="ic-business">Business name</label>
+      <div className="ic-field">
+      <Icon name="search" />
       <input
         id="ic-business"
         role="combobox"
@@ -72,6 +75,7 @@ export function BusinessSearch({ sessionToken, onPick, onUnavailable }: { sessio
         onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
         onKeyDown={onKeyDown}
       />
+      </div>
       {showList ? (
         <ul className="ic-suggestions" id={listId} role="listbox" aria-label="Matching businesses">
           {items.map((s, i) => (

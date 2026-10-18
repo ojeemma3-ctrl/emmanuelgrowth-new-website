@@ -8,7 +8,7 @@ import type { WebsiteReport } from '../../lib/visibility/website';
 
 export type { Status };
 
-export type Fix = { key: string; text: string; weight: number };
+export type Fix = { key: string; text: string; weight: number; ruleId?: string };
 
 export type RuleResult = { rule: Rule; status: Status; value: string };
 
@@ -41,7 +41,7 @@ function buildArea(id: AreaId, results: RuleResult[], line: (status: Status) => 
   const worst = checked.reduce<Status>((acc, r) => (severity[r.status] > severity[acc] ? r.status : acc), 'Good');
   const status: Status = checked.length ? worst : 'Couldn’t check';
   const failing = checked.filter((r) => r.status === 'Problem' || r.status === 'Needs attention');
-  const fixes = failing.map((r) => ({ key: r.rule.issue ?? r.rule.id, text: r.rule.action, weight: priorityWeight[r.rule.priority] * 10 + severity[r.status] }));
+  const fixes = failing.map((r) => ({ key: r.rule.issue ?? r.rule.id, ruleId: r.rule.id, text: r.rule.action, weight: priorityWeight[r.rule.priority] * 10 + severity[r.status] }));
   return {
     id,
     title: areaTitles[id],
@@ -134,7 +134,7 @@ export function websiteArea(outcome: Outcome<WebsiteReport>, hasWebsite: boolean
       found: [line, 'Website checks and the speed test were skipped, because they would test the platform’s own site rather than yours.'],
       why: ruleById['gbp-website'].why,
       fix: `${ruleById['gbp-website'].action}.`,
-      fixes: [{ key: 'website', text: ruleById['gbp-website'].action, weight: 21 }],
+      fixes: [{ key: 'website', ruleId: 'gbp-website', text: ruleById['gbp-website'].action, weight: 21 }],
     };
   }
   if (!hasWebsite) {
@@ -143,7 +143,7 @@ export function websiteArea(outcome: Outcome<WebsiteReport>, hasWebsite: boolean
       found: ['There is no website on your Google profile, and none was entered.'],
       why: ruleById['gbp-website'].why,
       fix: `${ruleById['gbp-website'].action}.`,
-      fixes: [{ key: 'website', text: ruleById['gbp-website'].action, weight: 21 }],
+      fixes: [{ key: 'website', ruleId: 'gbp-website', text: ruleById['gbp-website'].action, weight: 21 }],
     };
   }
   if (outcome.state === 'waiting' || outcome.state === 'skipped') return null;
@@ -251,7 +251,7 @@ export function topFixes(areas: Area[]) {
     .sort((a, b) => b.weight - a.weight || a.order - b.order)
     .filter((f) => (seen.has(f.key) ? false : (seen.add(f.key), true)))
     .slice(0, 3)
-    .map((f) => ({ key: f.key, text: f.text }));
+    .map((f) => ({ key: f.key, text: f.text, rule: f.ruleId ? ruleById[f.ruleId] : undefined }));
 }
 
 // Nearby comparison summary: typical (median) review count, range and this business's rank by reviews.

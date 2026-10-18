@@ -10,6 +10,7 @@ import { Arrow } from '../home/shared';
 import { BusinessSearch } from './BusinessSearch';
 import type { Outcome } from './findings';
 import { ResultView } from './ResultView';
+import { Icon, StepBar } from './ui';
 
 type Stage = 'form' | 'running';
 type Load<T> = Outcome<T>;
@@ -171,46 +172,62 @@ export function InstantCheck() {
   }
 
   return (
-    <form className="ic-card" ref={formRef} onSubmit={onSubmit} noValidate={false}>
-      <p className="kicker">Free visibility check</p>
-      <h1 className="vc-title">See how your business shows up online.</h1>
-      <p className="vc-lead">Find your business and we’ll run automated checks of your public Google profile and website, then show you the top fixes in plain words.</p>
+    <div className="ic-page">
+      <StepBar steps={[{ label: 'Your business', state: 'current' }, { label: 'Your results', state: 'upcoming' }, { label: 'Full report', state: 'upcoming' }]} />
 
-      {!manual ? (
-        preview ? (
-          <div className="ic-confirm" role="group" aria-labelledby="ic-confirm-title">
-            <p className="ic-confirm-title" id="ic-confirm-title">Is this you?</p>
-            <strong>{preview.name}</strong>
-            <span>{preview.address}</span>
-            <span>{[preview.category, preview.rating ? `${preview.rating} ★ from ${preview.reviewCount ?? 0} reviews` : 'No rating yet'].filter(Boolean).join(' · ')}</span>
-            <button className="vc-back" type="button" onClick={() => setPreview(null)}>Not me, search again</button>
-          </div>
+      <header className="ic-hero">
+        <p className="ic-hero-label">Step 1 of 3 · Your business</p>
+        <h1>See how your business shows up online.</h1>
+        <p>Find your business and we’ll run automated checks of your public Google profile and website, then show you the top fixes in plain words.</p>
+      </header>
+
+      <form className="ic-card ic-form" ref={formRef} onSubmit={onSubmit} noValidate={false}>
+        {!manual ? (
+          preview ? (
+            <div className="ic-confirm" role="group" aria-labelledby="ic-confirm-title">
+              <p className="ic-confirm-title" id="ic-confirm-title">Is this you?</p>
+              <strong>{preview.name}</strong>
+              <span className="ic-confirm-line"><Icon name="pin" size={16} />{preview.address}</span>
+              <span className="ic-confirm-line"><Icon name="star" size={16} />{[preview.category, preview.rating ? `${preview.rating} from ${preview.reviewCount ?? 0} reviews on Google` : 'No rating yet'].filter(Boolean).join(' · ')}</span>
+              <button className="vc-back" type="button" onClick={() => setPreview(null)}>Not me, search again</button>
+            </div>
+          ) : (
+            <>
+              <BusinessSearch sessionToken={sessionToken} onPick={onPick} onUnavailable={onUnavailable} />
+              {previewLoading ? <p className="ic-hint" aria-live="polite">Loading business details…</p> : null}
+              <button className="vc-back" type="button" onClick={() => setManual(true)}>My business isn’t listed</button>
+            </>
+          )
         ) : (
-          <>
-            <BusinessSearch sessionToken={sessionToken} onPick={onPick} onUnavailable={onUnavailable} />
-            {previewLoading ? <p className="ic-hint" aria-live="polite">Loading business details…</p> : null}
-            <button className="vc-back" type="button" onClick={() => setManual(true)}>My business isn’t listed</button>
-          </>
-        )
-      ) : (
-        <fieldset className="ic-manual">
-          <legend>Your business</legend>
-          {searchUnavailable ? <p className="ic-hint">Business search isn’t available right now, so please enter your details. We’ll still check your website.</p> : null}
-          <label htmlFor="ic-name">Business name</label>
-          <input id="ic-name" name="manualName" required maxLength={120} autoComplete="organization" />
-          <label htmlFor="ic-town">Town</label>
-          <input id="ic-town" name="manualTown" required maxLength={80} autoComplete="address-level2" />
-          <label htmlFor="ic-website">Website (optional)</label>
-          <input id="ic-website" name="manualWebsite" maxLength={300} inputMode="url" placeholder="yourbusiness.co.uk" />
-          {searchUnavailable ? null : <button className="vc-back" type="button" onClick={() => setManual(false)}>Search Google instead</button>}
-        </fieldset>
-      )}
+          <fieldset className="ic-manual">
+            <legend>Your business</legend>
+            {searchUnavailable ? <p className="ic-hint">Business search isn’t available right now, so please enter your details. We’ll still check your website.</p> : null}
+            <div className="ic-grid-2">
+              <div>
+                <label htmlFor="ic-name">Business name</label>
+                <div className="ic-field"><Icon name="building" /><input id="ic-name" name="manualName" required maxLength={120} autoComplete="organization" /></div>
+              </div>
+              <div>
+                <label htmlFor="ic-town">Town</label>
+                <div className="ic-field"><Icon name="pin" /><input id="ic-town" name="manualTown" required maxLength={80} autoComplete="address-level2" /></div>
+              </div>
+            </div>
+            <label htmlFor="ic-website">Website (optional)</label>
+            <div className="ic-field"><Icon name="globe" /><input id="ic-website" name="manualWebsite" maxLength={300} inputMode="url" placeholder="yourbusiness.co.uk" /></div>
+            {searchUnavailable ? null : <button className="vc-back" type="button" onClick={() => setManual(false)}>Search Google instead</button>}
+          </fieldset>
+        )}
 
-      <div className="ic-fields">
-        <label htmlFor="ic-email">Email</label>
-        <input id="ic-email" name="email" type="email" required maxLength={200} autoComplete="email" />
-        <label htmlFor="ic-whatsapp">WhatsApp (optional)</label>
-        <input id="ic-whatsapp" name="whatsapp" type="tel" maxLength={30} autoComplete="tel" placeholder="+44 7…" />
+        <div className="ic-fields ic-grid-2">
+          <div>
+            <label htmlFor="ic-email">Email</label>
+            <div className="ic-field"><Icon name="mail" /><input id="ic-email" name="email" type="email" required maxLength={200} autoComplete="email" /></div>
+          </div>
+          <div>
+            <label htmlFor="ic-whatsapp">WhatsApp (optional)</label>
+            <div className="ic-field"><Icon name="phone" /><input id="ic-whatsapp" name="whatsapp" type="tel" maxLength={30} autoComplete="tel" placeholder="+44 7…" /></div>
+          </div>
+        </div>
         <div className="ic-honeypot" aria-hidden="true">
           <label htmlFor="ic-company-url">Leave this empty</label>
           <input id="ic-company-url" name="company_url" tabIndex={-1} autoComplete="off" />
@@ -219,15 +236,15 @@ export function InstantCheck() {
           <input type="checkbox" name="consent" required aria-labelledby="ic-consent-text" />
           <span id="ic-consent-text">I agree that Emmanuel Growth can contact me about my visibility check. <Link href="/privacy-policy" target="_blank">Privacy policy</Link></span>
         </label>
-      </div>
 
-      {turnstileKey ? <div ref={turnstileRef} className="ic-turnstile" /> : null}
+        {turnstileKey ? <div ref={turnstileRef} className="ic-turnstile" /> : null}
 
-      {error ? <p className="ic-error" role="alert">{error}</p> : null}
-      <button className="button button-growth ic-submit" type="submit" disabled={submitting}>
-        {submitting ? 'Starting your check…' : manual ? 'Run my check' : preview ? 'Yes, this is me. Run my check' : 'Run my check'} <Arrow />
-      </button>
-      <p className="vc-note">Automated checks of public information only. We don’t store the Google data or page content we look at.</p>
-    </form>
+        {error ? <p className="ic-error" role="alert">{error}</p> : null}
+        <button className="button button-growth ic-submit" type="submit" disabled={submitting}>
+          {submitting ? 'Starting your check…' : manual ? 'Run my check' : preview ? 'Yes, this is me. Run my check' : 'Run my check'} <Arrow />
+        </button>
+        <p className="vc-note">Automated checks of public information only. We don’t store the Google data or page content we look at.</p>
+      </form>
+    </div>
   );
 }
