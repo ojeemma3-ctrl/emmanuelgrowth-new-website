@@ -17,8 +17,9 @@ export type Area = {
   title: string;
   status: Status;
   line: string;
-  found: string[];
+  found: string[]; // plain lines, used when an area has no rule results (e.g. couldn't check)
   results: RuleResult[];
+  extra: string[]; // context lines shown with the rule findings (address checked, other scores...)
   why: string;
   fix: string;
   fixes: Fix[];
@@ -47,6 +48,7 @@ function buildArea(id: AreaId, results: RuleResult[], line: (status: Status) => 
     status,
     line: line(status),
     results,
+    extra: [],
     found: results.map((r) => `${r.rule.label}: ${r.value}${r.rule.mode === 'automatic' && r.status !== 'Couldn’t check' ? ` (${r.status})` : ''}`),
     why: (failing[0] ?? results[0]).rule.why,
     fix: failing.length ? failing.map((r) => r.rule.action).join('. ') + '.' : 'Nothing urgent here.',
@@ -55,14 +57,14 @@ function buildArea(id: AreaId, results: RuleResult[], line: (status: Status) => 
 }
 
 function couldntCheck(id: AreaId, line: string, found: string[]): Area {
-  return { id, title: areaTitles[id], status: 'Couldn’t check', line, found, results: [], why: 'We only report on what we could actually check.', fix: 'You can run the check again later.', fixes: [] };
+  return { id, title: areaTitles[id], status: 'Couldn’t check', line, found, results: [], extra: [], why: 'We only report on what we could actually check.', fix: 'You can run the check again later.', fixes: [] };
 }
 
 // Google business profile
 export function profileArea(profile: Profile | null, social: string | null): Area {
   if (!profile) {
     return {
-      id: 'profile', title: areaTitles.profile, status: 'Problem', results: [],
+      id: 'profile', title: areaTitles.profile, status: 'Problem', results: [], extra: [],
       line: 'No Google business profile was selected for this check.',
       found: ['You told us your business isn’t listed on Google, so there was no profile to check.'],
       why: 'A Google business profile is how many local customers find you on Google Search and Maps.',
@@ -128,7 +130,7 @@ export function websiteArea(outcome: Outcome<WebsiteReport>, hasWebsite: boolean
   if (social) {
     const line = fromProfile ? `Your Google profile links to ${social}, not a website.` : `The address you gave is a ${social} page, not a website.`;
     return {
-      id: 'website', title: areaTitles.website, status: 'Needs attention', line, results: [],
+      id: 'website', title: areaTitles.website, status: 'Needs attention', line, results: [], extra: [],
       found: [line, 'Website checks and the speed test were skipped, because they would test the platform’s own site rather than yours.'],
       why: ruleById['gbp-website'].why,
       fix: `${ruleById['gbp-website'].action}.`,
@@ -137,7 +139,7 @@ export function websiteArea(outcome: Outcome<WebsiteReport>, hasWebsite: boolean
   }
   if (!hasWebsite) {
     return {
-      id: 'website', title: areaTitles.website, status: 'Needs attention', line: 'No website was found to check.', results: [],
+      id: 'website', title: areaTitles.website, status: 'Needs attention', line: 'No website was found to check.', results: [], extra: [],
       found: ['There is no website on your Google profile, and none was entered.'],
       why: ruleById['gbp-website'].why,
       fix: `${ruleById['gbp-website'].action}.`,
@@ -152,7 +154,7 @@ export function websiteArea(outcome: Outcome<WebsiteReport>, hasWebsite: boolean
       return couldntCheck('website', 'We couldn’t load your website for this check. Some sites block automated visits.', [`Address checked: ${site.url}`, `Result: ${site.error ? site.error.replace(/_/g, ' ') : `status ${site.status}`}`]);
     }
     return {
-      id: 'website', title: areaTitles.website, status: 'Problem', line: 'Your website returned an error page.', results: [],
+      id: 'website', title: areaTitles.website, status: 'Problem', line: 'Your website returned an error page.', results: [], extra: [],
       found: [`Address checked: ${site.url}`, `Result: status ${site.status}`],
       why: 'If the page shows an error for us, it may show one for some customers too.',
       fix: 'Check your website address is correct and that the home page loads on a phone.',
@@ -168,7 +170,7 @@ export function websiteArea(outcome: Outcome<WebsiteReport>, hasWebsite: boolean
     result('web-open-graph', site.openGraph.title && site.openGraph.image ? 'Good' : 'Needs attention', `title ${yesNo(site.openGraph.title)}, image ${yesNo(site.openGraph.image)}`),
   ];
   const area = buildArea('website', results, (status) => (status === 'Good' ? 'The basic set-up search engines and phones need is in place.' : 'A few basics to tidy up.'));
-  area.found.unshift(`Address checked: ${site.finalUrl}${site.redirectCount ? ` (after ${site.redirectCount} redirect${site.redirectCount === 1 ? '' : 's'})` : ''}`);
+  area.extra.unshift(`Address checked: ${site.finalUrl}${site.redirectCount ? ` (after ${site.redirectCount} redirect${site.redirectCount === 1 ? '' : 's'})` : ''}`);
   return area;
 }
 
@@ -177,7 +179,7 @@ export function contactArea(site: WebsiteReport | null): Area | null {
   const ways = [site.telLinks && `${site.telLinks} tap-to-call`, site.whatsappLinks && `${site.whatsappLinks} WhatsApp`, site.bookingLinks && `${site.bookingLinks} booking`].filter(Boolean);
   const results = [result('contact-links', ways.length ? 'Good' : 'Needs attention', ways.length ? `${ways.join(', ')} link${ways.length === 1 ? '' : 's'}` : 'none found')];
   const area = buildArea('contact', results, (status) => (status === 'Good' ? 'Customers can reach you in one tap from your website.' : 'We found no one-tap way to call, message or book.'));
-  area.found.push(`Email links: ${site.mailtoLinks}`, `Contact form: ${site.hasContactForm ? 'found' : 'not found'}`, `Social links: ${site.socialLinks.length ? site.socialLinks.join(', ') : 'none found'}`);
+  area.extra.push(`Email links: ${site.mailtoLinks}`, `Contact form: ${site.hasContactForm ? 'found' : 'not found'}`, `Social links: ${site.socialLinks.length ? site.socialLinks.join(', ') : 'none found'}`);
   return area;
 }
 
@@ -206,7 +208,7 @@ export function speedArea(outcome: Outcome<PageSpeedReport>): Area | null {
   const perf = psi.scores.performance as number;
   const status: Status = perf >= limits.speedGood ? 'Good' : perf >= limits.speedAttention ? 'Needs attention' : 'Problem';
   const area = buildArea('speed', [result('speed-mobile', status, `${perf} out of 100`)], () => `Google’s mobile test scored performance ${perf} out of 100.`);
-  area.found.push(
+  area.extra.push(
     `Other scores out of 100: accessibility ${psi.scores.accessibility ?? '–'}, best practices ${psi.scores.bestPractices ?? '–'}, SEO ${psi.scores.seo ?? '–'}`,
     ...psi.metrics.map((m) => `${m.plain}: ${m.value}`),
     ...(psi.opportunities.length ? [`Biggest suggested improvements: ${psi.opportunities.join('; ')}`] : []),
@@ -232,7 +234,7 @@ export function consistencyArea(profile: Profile | null, site: WebsiteReport | n
   ];
   const allMatch = nameMatch === true && addressMatch === true && phoneMatch === true;
   const area = buildArea('consistency', [result('consistency-nap', allMatch ? 'Good' : 'Needs attention', parts.join(', '))], (status) => (status === 'Good' ? 'Your name, address and phone match.' : 'Your details differ, or some are missing from your website.'));
-  area.found.push(
+  area.extra.push(
     `Google phone: ${googlePhone ?? 'not listed'}`,
     `Phone numbers found on your website: ${site.phonesFound.length ? site.phonesFound.join(', ') : 'none found as links or structured data'}`,
     `Google address: ${profile.address || 'not shown'}`,
@@ -249,7 +251,15 @@ export function topFixes(areas: Area[]) {
     .sort((a, b) => b.weight - a.weight || a.order - b.order)
     .filter((f) => (seen.has(f.key) ? false : (seen.add(f.key), true)))
     .slice(0, 3)
-    .map((f) => f.text);
+    .map((f) => ({ key: f.key, text: f.text }));
+}
+
+// Nearby comparison summary: typical (median) review count, range and this business's rank by reviews.
+export function reviewStats(ownCount: number, rows: Competitor[]) {
+  const counts = rows.map((r) => r.reviewCount ?? 0);
+  const typical = median(counts);
+  const rank = 1 + counts.filter((c) => c > ownCount).length;
+  return { typical, min: Math.min(...counts), max: Math.max(...counts), rank, of: counts.length + 1 };
 }
 
 export const baselineLabel = BASELINE_LABEL;

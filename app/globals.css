@@ -354,7 +354,17 @@ h1 em, h2 em { display: inline-block; font-style: normal; color: inherit; text-d
 .ic-table thead th { background: var(--grey); font-weight: 700; }
 .ic-table tbody th { font-weight: 600; white-space: normal; min-width: 160px; }
 .ic-table tr.is-you { background: var(--grey); }
-.ic-cta { margin-top: 40px; }
+.ic-cta { display: grid; gap: 16px; margin-top: 40px; }
+.ic-finding { padding: 16px 0; border-top: 1px solid var(--border-light); }
+.ic-finding:first-child { border-top: 0; padding-top: 4px; }
+.ic-finding-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; margin-bottom: 10px; }
+.ic-finding-head strong { font-size: 17px; line-height: 24px; }
+.ic-finding dl { display: grid; grid-template-columns: minmax(0, 160px) minmax(0, 1fr); gap: 6px 16px; margin: 0; }
+.ic-finding dt { font-weight: 700; }
+.ic-finding dd { margin: 0; overflow-wrap: anywhere; }
+.ic-baseline { margin: 8px 0 0; font-size: 16px; color: var(--muted-light); }
+.ic-learn, .ic-soft-link { display: inline-flex; gap: 6px; margin-top: 10px; font-size: 16px; font-weight: 600; color: var(--text); text-decoration: underline; text-underline-offset: 4px; }
+.ic-fixes .ic-soft-link { display: block; margin-top: 4px; font-weight: 500; }
 .ic-cta .button { width: 100%; text-align: left; }
 
 .site-footer { position: relative; z-index: 20; padding-block: 72px 0; background: var(--black); color: var(--white); }
@@ -457,6 +467,8 @@ h1 em, h2 em { display: inline-block; font-style: normal; color: inherit; text-d
 }
 
 @media (max-width: 767px) {
+  .ic-finding dl { grid-template-columns: 1fr; gap: 2px; }
+  .ic-finding dd { margin-bottom: 8px; }
   .ic-card { padding: 28px 20px; border-radius: 18px; }
   .ic-block h2 { font-size: 24px; }
   .vc-section { padding-block: 32px 72px; }
