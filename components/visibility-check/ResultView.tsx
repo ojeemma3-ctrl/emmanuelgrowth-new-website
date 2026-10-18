@@ -6,7 +6,7 @@ import { whatsappNumber } from '../home/content';
 import { Arrow } from '../home/shared';
 import { competitorArea, consistencyArea, contactArea, notChecked, profileArea, reviewStats, searchArea, speedArea, topFixes, websiteArea, type Area, type RuleResult, type Status } from './findings';
 import type { CheckState } from './InstantCheck';
-import { Icon, Ring, StatusChip, StepBar, statusClass, type IconName } from './ui';
+import { Icon, Ring, StatusChip, StepBar, type IconName } from './ui';
 
 // Switch to true once the /guides/[rule-id] pages exist. Until then "Learn how" opens WhatsApp.
 const GUIDES_PUBLISHED = false;
@@ -35,8 +35,12 @@ function Finding({ result, business }: { result: RuleResult; business: string })
         <dd>{value}</dd>
         <dt>Why it matters</dt>
         <dd>{rule.why}</dd>
-        <dt>Priority and effort</dt>
-        <dd>{rule.priority} · {rule.effort} (rough estimate)</dd>
+        {status === 'Problem' || status === 'Needs attention' ? (
+          <>
+            <dt>Priority and effort</dt>
+            <dd>{rule.priority} · {rule.effort} (rough estimate)</dd>
+          </>
+        ) : null}
       </dl>
       {rule.mode === 'automatic' ? <p className="ic-baseline">Good means: {rule.thresholds.good.toLowerCase()}.{rule.baseline ? ` ${BASELINE_LABEL}` : ''}</p> : null}
       {rule.note ? <p className="ic-baseline">{rule.note}</p> : null}
@@ -79,7 +83,20 @@ function AreaCard({ area, business }: { area: Area; business: string }) {
   );
 }
 
-type TileData = { title: string; icon: IconName; status: Status | null; statusLabel?: string; figure: string; passed: number; total: number; sources: string[] };
+type TileData = { title: string; icon: IconName; status: Status | null; statusLabel?: string; figure: string; passed: number; total: number; problems?: number; attention?: number; sources: string[] };
+
+// "1 problem, 6 checks passed": issues first, then passes.
+function countLine(t: TileData) {
+  const parts = [
+    t.problems ? `${t.problems} problem${t.problems === 1 ? '' : 's'}` : '',
+    t.attention ? `${t.attention} need${t.attention === 1 ? 's' : ''} attention` : '',
+    `${t.passed} check${t.passed === 1 ? '' : 's'} passed`,
+  ].filter(Boolean);
+  return parts.join(', ');
+}
+
+// Bar colour follows the share of checks passed, so one problem among many passes isn't shown as red.
+const ratioClass = (share: number) => (share >= 0.8 ? 'is-good' : share >= 0.5 ? 'is-attention' : 'is-problem');
 
 function Tile({ tile }: { tile: TileData }) {
   const share = tile.total ? tile.passed / tile.total : 0;
@@ -92,8 +109,8 @@ function Tile({ tile }: { tile: TileData }) {
       <p className="ic-tile-figure">{tile.figure}</p>
       {tile.total ? (
         <>
-          <div className={`ic-bar ${tile.status ? statusClass(tile.status) : 'is-unknown'}`} aria-hidden="true"><span style={{ width: `${Math.round(share * 100)}%` }} /></div>
-          <p className="ic-tile-count">{tile.passed} of {tile.total} checks passed</p>
+          <div className={`ic-bar ${ratioClass(share)}`} aria-hidden="true"><span style={{ width: `${Math.round(share * 100)}%` }} /></div>
+          <p className="ic-tile-count">{countLine(tile)}</p>
         </>
       ) : null}
       {tile.sources.length ? <p className="ic-source">{tile.sources.join(' · ')}</p> : null}
@@ -101,8 +118,9 @@ function Tile({ tile }: { tile: TileData }) {
   );
 }
 
-export function ResultView({ check, ticket, contact, headingRef, whatsappHref }: {
+export function ResultView({ check, ticket, contact, headingRef, whatsappHref, onCompare }: {
   check: CheckState;
+  onCompare?: (keyword: string) => Promise<void>;
   ticket: string | null;
   contact: { email: string; whatsapp: string };
   headingRef: RefObject<HTMLHeadingElement | null>;
@@ -117,12 +135,16 @@ export function ResultView({ check, ticket, contact, headingRef, whatsappHref }:
   const competitorRows = check.competitors.state === 'done' ? check.competitors.data : null;
   const allDone = [check.competitors, check.site, check.speed].every((l) => l.state !== 'waiting');
   const [nearbyView, setNearbyView] = useState<'table' | 'cards'>('table');
+  const [reachedReport, setReachedReport] = useState(false);
+  const [keyword, setKeyword] = useState('');
+  const [comparing, setComparing] = useState(false);
+  const skippedReason = check.competitors.state === 'skipped' ? check.competitors.reason : check.competitors.state === 'failed' ? 'failed' : null;
 
   const areas: Area[] = [
     profileArea(profile, check.social),
     competitorArea(profile, check.competitors),
     websiteArea(check.site, hasWebsite, check.social, Boolean(profile)),
-    contactArea(site),
+    contactArea(site, profile),
     searchArea(site),
     speedArea(check.speed),
     consistencyArea(profile, site),
@@ -144,13 +166,14 @@ export function ResultView({ check, ticket, contact, headingRef, whatsappHref }:
 
   const counts = (area?: Area) => {
     const m = (area?.results ?? []).filter(measured);
-    return { passed: m.filter((r) => r.status === 'Good').length, total: m.length };
+    return { passed: m.filter((r) => r.status === 'Good').length, total: m.length, problems: m.filter((r) => r.status === 'Problem').length, attention: m.filter((r) => r.status === 'Needs attention').length };
   };
   const value = (area: Area | undefined, ruleId: string) => area?.results.find((r) => r.rule.id === ruleId)?.value;
 
   const websiteArea_ = byId.website;
   const speedArea_ = byId.speed;
-  const websiteCounts = { passed: counts(websiteArea_).passed + counts(speedArea_).passed, total: counts(websiteArea_).total + counts(speedArea_).total };
+  const sum = (a: ReturnType<typeof counts>, b: ReturnType<typeof counts>) => ({ passed: a.passed + b.passed, total: a.total + b.total, problems: a.problems + b.problems, attention: a.attention + b.attention });
+  const websiteCounts = sum(counts(websiteArea_), counts(speedArea_));
   const worse = (a?: Status, b?: Status): Status | null => {
     const rank: Record<string, number> = { Problem: 3, 'Needs attention': 2, Good: 1, 'Couldn’t check': 0, 'Not checked automatically': 0 };
     if (!a && !b) return null;
@@ -176,7 +199,7 @@ export function ResultView({ check, ticket, contact, headingRef, whatsappHref }:
       sources: check.social && profile ? ['From Google Maps'] : [],
     } : {
       title: 'Website', icon: 'globe', status: worse(websiteArea_?.status, speedArea_?.status),
-      figure: [websiteArea_ ? websiteArea_.line : 'Checking your website…', speed?.scores.performance !== undefined ? `Mobile speed ${speed.scores.performance} out of 100.` : null].filter(Boolean).join(' '),
+      figure: [websiteArea_ ? websiteArea_.line : 'Checking your website…', speed?.scores.performance !== undefined ? `Mobile speed ${speed.scores.performance} out of 100.` : null, site ? `Page tested: ${site.finalUrl}` : null].filter(Boolean).join(' '),
       ...websiteCounts,
       sources: [site ? 'From your website' : null, speed?.scores.performance !== undefined ? 'From Google PageSpeed' : null].filter((x): x is string => Boolean(x)),
     },
@@ -185,7 +208,7 @@ export function ResultView({ check, ticket, contact, headingRef, whatsappHref }:
       figure: noRealWebsite ? 'There’s no website to check for contact buttons.' : 'We couldn’t read your website for contact links.', passed: 0, total: 0, sources: [],
     } : {
       title: 'Contact', icon: 'phone', status: byId.contact.status,
-      figure: `Tap to call, WhatsApp or book: ${value(byId.contact, 'contact-links') ?? 'not found'}.`,
+      figure: byId.contact.status === 'Good' ? `Tap to call, WhatsApp or book: ${value(byId.contact, 'contact-links')}.` : value(byId.contact, 'contact-links') ?? '',
       ...counts(byId.contact), sources: ['From your website'],
     },
     noRealWebsite || !byId.search ? {
@@ -197,6 +220,19 @@ export function ResultView({ check, ticket, contact, headingRef, whatsappHref }:
       ...counts(byId.search), sources: ['From your website'],
     },
   ];
+
+  useEffect(() => {
+    const report = document.getElementById('ic-areas');
+    if (!report || reachedReport || !('IntersectionObserver' in window)) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) {
+        setReachedReport(true);
+        observer.disconnect();
+      }
+    }, { threshold: 0.1 });
+    observer.observe(report);
+    return () => observer.disconnect();
+  }, [reachedReport]);
 
   // Bring the result into view and move focus to it once, when it first appears.
   useEffect(() => {
@@ -218,7 +254,7 @@ export function ResultView({ check, ticket, contact, headingRef, whatsappHref }:
       <StepBar steps={[
         { label: 'Your business', state: 'done' },
         { label: 'Your results', state: 'current', href: '#ic-top' },
-        { label: 'Full report', state: allDone ? 'done' : 'upcoming', href: '#ic-areas' },
+        { label: 'Full report', state: reachedReport ? 'done' : 'upcoming', href: '#ic-areas' },
       ]} />
 
       <header className="ic-hero ic-result-hero" id="ic-top">
@@ -304,6 +340,20 @@ export function ResultView({ check, ticket, contact, headingRef, whatsappHref }:
           {check.social ? <p>{profile ? `Your Google profile links to ${check.social}, not a website.` : `The address you gave is a ${check.social} page, not a website.`} {check.social} can be a good place to show your work, so we skipped the website checks and speed test rather than test {check.social}’s own site.</p> : <p>We didn’t find a website for this business, so the website checks were skipped.</p>}
           <p>Customers can still find you on Google Maps. A website helps by giving Google and AI assistants a page to read about your services and location, and by giving customers one place to see your work, prices and contact options. It may also make it easier for people who find you elsewhere to get in touch.</p>
           <a className="ic-soft-link" href={wa(`Hi Emmanuel, I ran the visibility check for ${business}. We don’t have a website yet. Could you build one for us?`)} target="_blank" rel="noreferrer">Want me to build it?</a>
+        </section>
+      ) : null}
+
+      {profile && onCompare && (skippedReason === 'generic_category' || skippedReason === 'too_few' || skippedReason === 'failed') ? (
+        <section className="ic-block ic-panel ic-neutral" aria-labelledby="ic-compare-skip">
+          <h2 id="ic-compare-skip">Nearby businesses on Google</h2>
+          <p>{skippedReason === 'generic_category' ? 'Couldn’t compare: your Google category is very general.' : skippedReason === 'failed' ? 'Couldn’t compare: the nearby search didn’t respond.' : 'Couldn’t compare: we found fewer than 3 similar businesses nearby.'} Tell us what you do and we’ll search for similar businesses near you.</p>
+          <form className="ic-compare-form" onSubmit={async (e) => { e.preventDefault(); if (!keyword.trim()) return; setComparing(true); await onCompare(keyword.trim()); setComparing(false); }}>
+            <label htmlFor="ic-keyword">What do you do? (for example plumber, spa, restaurant)</label>
+            <div className="ic-compare-row">
+              <div className="ic-field"><Icon name="search" /><input id="ic-keyword" value={keyword} onChange={(e) => setKeyword(e.target.value)} maxLength={40} autoComplete="off" /></div>
+              <button className="button button-dark" type="submit" disabled={comparing}>{comparing ? 'Searching…' : 'Compare'}</button>
+            </div>
+          </form>
         </section>
       ) : null}
 

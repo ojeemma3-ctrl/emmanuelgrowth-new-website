@@ -63,7 +63,7 @@ export function StepBar({ steps }: { steps: { label: string; state: StepState; h
           );
           return (
             <li key={step.label} className={`ic-step is-${step.state}`} aria-current={step.state === 'current' ? 'step' : undefined}>
-              {step.href && step.state !== 'upcoming' ? <a href={step.href}>{body}</a> : <span>{body}</span>}
+              {step.href ? <a href={step.href}>{body}</a> : <span>{body}</span>}
             </li>
           );
         })}

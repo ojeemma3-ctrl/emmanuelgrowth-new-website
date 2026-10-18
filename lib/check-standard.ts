@@ -61,10 +61,10 @@ export const rules: Rule[] = [
   },
   {
     id: 'gbp-category', area: 'profile', label: 'Business category', mode: 'automatic', baseline: true,
-    measured: 'Whether Google returns a primary category for the profile.',
-    thresholds: { good: 'A primary category is set', problem: 'No category set' },
+    measured: 'The primary category Google returns for the profile, and whether it is specific or very general (for example “Services”).',
+    thresholds: { good: 'A specific primary category', attention: 'A very general category, such as “Services”', problem: 'No category set' },
     why: 'Your category helps Google match you to the right searches.',
-    priority: 'Fix first', effort: 'About 10 minutes', action: 'Set the right primary category on your Google profile',
+    priority: 'Fix first', effort: 'About 10 minutes', action: 'Choose a specific category so Google can match the right searches',
   },
   {
     id: 'gbp-hours', area: 'profile', label: 'Opening hours', mode: 'automatic', baseline: true,
@@ -120,7 +120,7 @@ export const rules: Rule[] = [
   // Reviews
   {
     id: 'reviews-count', area: 'reviews', label: 'Review count compared with nearby businesses', mode: 'automatic', baseline: true,
-    measured: 'Your Google review count compared with the typical (median) count of the similar nearby businesses we found.',
+    measured: 'Your Google review count compared with the typical (median) count of nearby businesses with the same Google category. Only compared when your category is specific and we find at least 3 of them.',
     thresholds: { good: 'At or above the typical count', attention: 'Under half of the typical count', problem: 'Under a quarter of the typical count, or fewer than 10 reviews' },
     why: 'Customers often compare a few local options side by side, and reviews are one of the first things they see.',
     priority: 'Fix first', effort: 'A few minutes after each job', action: 'Ask every happy customer for a Google review', issue: 'reviews',
@@ -134,9 +134,9 @@ export const rules: Rule[] = [
     priority: 'Next', effort: 'Ongoing', action: 'Ask happy customers for reviews and reply to every review', issue: 'reviews',
   },
   {
-    id: 'reviews-recent', area: 'reviews', label: 'Recent review', mode: 'automatic', baseline: true,
-    measured: 'The newest of the reviews Google returns (up to 5). A newer review may exist that Google didn’t return.',
-    thresholds: { good: 'At least one review in the last 60 days', attention: 'No review in the last 60 days' },
+    id: 'reviews-recent', area: 'reviews', label: 'Recent review', mode: 'manual', baseline: true,
+    measured: 'Google returns at most 5 reviews, sorted by relevance rather than date, so the newest review can’t be checked reliably.',
+    thresholds: { good: 'At least one review in the last 60 days (check on your profile)' },
     why: 'Recent reviews show customers the business is active.',
     priority: 'Next', effort: 'A few minutes after each job', action: 'Ask recent customers for a Google review', issue: 'reviews',
   },
@@ -251,5 +251,22 @@ export const rules: Rule[] = [
     priority: 'Next', effort: 'About 30 minutes', action: 'Use the same name, address and phone on your website and Google',
   },
 ];
+
+// Quickest first; used to order the Top 3 fixes after status and priority. Edit alongside each rule's effort.
+export const effortOrder: Record<string, number> = {
+  'About 5 minutes': 1,
+  'About 10 minutes': 2,
+  'About 15 minutes': 3,
+  'A few minutes after each job': 3,
+  'About 15 minutes a month': 3,
+  'A few minutes a week': 3,
+  'About 30 minutes': 4,
+  'About an hour': 5,
+  Ongoing: 6,
+  'Depends on the site': 7,
+  'A few days for a simple site': 8,
+};
+
+export const priorityOrder: Record<Priority, number> = { 'Fix first': 0, Next: 1, Later: 2 };
 
 export const ruleById = Object.fromEntries(rules.map((r) => [r.id, r])) as Record<string, Rule>;

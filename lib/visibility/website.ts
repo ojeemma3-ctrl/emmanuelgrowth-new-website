@@ -33,7 +33,8 @@ export type WebsiteReport = {
   bookingLinks: number;
   hasContactForm: boolean;
   socialLinks: string[];
-  phonesFound: string[];
+  phonesFound: string[]; // from tel: links and structured data
+  textPhones: string[]; // phone-like numbers in the visible page text
   namesFound: string[];
   addressCheck?: { expected: string; found: boolean };
   truncated: boolean;
@@ -148,7 +149,7 @@ export async function checkWebsite(rawUrl: string, expectedAddress?: string): Pr
     url, finalUrl: url, reachable: false, https: false, redirectCount: 0, h1s: [], h1Count: 0, hasViewport: false, noindex: false,
     robotsTxt: { found: false, blocksAll: false }, sitemap: { found: false }, aiCrawlers: {}, schemaTypes: [], businessSchema: emptyBusinessSchema(),
     openGraph: { title: false, description: false, image: false }, telLinks: 0, mailtoLinks: 0, whatsappLinks: 0, bookingLinks: 0,
-    hasContactForm: false, socialLinks: [], phonesFound: [], namesFound: [], truncated: false,
+    hasContactForm: false, socialLinks: [], phonesFound: [], textPhones: [], namesFound: [], truncated: false,
   };
 
   let page;
@@ -250,6 +251,7 @@ export async function checkWebsite(rawUrl: string, expectedAddress?: string): Pr
     hasContactForm: forms.some((f) => /type\s*=\s*["']?email|<textarea|contact|enquir|message/i.test(f)),
     socialLinks: SOCIAL.filter(([, re]) => anchors.some((h) => re.test(h))).map(([name]) => name),
     phonesFound: [...phones].slice(0, 6),
+    textPhones: [...new Set((pageText.match(/(?:\+|00)?\(?\d[\d\s().-]{6,18}\d/g) ?? []).map((p) => p.trim()).filter((p) => { const n = p.replace(/\D/g, '').length; return n >= 7 && n <= 15; }))].slice(0, 12),
     namesFound: [title, ogSite, h1s[0], ...schemaNames].filter((n): n is string => Boolean(n)).slice(0, 6),
     addressCheck: expectedAddress ? { expected: expectedAddress, found: addressOnPage(pageText, expectedAddress) } : undefined,
     truncated: page.truncated,

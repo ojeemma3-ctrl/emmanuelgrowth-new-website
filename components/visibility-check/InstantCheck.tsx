@@ -168,7 +168,12 @@ export function InstantCheck() {
 
   if (stage === 'running' && check) {
     const whatsappHref = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Hi Emmanuel, I ran the visibility check for ${check.businessName}. Could you walk me through the fixes?`)}`;
-    return <ResultView check={check} ticket={ticket} contact={contact} headingRef={resultsRef} whatsappHref={whatsappHref} />;
+    const onCompare = async (keyword: string) => {
+      if (!ticket) return;
+      const d = await post<{ competitors?: Competitor[]; query?: string }>('competitors', { ticket, keyword });
+      setCheck((c) => (c ? { ...c, competitors: d.skipped ? { state: 'skipped', reason: d.skipped } : d.error ? { state: 'failed', reason: d.error } : { state: 'done', data: { rows: d.competitors ?? [], query: d.query } } } : c));
+    };
+    return <ResultView check={check} ticket={ticket} contact={contact} headingRef={resultsRef} whatsappHref={whatsappHref} onCompare={onCompare} />;
   }
 
   return (

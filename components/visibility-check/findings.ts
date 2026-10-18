@@ -1,14 +1,15 @@
 // Applies the visibility check standard (lib/check-standard.ts) to the raw check results.
 // All thresholds, wording for "why it matters", priorities and effort live in the standard;
 // this file only measures values and picks the status each rule's thresholds give.
-import { areaTitles, BASELINE_LABEL, limits, ruleById, type AreaId, type Rule, type Status } from '../../lib/check-standard';
+import { areaTitles, BASELINE_LABEL, effortOrder, limits, priorityOrder, ruleById, type AreaId, type Rule, type Status } from '../../lib/check-standard';
+import { isGenericCategory } from '../../lib/visibility/category';
 import type { Competitor, Profile } from '../../lib/visibility/places';
 import type { PageSpeedReport } from '../../lib/visibility/pagespeed';
 import type { WebsiteReport } from '../../lib/visibility/website';
 
 export type { Status };
 
-export type Fix = { key: string; text: string; weight: number; ruleId?: string };
+export type Fix = { key: string; text: string; ruleId?: string; area: string; severity: number; priority: number; effort: number };
 
 export type RuleResult = { rule: Rule; status: Status; value: string };
 
@@ -28,20 +29,22 @@ export type Area = {
 export type Outcome<T> = { state: 'waiting' } | { state: 'done'; data: T } | { state: 'skipped'; reason: string } | { state: 'failed'; reason: string };
 
 const severity: Record<Status, number> = { Problem: 2, 'Needs attention': 1, Good: 0, 'Couldn’t check': 0, 'Not checked automatically': 0 };
-const priorityWeight = { 'Fix first': 3, Next: 2, Later: 1 } as const;
 const yesNo = (v: boolean) => (v ? 'Yes' : 'No');
 const formatDate = (iso?: string) => (iso ? new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : undefined);
-const daysSince = (iso?: string) => (iso ? (Date.now() - new Date(iso).getTime()) / (1000 * 60 * 60 * 24) : Infinity);
 
 const result = (id: string, status: Status, value: string): RuleResult => ({ rule: ruleById[id], status, value });
 const manual = (id: string): RuleResult => result(id, 'Not checked automatically', 'Not checked automatically');
+
+function fixFromRule(rule: Rule, status: Status, area: string): Fix {
+  return { key: rule.issue ?? rule.id, ruleId: rule.id, text: rule.action, area, severity: severity[status], priority: priorityOrder[rule.priority], effort: effortOrder[rule.effort] ?? 9 };
+}
 
 function buildArea(id: AreaId, results: RuleResult[], line: (status: Status) => string): Area {
   const checked = results.filter((r) => r.rule.mode === 'automatic' && r.status !== 'Couldn’t check' && r.status !== 'Not checked automatically');
   const worst = checked.reduce<Status>((acc, r) => (severity[r.status] > severity[acc] ? r.status : acc), 'Good');
   const status: Status = checked.length ? worst : 'Couldn’t check';
   const failing = checked.filter((r) => r.status === 'Problem' || r.status === 'Needs attention');
-  const fixes = failing.map((r) => ({ key: r.rule.issue ?? r.rule.id, ruleId: r.rule.id, text: r.rule.action, weight: priorityWeight[r.rule.priority] * 10 + severity[r.status] }));
+  const fixes: Fix[] = failing.map((r) => fixFromRule(r.rule, r.status, id));
   return {
     id,
     title: areaTitles[id],
@@ -69,14 +72,14 @@ export function profileArea(profile: Profile | null, social: string | null): Are
       found: ['You told us your business isn’t listed on Google, so there was no profile to check.'],
       why: 'A Google business profile is how many local customers find you on Google Search and Maps.',
       fix: 'Create or claim your free Google business profile.',
-      fixes: [{ key: 'gbp', text: 'Create or claim your free Google business profile', weight: 32 }],
+      fixes: [{ key: 'gbp', text: 'Create or claim your free Google business profile', area: 'profile', severity: 2, priority: 0, effort: 4 }],
     };
   }
   const operational = !profile.businessStatus || profile.businessStatus === 'OPERATIONAL';
   const photos = profile.photoCount;
   const results: RuleResult[] = [
     result('gbp-status', operational ? 'Good' : 'Problem', profile.businessStatus ? profile.businessStatus.replace(/_/g, ' ').toLowerCase() : 'not shown'),
-    result('gbp-category', profile.category ? 'Good' : 'Problem', profile.category ?? 'not set'),
+    result('gbp-category', !profile.category ? 'Problem' : isGenericCategory(profile.categoryType, profile.category) ? 'Needs attention' : 'Good', !profile.category ? 'not set' : isGenericCategory(profile.categoryType, profile.category) ? `“${profile.category}” is very general` : profile.category),
     result('gbp-hours', profile.hasOpeningHours ? 'Good' : 'Needs attention', profile.hasOpeningHours ? 'listed' : 'missing'),
     result('gbp-phone', profile.phone ? 'Good' : 'Problem', profile.phone ?? 'missing'),
     result('gbp-website', profile.website && !social ? 'Good' : 'Needs attention', !profile.website ? 'no website listed' : social ? `links to ${social}, not a website` : profile.website),
@@ -108,16 +111,18 @@ export function competitorArea(profile: Profile | null, outcome: Outcome<{ rows:
     if (own < limits.reviewsFloor || ratio < limits.reviewsQuarterOfTypical) status = 'Problem';
     else if (ratio < limits.reviewsHalfOfTypical) status = 'Needs attention';
     countResult = result('reviews-count', status, `${own} reviews; similar businesses nearby typically have ${typical}`);
-  } else if (outcome.state === 'done') {
-    countResult = result('reviews-count', own < limits.reviewsFloor ? 'Problem' : 'Good', `${own} reviews; no similar businesses were found to compare with`);
   } else {
-    countResult = result('reviews-count', 'Couldn’t check', `${own} reviews; we couldn’t run the nearby comparison`);
+    const reason = outcome.state === 'skipped' ? outcome.reason : outcome.state === 'failed' ? 'failed' : 'too_few';
+    countResult = result('reviews-count', 'Couldn’t check', reason === 'generic_category'
+      ? `Couldn’t compare: your Google category is very general. You have ${own} reviews.`
+      : reason === 'failed'
+        ? `Couldn’t compare: the nearby search didn’t respond. You have ${own} reviews.`
+        : `Couldn’t compare: we found fewer than 3 similar businesses nearby. You have ${own} reviews.`);
   }
-  const days = daysSince(profile.latestReviewDate);
   const results: RuleResult[] = [
     countResult,
     result('reviews-rating', profile.rating && profile.rating >= limits.ratingGood ? 'Good' : 'Needs attention', profile.rating ? `${profile.rating}` : 'no rating yet'),
-    result('reviews-recent', days <= limits.recentReviewDays ? 'Good' : 'Needs attention', formatDate(profile.latestReviewDate) ? `newest returned review ${formatDate(profile.latestReviewDate)}` : 'no reviews returned'),
+    result('reviews-recent', 'Not checked automatically', formatDate(profile.latestReviewDate) ? `Among the reviews Google returned, the newest is ${formatDate(profile.latestReviewDate)}. Check your profile for newer ones.` : 'Google returned no reviews to look at. Check your profile for recent ones.'),
     manual('reviews-owner-replies'),
   ];
   return buildArea('reviews', results, () => (typical !== undefined ? `You have ${own} reviews. Similar businesses nearby typically have ${typical}.` : `You have ${own} reviews.`));
@@ -134,7 +139,7 @@ export function websiteArea(outcome: Outcome<WebsiteReport>, hasWebsite: boolean
       found: [line, 'Website checks and the speed test were skipped, because they would test the platform’s own site rather than yours.'],
       why: ruleById['gbp-website'].why,
       fix: `${ruleById['gbp-website'].action}.`,
-      fixes: [{ key: 'website', ruleId: 'gbp-website', text: ruleById['gbp-website'].action, weight: 21 }],
+      fixes: [fixFromRule(ruleById['gbp-website'], 'Needs attention', 'website')],
     };
   }
   if (!hasWebsite) {
@@ -143,7 +148,7 @@ export function websiteArea(outcome: Outcome<WebsiteReport>, hasWebsite: boolean
       found: ['There is no website on your Google profile, and none was entered.'],
       why: ruleById['gbp-website'].why,
       fix: `${ruleById['gbp-website'].action}.`,
-      fixes: [{ key: 'website', ruleId: 'gbp-website', text: ruleById['gbp-website'].action, weight: 21 }],
+      fixes: [fixFromRule(ruleById['gbp-website'], 'Needs attention', 'website')],
     };
   }
   if (outcome.state === 'waiting' || outcome.state === 'skipped') return null;
@@ -158,7 +163,7 @@ export function websiteArea(outcome: Outcome<WebsiteReport>, hasWebsite: boolean
       found: [`Address checked: ${site.url}`, `Result: status ${site.status}`],
       why: 'If the page shows an error for us, it may show one for some customers too.',
       fix: 'Check your website address is correct and that the home page loads on a phone.',
-      fixes: [{ key: 'site-error', text: 'Check your website address and that the home page loads', weight: 32 }],
+      fixes: [{ key: 'site-error', text: 'Check your website address and that the home page loads', area: 'website', severity: 2, priority: 0, effort: 4 }],
     };
   }
   const results: RuleResult[] = [
@@ -170,16 +175,18 @@ export function websiteArea(outcome: Outcome<WebsiteReport>, hasWebsite: boolean
     result('web-open-graph', site.openGraph.title && site.openGraph.image ? 'Good' : 'Needs attention', `title ${yesNo(site.openGraph.title)}, image ${yesNo(site.openGraph.image)}`),
   ];
   const area = buildArea('website', results, (status) => (status === 'Good' ? 'The basic set-up search engines and phones need is in place.' : 'A few basics to tidy up.'));
-  area.extra.unshift(`Address checked: ${site.finalUrl}${site.redirectCount ? ` (after ${site.redirectCount} redirect${site.redirectCount === 1 ? '' : 's'})` : ''}`);
+  area.extra.unshift(`Page tested: ${site.finalUrl}${site.redirectCount ? ` (after ${site.redirectCount} redirect${site.redirectCount === 1 ? '' : 's'})` : ''}`);
   return area;
 }
 
-export function contactArea(site: WebsiteReport | null): Area | null {
+export function contactArea(site: WebsiteReport | null, profile: Profile | null = null): Area | null {
   if (!site?.reachable) return null;
+  const googlePhone = profile?.internationalPhone ?? profile?.phone;
+  const phoneAsText = googlePhone ? site.textPhones.some((p) => phonesMatch(p, googlePhone)) : false;
   const ways = [site.telLinks && `${site.telLinks} tap-to-call`, site.whatsappLinks && `${site.whatsappLinks} WhatsApp`, site.bookingLinks && `${site.bookingLinks} booking`].filter(Boolean);
-  const results = [result('contact-links', ways.length ? 'Good' : 'Needs attention', ways.length ? `${ways.join(', ')} link${ways.length === 1 ? '' : 's'}` : 'none found')];
+  const results = [result('contact-links', ways.length ? 'Good' : 'Needs attention', ways.length ? `${ways.join(', ')} link${ways.length === 1 ? '' : 's'} on ${site.finalUrl}` : `We didn’t find a tap-to-call, WhatsApp or booking link on ${site.finalUrl}. Links added by scripts may not be visible to our check.${phoneAsText ? ' Your phone number does appear as plain text on the page.' : ''}`)];
   const area = buildArea('contact', results, (status) => (status === 'Good' ? 'Customers can reach you in one tap from your website.' : 'We found no one-tap way to call, message or book.'));
-  area.extra.push(`Email links: ${site.mailtoLinks}`, `Contact form: ${site.hasContactForm ? 'found' : 'not found'}`, `Social links: ${site.socialLinks.length ? site.socialLinks.join(', ') : 'none found'}`);
+  area.extra.push(`Page tested: ${site.finalUrl}`, `Email links: ${site.mailtoLinks}`, `Contact form: ${site.hasContactForm ? 'found' : 'not found'}`, `Social links: ${site.socialLinks.length ? site.socialLinks.join(', ') : 'none found'}`);
   return area;
 }
 
@@ -216,14 +223,22 @@ export function speedArea(outcome: Outcome<PageSpeedReport>): Area | null {
   return area;
 }
 
-const digits = (s: string) => s.replace(/\D/g, '');
-const lastNine = (s: string) => digits(s).slice(-9);
+// Phone numbers: digits only, international prefix (+ or 00) and the national leading 0 removed,
+// then two numbers match when one ends with the other (so +33 5 62… matches 05 62…).
+const nationalDigits = (s: string) => s.replace(/\D/g, '').replace(/^00/, '').replace(/^0+/, '');
+export function phonesMatch(a: string, b: string) {
+  const x = nationalDigits(a);
+  const y = nationalDigits(b);
+  if (x.length < 7 || y.length < 7) return false;
+  return x.endsWith(y) || y.endsWith(x);
+}
 const simplify = (s: string) => s.toLowerCase().replace(/&/g, 'and').replace(/\b(ltd|limited|llc|inc|plc|the)\b/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
 
 export function consistencyArea(profile: Profile | null, site: WebsiteReport | null): Area | null {
   if (!profile || !site?.reachable) return null;
   const googlePhone = profile.internationalPhone ?? profile.phone;
-  const phoneMatch = googlePhone && site.phonesFound.length ? site.phonesFound.some((p) => lastNine(p) === lastNine(googlePhone)) : undefined;
+  const sitePhones = [...site.phonesFound, ...site.textPhones];
+  const phoneMatch = googlePhone && sitePhones.length ? sitePhones.some((p) => phonesMatch(p, googlePhone)) : undefined;
   const name = simplify(profile.name);
   const nameMatch = name ? site.namesFound.some((n) => simplify(n).includes(name) || name.includes(simplify(n))) : undefined;
   const addressMatch = site.addressCheck?.found;
@@ -236,21 +251,33 @@ export function consistencyArea(profile: Profile | null, site: WebsiteReport | n
   const area = buildArea('consistency', [result('consistency-nap', allMatch ? 'Good' : 'Needs attention', parts.join(', '))], (status) => (status === 'Good' ? 'Your name, address and phone match.' : 'Your details differ, or some are missing from your website.'));
   area.extra.push(
     `Google phone: ${googlePhone ?? 'not listed'}`,
-    `Phone numbers found on your website: ${site.phonesFound.length ? site.phonesFound.join(', ') : 'none found as links or structured data'}`,
+    `Phone numbers found on ${site.finalUrl}: ${sitePhones.length ? sitePhones.slice(0, 6).join(', ') : 'none found in links, structured data or page text'}`,
     `Google address: ${profile.address || 'not shown'}`,
     `Business name on your website: ${site.namesFound.length ? site.namesFound.slice(0, 3).join(' · ') : 'not found'}`,
   );
   return area;
 }
 
-// Highest priority first; one fix per issue.
+// Top 3: Problem before Needs attention, then priority, then quickest effort.
+// One fix per issue, and at most one per area unless there aren't enough areas to fill three.
 export function topFixes(areas: Area[]) {
-  const seen = new Set<string>();
-  return areas
+  const sorted = areas
     .flatMap((a, ai) => a.fixes.map((f, fi) => ({ ...f, order: ai * 10 + fi })))
-    .sort((a, b) => b.weight - a.weight || a.order - b.order)
-    .filter((f) => (seen.has(f.key) ? false : (seen.add(f.key), true)))
-    .slice(0, 3)
+    .sort((a, b) => b.severity - a.severity || a.priority - b.priority || a.effort - b.effort || a.order - b.order);
+  const picked: typeof sorted = [];
+  const issues = new Set<string>();
+  const usedAreas = new Set<string>();
+  for (const pass of [true, false]) {
+    for (const f of sorted) {
+      if (picked.length >= 3) break;
+      if (issues.has(f.key) || (pass && usedAreas.has(f.area))) continue;
+      picked.push(f);
+      issues.add(f.key);
+      usedAreas.add(f.area);
+    }
+  }
+  return picked
+    .sort((a, b) => b.severity - a.severity || a.priority - b.priority || a.effort - b.effort || a.order - b.order)
     .map((f) => ({ key: f.key, text: f.text, rule: f.ruleId ? ruleById[f.ruleId] : undefined }));
 }
 

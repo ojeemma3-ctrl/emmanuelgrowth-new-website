@@ -121,18 +121,19 @@ export async function profile(placeId: string): Promise<Profile> {
   };
 }
 
-export type Competitor = { name: string; rating?: number; reviewCount?: number; hasWebsite: boolean };
+export type Competitor = { name: string; rating?: number; reviewCount?: number; hasWebsite: boolean; primaryType?: string };
 
-// One Text Search for the same category in the same town.
-export async function competitors(category: string, town: string, excludePlaceId?: string): Promise<Competitor[]> {
-  type R = { places?: { id: string; displayName?: LocalizedText; rating?: number; userRatingCount?: number; websiteUri?: string }[] };
+// One Text Search. When requiredType is given, only businesses with that same primary type are kept.
+export async function competitors(textQuery: string, excludePlaceId?: string, requiredType?: string): Promise<Competitor[]> {
+  type R = { places?: { id: string; displayName?: LocalizedText; rating?: number; userRatingCount?: number; websiteUri?: string; primaryType?: string }[] };
   const data = await call<R>('/places:searchText', {
     method: 'POST',
-    fieldMask: 'places.id,places.displayName,places.rating,places.userRatingCount,places.websiteUri',
-    body: JSON.stringify({ textQuery: `${category} in ${town}`, languageCode: 'en', pageSize: 10 }),
+    fieldMask: 'places.id,places.displayName,places.rating,places.userRatingCount,places.websiteUri,places.primaryType',
+    body: JSON.stringify({ textQuery, languageCode: 'en', pageSize: 20 }),
   });
   return (data.places ?? [])
     .filter((p) => p.id !== excludePlaceId)
+    .filter((p) => !requiredType || p.primaryType === requiredType)
     .slice(0, 5)
-    .map((p) => ({ name: p.displayName?.text ?? '', rating: p.rating, reviewCount: p.userRatingCount, hasWebsite: Boolean(p.websiteUri) }));
+    .map((p) => ({ name: p.displayName?.text ?? '', rating: p.rating, reviewCount: p.userRatingCount, hasWebsite: Boolean(p.websiteUri), primaryType: p.primaryType }));
 }
