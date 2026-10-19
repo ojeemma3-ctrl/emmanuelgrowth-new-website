@@ -520,18 +520,15 @@ h1 em, h2 em { display: inline-block; font-style: normal; color: inherit; text-d
 .ic-pdf { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-top: 16px; }
 .ic-pdf .button { display: inline-flex; align-items: center; gap: 8px; }
 .ic-pdf .ic-hint { margin: 0; }
-.ic-print-cover { display: none; }
 .ic-offer { display: inline-flex; vertical-align: middle; }
 .ic-offer-tag { display: inline-flex; align-items: center; min-height: 32px; padding: 4px 12px; border: 1px solid var(--border-light); border-radius: 999px; background: var(--white); color: var(--text); font: inherit; font-size: 14px; line-height: 20px; font-weight: 600; text-decoration: none; cursor: pointer; }
 .ic-offer-tag:hover { border-color: var(--text); }
-.ic-offer-print { display: none; }
 .ic-fix-card .ic-offer { margin-top: 10px; }
 .ic-closing { padding: 24px; border: 1px solid var(--border-light); border-radius: 16px; background: var(--white); }
 .ic-closing-text { max-width: 62ch; margin: 0 0 18px; font-size: 17px; line-height: 27px; }
 .ic-closing-text strong { display: block; margin-bottom: 4px; font-size: 20px; line-height: 28px; }
 .ic-closing-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
 .ic-closing-talk { padding: 8px 0; border: 0; background: transparent; color: var(--text); font: inherit; font-size: 16px; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
-.ic-closing-contact { display: none; }
 .ic-review { max-width: 560px; }
 .ic-review-body { display: grid; justify-items: start; gap: 16px; }
 .ic-review-body p { margin: 0; }
@@ -1009,44 +1006,107 @@ h1 em, h2 em { display: inline-block; font-style: normal; color: inherit; text-d
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
 
-/* Visibility check: print / "Save as PDF". Cover page, report only, no buttons or navigation. */
+/* Visibility check: A4 PDF ("Download PDF" → print → Save as PDF). The print layout (.icp, PrintReport.tsx)
+   only shows when printing; the on-screen report is hidden. Six pages with fixed breaks. */
+.icp { display: none; }
 @media print {
-  @page { size: A4; margin: 16mm 14mm; }
-  html, body { background: var(--white) !important; color: var(--text); font-size: 11pt; }
-  .skip-link, .site-header, #main-content ~ *, .cookie-banner { display: none !important; }
-  .vc-section { padding: 0 !important; background: none !important; }
+  @page { size: A4; margin: 16mm; @bottom-right { content: "Page " counter(page) " of " counter(pages); font-size: 8pt; color: #6B706B; } }
+  @page :first { @bottom-right { content: none; } }
+  html, body { background: var(--white) !important; color: var(--text); font-size: 9.5pt; line-height: 1.45; }
+  .skip-link, .site-header, .site-footer, .cookie-banner, .contact-overlay, #main-content ~ * { display: none !important; }
+  .vc-section { min-height: 0 !important; padding: 0 !important; background: none !important; }
   .vc-container, .container { width: auto !important; max-width: none !important; padding: 0 !important; margin: 0 !important; }
-  .ic-steps, .ic-result-actions, .ic-cta, .ic-pdf, .ic-unlock, .ic-progress, .ic-toggle, .ic-compare-form, .ic-maps-link, .ic-soft-link, .ic-learn, .vc-back, .ic-ring, .ic-bar, .ic-score-note, .ic-howto, .ic-offer-tag, .ic-closing-actions, button { display: none !important; }
-  .ic-offer-print { display: inline; font-size: 10pt; color: var(--muted-light); }
-  .ic-fix-card .ic-offer-print { display: block; }
-  .ic-closing { padding: 12pt 0 0 !important; border: 0 !important; border-top: 1px solid var(--border-light) !important; }
-  .ic-closing-contact { display: block; margin: 0; }
-  .ic-page { display: block; }
-  .ic-page > * + * { margin-top: 18pt; }
-  .ic-print-cover { display: flex; flex-direction: column; justify-content: center; min-height: 240mm; break-after: page; page-break-after: always; }
-  .ic-print-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 40mm; font-size: 16pt; font-weight: 800; letter-spacing: .04em; }
-  .ic-print-brand b { color: var(--text); }
-  .ic-print-kicker { margin: 0 0 6pt; font-size: 12pt; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-light); }
-  .ic-print-cover h1 { margin: 0 0 12pt; font-size: 30pt; line-height: 1.1; color: var(--text); }
-  .ic-print-cover p { margin: 0 0 4pt; font-size: 12pt; }
-  .ic-print-note { margin-top: 10pt !important; font-weight: 700; }
-  .ic-print-contact { margin-top: auto; padding-top: 12pt; border-top: 1px solid var(--border-light); }
-  .ic-hero, .ic-result-hero { padding: 0 !important; border: 0 !important; background: none !important; color: var(--text) !important; }
-  .ic-hero h1, .ic-hero p, .ic-hero .ic-address, .ic-result-main > p:not(.ic-hero-label) { color: var(--text) !important; }
-  .ic-hero-label, .ic-chips li { border-color: var(--border-light) !important; background: none !important; color: var(--text) !important; }
-  .ic-result-score { padding: 0 !important; border: 0 !important; background: none !important; color: var(--text) !important; }
-  .ic-panel, .ic-tile, .ic-area, .ic-fix-card, .ic-status-list, .ic-split-col { box-shadow: none !important; background: var(--white) !important; }
-  .ic-status, .ic-code-pill, .ic-priority, .ic-fix-num { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  h2, h3, h4 { break-after: avoid; page-break-after: avoid; }
-  .ic-fix-card, .ic-tile, .ic-finding, .ic-status-list li, .ic-table tr, .ic-nearby-cards li, .ic-area summary { break-inside: avoid; page-break-inside: avoid; }
-  .ic-results > :not(.ic-print-cover) { zoom: .85; }
-  .ic-full-head { margin-top: 24pt !important; }
-  .ic-fix-cards, .ic-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10pt; }
-  .ic-area summary { cursor: default; }
-  .ic-table-wrap { overflow: visible !important; }
-  a { color: var(--text); text-decoration: none; }
-  /* Report layout (step 2): all area cards open, no section bar, filters or toggles. Step 3 replaces this with a dedicated A4 layout. */
-  .ic-sectionbar, .ic-filters, .ic-row-toggle, .ic-chevron, .ic-hero-actions, .ic-nearby-tools, .ic-skel { display: none !important; }
-  .ic-acard-body[hidden] { display: block !important; }
-  .ic-acard, .ic-row { break-inside: avoid; page-break-inside: avoid; }
+  .ic-results { display: block !important; }
+  .ic-results > :not(.icp) { display: none !important; }
+
+  .icp { display: block; font-family: var(--font-ui); font-size: 9.5pt; line-height: 1.45; color: var(--text); }
+  .icp * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .icp p { max-width: none; margin: 0 0 4pt; }
+  .icp :is(h1, h2, h3, h4) { font-family: var(--font-display); font-weight: 700; line-height: 1.15; letter-spacing: -.02em; color: var(--text); }
+  .icp-page { break-after: page; page-break-after: always; }
+  .icp-page:last-child { break-after: auto; page-break-after: auto; }
+
+  /* Cover */
+  .icp-cover { display: flex; flex-direction: column; height: 262mm; }
+  .icp-brand { display: flex; align-items: center; gap: 10pt; font-size: 14pt; font-weight: 800; letter-spacing: .04em; }
+  .icp-brand b { color: var(--text); }
+  .icp-cover-main { margin: auto 0; }
+  .icp-kicker { margin-bottom: 8pt !important; color: var(--muted-light); font-size: 11pt; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+  .icp-cover h1 { margin: 0 0 12pt; font-size: 32pt; }
+  .icp-cover-main p { font-size: 12pt; }
+  .icp-cover-note { margin-top: 14pt !important; padding: 6pt 10pt; display: inline-block; border: 1px solid var(--line); border-radius: 6pt; font-weight: 600; }
+  .icp-cover-contact { padding-top: 10pt; border-top: 1px solid var(--line); font-size: 10.5pt; }
+
+  /* Page header */
+  .icp-head { margin-bottom: 12pt; padding-bottom: 8pt; border-bottom: 2px solid var(--text); }
+  .icp-head > span { display: block; margin-bottom: 3pt; color: var(--muted-light); font-size: 8pt; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+  .icp-head h2 { margin: 0; font-size: 18pt; }
+
+  /* Blocks */
+  .icp-block { margin-bottom: 12pt; }
+  .icp-block h3 { margin: 0; font-size: 12pt; }
+  .icp-block > h3 { margin-bottom: 6pt; }
+  .icp-block-head { display: flex; align-items: center; justify-content: space-between; gap: 10pt; margin-bottom: 3pt; break-after: avoid; page-break-after: avoid; }
+  .icp-line { color: var(--muted-light); }
+  .icp-tested { color: var(--muted-light); }
+  .icp-tested strong { color: var(--text); }
+  .icp-muted { color: var(--muted-light); font-size: 8.5pt; }
+  .icp .ic-status { height: 15pt; padding: 0 6pt; gap: 3pt; border-radius: 999px; font-size: 7.5pt; font-weight: 600; line-height: 1; white-space: nowrap; }
+  .icp .ic-status .ic-icon { width: 9pt; height: 9pt; }
+  .icp .ic-status.is-unknown { border: 1px solid var(--line); }
+
+  .icp-rows, .icp-areas { width: 100%; margin-top: 4pt; border-collapse: collapse; font-size: 8.5pt; }
+  .icp-rows thead th { padding: 3pt 6pt; border-bottom: 1px solid var(--text); color: var(--muted-light); font-size: 7.5pt; font-weight: 600; text-align: left; text-transform: uppercase; letter-spacing: .04em; }
+  .icp-rows :is(tbody th, td), .icp-areas :is(th, td) { padding: 4pt 6pt; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; font-weight: 400; }
+  .icp-rows tbody th { width: 34%; }
+  .icp-rows tbody th strong { display: block; font-weight: 600; }
+  .icp-rows tbody th small { display: block; color: var(--muted-light); font-size: 7.5pt; }
+  .icp-rows td:last-child, .icp-areas td:last-child { width: 1%; text-align: right; white-space: nowrap; }
+  .icp-rows td { overflow-wrap: anywhere; }
+  .icp-rows tr, .icp-areas tr, .icp-details > div, .icp-bars li, .icp-first li { break-inside: avoid; page-break-inside: avoid; }
+  .icp-areas th { width: 24%; font-weight: 600 !important; }
+  .icp-areas td:nth-child(2) { color: var(--muted-light); }
+
+  .icp-details { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12pt; margin: 6pt 0 0; padding: 4pt 8pt; border-radius: 6pt; background: var(--grey); font-size: 8pt; }
+  .icp-details > div { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 6pt; padding: 2.5pt 0; border-top: 1px solid var(--line); }
+  .icp-details > div:nth-child(-n+2) { border-top: 0; }
+  .icp-details dt { color: var(--muted-light); }
+  .icp-details dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+
+  /* Summary page */
+  .icp-score { display: flex; align-items: center; gap: 14pt; margin-bottom: 14pt; padding: 10pt 12pt; border: 1px solid var(--line); border-radius: 8pt; }
+  .icp-score p { margin: 0; color: var(--muted-light); }
+  .icp-score .icp-score-big { color: var(--text); font-size: 14pt; font-weight: 700; }
+  .icp .ic-ring { width: 72pt; height: 72pt; }
+  .icp .ic-ring svg { width: 72pt; height: 72pt; }
+  .icp .ic-ring-track { stroke: var(--grey); }
+  .icp .ic-ring-fill { animation: none; transition: none; }
+  .icp .ic-ring-text { color: var(--text); }
+  .icp .ic-ring-text strong { font-family: var(--font-ui); font-size: 18pt; }
+  .icp .ic-ring-text small { color: var(--muted-light); font-size: 8pt; }
+  .icp-top, .icp-first { margin: 0 0 6pt; padding: 0; list-style: none; }
+  .icp-top li { display: grid; grid-template-columns: 16pt minmax(0, 1fr) auto; align-items: center; gap: 8pt; padding: 5pt 0; border-bottom: 1px solid var(--line); font-weight: 600; }
+  .icp-top em { font-style: normal; color: var(--muted-light); font-size: 8pt; font-weight: 600; }
+  .icp-num { display: grid; place-items: center; width: 16pt; height: 16pt; border-radius: 4pt; background: var(--black); color: var(--green); font-size: 8.5pt; font-weight: 700; }
+
+  /* Review bars */
+  .icp-nearby { margin-top: 10pt; padding-top: 8pt; border-top: 1px solid var(--line); break-inside: avoid; page-break-inside: avoid; }
+  .icp-nearby h4 { margin: 0 0 4pt; font-size: 10pt; }
+  .icp-bars { margin: 6pt 0; padding: 0; list-style: none; font-size: 8.5pt; }
+  .icp-bars li { display: grid; grid-template-columns: 52mm minmax(0, 1fr) 16mm; align-items: center; gap: 8pt; padding: 2pt 0; }
+  .icp-bars-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .icp-bars li.is-you .icp-bars-name { font-weight: 700; }
+  .icp-bars-track { height: 7pt; overflow: hidden; border-radius: 999px; background: var(--grey); }
+  .icp-bars-track > span { display: block; height: 100%; border-radius: inherit; background: var(--muted-light); }
+  .icp-bars li.is-you .icp-bars-track > span { background: var(--black); }
+  .icp-bars-count { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  /* Next steps */
+  .icp-first li { display: grid; grid-template-columns: 16pt minmax(0, 1fr); gap: 8pt; padding: 7pt 0; border-bottom: 1px solid var(--line); }
+  .icp-first-title { font-size: 10.5pt; font-weight: 700; }
+  .icp-reach { padding: 8pt 10pt; border: 1px solid var(--line); border-radius: 6pt; }
+  .icp-reach h3 { margin-bottom: 3pt !important; }
+  .icp-list { margin: 0 0 6pt; padding-left: 12pt; list-style: disc; }
+  .icp-list li { margin-bottom: 2pt; }
+  .icp-foot { margin-top: 12pt !important; padding-top: 6pt; border-top: 1px solid var(--line); color: var(--muted-light); font-size: 8pt; }
 }

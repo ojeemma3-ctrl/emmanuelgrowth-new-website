@@ -1,6 +1,6 @@
 # Status
 
-Last updated: 19 October 2026 (from the code at commit 5621f16). Update this file at the end of each work item.
+Last updated: 20 October 2026 (visibility check redesign, steps 1 to 3). Update this file at the end of each work item.
 
 ## Done
 - Home page redesign: hero with animated panel, three offer sections, How it works, pricing, FAQ, About, final CTA,
@@ -14,23 +14,25 @@ Last updated: 19 October 2026 (from the code at commit 5621f16). Update this fil
     Contact and consent are validated before any Google or PageSpeed call.
   - Checks: Google profile, nearby comparison (same type, keyword rerun, fair-comparison rule), website basics,
     contact links, search/AI signals, mobile speed (PageSpeed), name/address/phone consistency.
-  - Full report on screen: ring of checks passed, Top 3 fixes, area statuses, tiles, what's working / what to fix,
-    nearby table, every check by area, offer tags, "How to fix this" steps, closing block.
-  - Save as PDF (browser print, cover page, ~12 pages).
+  - Report on screen (app-like, Inter only, tokens scoped to the check): header card with ring, Top 3 fixes,
+    sticky section bar, filter chips (All / Needs attention / Good), one expandable card per area with rows and
+    inline "Why it matters and how to fix", nearby review bars + table / cards, skeletons while loading, closing block.
+    Plain names per rule (displayName / technicalName in lib/check-standard.ts); no full web addresses inline.
+  - Save as PDF: dedicated A4 print layout (components/visibility-check/PrintReport.tsx), 6 fixed pages: cover,
+    summary, Google and reviews, website, contact / consistency / AI readiness, next steps. Page numbers in Chrome.
   - Results survive Back and refresh for 2 hours (sessionStorage, no contact details stored).
   - Limits per IP and per day (in memory), signed tickets, honeypot, Turnstile support (keys not set).
   - Brevo contact sync and owner email on completion; free personal review dialog (code done, see Blocked).
 
 ## In progress
-- Nothing mid-step. Last finished: personal review dialog (5621f16).
+- Nothing mid-step. Last finished: visibility check redesign (type and tokens, layout, A4 PDF).
 
 ## Pending (in order)
 1. Finish Brevo setup and test. Owner to create list "Visibility check" and attributes BUSINESS_NAME, WEBSITE_URL,
    PREFERRED_CHANNEL, VC_SUMMARY (text), VC_DATE (date), TIPS_CONSENT, PERSONAL_REVIEW (boolean), WHATSAPP.
    Not created as of 19 Oct 2026: confirm with the owner before testing. Then set env vars and test a fake lead.
 2. Prompt 4: new checks (docs/NEXT_PROMPTS.md, item 1).
-3. Polish plus a proper A4 PDF layout: about 6 pages, plain-English wording, cover page, review bars,
-   no repeated sections.
+3. Wording polish across the report (the A4 PDF layout is done).
 4. Plan detail pages (the Complete system has no page; its link goes to /#services).
 5. Going live: Google and Brevo env secrets in Cloudflare, domain, limits, a quota cap on Places API.
 6. Privacy retention period: owner decides (placeholder "[RETENTION PERIOD - owner to decide]" in the policy).

@@ -41,7 +41,7 @@ Step 3: accessibility, legal links, position snapshot.
 
 ---
 
-## Item 2: polish and A4 PDF layout
+## Item 2: polish and A4 PDF layout (A4 PDF DONE in the redesign, 20 Oct 2026; wording polish still open)
 Tidy wording to plain English across the report and make the PDF a proper A4 document of about 6 pages: cover page,
 review bars, no repeated sections, sensible page breaks. Keep "Save as PDF" (browser print, no new dependencies).
 Show desktop, phone and PDF before committing.

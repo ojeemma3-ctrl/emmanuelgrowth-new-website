@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { useCallback, useEffect, useId, useRef, useState, type MouseEvent, type ReactNode, type RefObject } from 'react';
 import { HELP_LINK, PLAN_LINKS } from '../../lib/check-config';
 import { offerFor, type Offer } from '../../lib/check-offers';
@@ -13,6 +12,7 @@ import type { CheckState } from './InstantCheck';
 import { Icon, Ring, StatusChip, StepBar, type IconName } from './ui';
 import type { Contact } from './ContactFields';
 import { PersonalReview } from './PersonalReview';
+import { PrintReport } from './PrintReport';
 
 // WhatsApp number from site config, shown on the PDF cover as +44 7575 416197.
 const whatsappDisplay = `+${whatsappNumber.slice(0, 2)} ${whatsappNumber.slice(2, 6)} ${whatsappNumber.slice(6)}`;
@@ -35,7 +35,6 @@ function OfferTag({ offer }: { offer: Offer | null }) {
       {offer.kind === 'link'
         ? <a className="ic-offer-tag" href={offer.href}>{offer.label}</a>
         : <button className="ic-offer-tag" type="button" aria-haspopup="dialog" onClick={() => openContact(offer.topic)}>{offer.label}</button>}
-      <span className="ic-offer-print">Covered by: {offer.covers}</span>
     </span>
   );
 }
@@ -68,7 +67,6 @@ function ClosingBlock({ realWebsite, onPersonalReview }: { realWebsite: boolean;
       ) : (
         <p className="ic-closing-text"><strong id="ic-closing-title">A simple website is the first step,</strong> then reviews and quick replies.</p>
       )}
-      <p className="ic-closing-contact">Questions about this report? Email {contactEmail} or WhatsApp {whatsappDisplay}.</p>
       <div className="ic-closing-actions">
         {realWebsite
           ? <a className="button button-growth" href={HELP_LINK}>See how I can help <Arrow /></a>
@@ -152,8 +150,9 @@ function Details({ lines }: { lines: string[] }) {
   );
 }
 
+export type Fix = ReturnType<typeof topFixes>[number];
 type CardId = 'profile' | 'reviews' | 'website' | 'contact' | 'consistency' | 'ai';
-type Card = {
+export type Card = {
   id: CardId;
   title: string;
   icon: IconName;
@@ -501,22 +500,21 @@ export function ResultView({ check, ticket, headingRef, onCompare, restored = fa
 
   return (
     <div className="ic-page ic-results">
-      <section className="ic-print-cover" aria-hidden="true">
-        <div className="ic-print-brand">
-          <Image src="/favicon.svg" alt="" width={56} height={56} />
-          <span>EMMANUEL <b>GROWTH</b></span>
-        </div>
-        <p className="ic-print-kicker">Visibility check report</p>
-        <h1>{business}</h1>
-        {profile ? <p>{profile.address}</p> : null}
-        <p>{today}</p>
-        <p className="ic-print-note">Automated checks of public information</p>
-        <div className="ic-print-contact">
-          <p>Questions about this report?</p>
-          <p>Email: {contactEmail}</p>
-          <p>WhatsApp: {whatsappDisplay}</p>
-        </div>
-      </section>
+      <PrintReport
+        business={business}
+        address={profile?.address}
+        today={today}
+        cards={cards}
+        fixes={fixes}
+        passed={passed}
+        total={allResults.length}
+        realWebsite={!noRealWebsite}
+        nearby={stats && competitorRows && profile ? { query: competitorRows.query, ...stats, items: [{ name: profile.name, count: profile.reviewCount ?? 0, you: true }, ...competitorRows.rows.map((r) => ({ name: r.name, count: r.reviewCount ?? 0 }))] } : null}
+        speedTestedAt={check.speed.state === 'done' ? check.speed.data.testedAt : undefined}
+        logo="/favicon.svg"
+        contactEmail={contactEmail}
+        whatsapp={whatsappDisplay}
+      />
 
       <StepBar steps={[
         { label: 'Your business', state: 'done' },
