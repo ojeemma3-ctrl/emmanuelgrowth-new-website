@@ -597,7 +597,7 @@ h1 em, h2 em { display: inline-block; font-style: normal; color: inherit; text-d
   .ic-page h1 { font-size: var(--fs-40); }
   .ic-page h2 { font-size: var(--fs-28); }
 }
-.ic-page p, .ic-page li, .ic-page dd { max-width: 68ch; }
+.ic-page p, .ic-page .ic-howto-steps li { max-width: 68ch; }
 .ic-page :is(.ic-ring-text, .ic-table td, .ic-fix-num, .ic-tile-count, .ic-tile-figure, .ic-result-score, .ic-nearby-cards, .ic-bars), .ic-num { font-variant-numeric: tabular-nums; }
 
 /* Text sizes on the scale: body 16, secondary 14, small labels 12 (never body copy). */
@@ -642,6 +642,11 @@ h1 em, h2 em { display: inline-block; font-style: normal; color: inherit; text-d
 .ic-page .ic-offer-tag:active, .ic-page .ic-toggle button:active { transform: translateY(1px); }
 .ic-page :focus-visible, .ic-review :focus-visible { outline: 3px solid var(--text); outline-offset: 2px; }
 .ic-page .ic-hero :focus-visible { outline-color: var(--green); }
+/* Headings and sections that receive focus from script (after a jump) don't show a ring. */
+.ic-page [tabindex="-1"]:focus { outline: none; }
+.ic-page .ic-hero-label { border-radius: var(--radius-inner); }
+.ic-page .ic-hero .button-dark { border-color: var(--border-dark); background: var(--surface); }
+.ic-page .ic-hero .button-dark:hover { border-color: var(--muted-dark); }
 
 /* Status chips: icon plus text, 13px / 600, one fixed height, never wrapping. */
 .ic-page .ic-status, .ic-review .ic-status { display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto; height: var(--chip-h); padding: 0 10px; border-radius: 999px; font-size: 13px; line-height: 1; font-weight: 600; white-space: nowrap; }
@@ -650,6 +655,152 @@ h1 em, h2 em { display: inline-block; font-style: normal; color: inherit; text-d
 
 @media (prefers-reduced-motion: reduce) {
   .ic-page .button, .ic-page .ic-offer-tag, .ic-page .ic-toggle button { transition: none; transform: none !important; }
+}
+
+/* Visibility check: report layout. Header card, Top 3, sticky section bar, one expandable card per area. */
+.ic-results [id] { scroll-margin-top: 148px; }
+.ic-hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-8) var(--sp-24); margin-top: var(--sp-16); }
+.ic-page .ic-hero-actions .ic-maps-link { margin: 0; }
+.ic-page .ic-pdf-button { padding: 0 var(--sp-16); }
+.ic-page .ic-hero .ic-address { margin-bottom: 0; }
+.ic-page .ic-chips { margin-bottom: var(--sp-12); }
+.ic-page .ic-chips li { display: inline-flex; align-items: center; height: var(--chip-h); padding: 0 var(--sp-12); white-space: nowrap; }
+.ic-page .ic-result-score { gap: var(--sp-16); padding: var(--sp-16); }
+.ic-page .ic-panel h2 { font-size: var(--fs-20); margin-bottom: var(--sp-8); }
+.ic-page .ic-panel > p { margin: 0; }
+
+.ic-page .ic-fix-cards { gap: var(--sp-12); }
+.ic-page .ic-fix-card { gap: var(--sp-8); }
+.ic-page .ic-fix-text { font-size: var(--fs-16); line-height: 1.4; font-weight: 600; }
+.ic-page .ic-fix-num { width: 32px; height: 32px; border-radius: 10px; }
+.ic-page .ic-priority { display: inline-flex; align-items: center; height: var(--chip-h); padding: 0 var(--sp-12); font-size: 13px; line-height: 1; font-weight: 600; white-space: nowrap; }
+.ic-fix-actions { display: grid; justify-items: start; gap: var(--sp-4); margin-top: auto; padding-top: var(--sp-4); }
+.ic-page .ic-fix-card .ic-offer, .ic-page .ic-howto { margin: 0; }
+.ic-page .ic-howto-toggle { gap: 6px; font-size: var(--fs-14); }
+.ic-howto-toggle[aria-expanded="true"] .ic-icon, .ic-row-toggle[aria-expanded="true"] .ic-icon { transform: rotate(180deg); }
+.ic-page .ic-howto-steps { margin: var(--sp-4) 0 var(--sp-8); font-size: var(--fs-14); }
+
+/* Sticky section bar: sits under the site header; chips scroll sideways on phones, never wrap. */
+.ic-sectionbar { position: sticky; top: 76px; z-index: 20; margin: 0 -8px; padding: var(--sp-4) 0; background: color-mix(in srgb, var(--grey) 94%, transparent); backdrop-filter: blur(8px); }
+.ic-sectionbar ol { display: flex; gap: var(--sp-8); margin: 0; padding: 4px 8px; list-style: none; overflow-x: auto; scrollbar-width: none; }
+.ic-sectionbar ol::-webkit-scrollbar { display: none; }
+.ic-sectionbar a { display: inline-flex; align-items: center; height: var(--tap); padding: 0 var(--sp-16); border: 1px solid var(--line); border-radius: 999px; background: var(--white); color: var(--text); font-size: var(--fs-14); font-weight: 600; white-space: nowrap; transition: background .15s ease, border-color .15s ease, color .15s ease; }
+.ic-sectionbar a:hover { border-color: var(--text); }
+.ic-sectionbar a:active { transform: translateY(1px); }
+.ic-sectionbar a[aria-current="true"] { border-color: var(--black); background: var(--black); color: var(--white); }
+.ic-page .ic-sectionbar a:focus-visible { outline-offset: 1px; }
+
+.ic-areas-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--sp-12) var(--sp-16); margin-bottom: var(--sp-16); }
+.ic-page .ic-areas-head h2 { margin: 0; }
+.ic-filters { display: inline-flex; gap: var(--sp-4); padding: var(--sp-4); border: 1px solid var(--line); border-radius: 999px; background: var(--white); }
+.ic-filters button { display: inline-flex; align-items: center; gap: 6px; min-height: var(--tap); padding: 0 var(--sp-16); border: 0; border-radius: 999px; background: transparent; color: var(--text); font-size: var(--fs-14); font-weight: 600; white-space: nowrap; cursor: pointer; }
+.ic-filters button:hover { background: var(--grey); }
+.ic-filters button:active { transform: translateY(1px); }
+.ic-filters button[aria-pressed="true"] { background: var(--black); color: var(--white); }
+.ic-filters button .ic-num { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: var(--grey); color: var(--text); font-size: 13px; }
+
+/* Area cards */
+.ic-acards { display: grid; gap: var(--sp-12); }
+.ic-acard { border: 1px solid var(--line); border-radius: var(--radius-card); background: var(--white); }
+.ic-page .ic-acard-heading { margin: 0; font-family: var(--font-ui); font-size: var(--fs-16); letter-spacing: 0; }
+.ic-acard-head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "icon text chev" "icon chip chev"; align-items: center; gap: var(--sp-8) var(--sp-12); width: 100%; min-height: 72px; padding: var(--sp-16) var(--pad-card); border: 0; border-radius: var(--radius-card); background: transparent; color: var(--text); font: inherit; text-align: left; cursor: pointer; }
+.ic-acard-head:hover:not(:disabled) { background: color-mix(in srgb, var(--grey) 55%, var(--white)); }
+.ic-acard-head:disabled { cursor: default; }
+.ic-acard-head > .ic-status { grid-area: chip; justify-self: start; }
+.ic-acard-icon { grid-area: icon; align-self: start; width: 40px; height: 40px; display: grid; place-items: center; border-radius: var(--radius-inner); background: var(--grey); }
+.ic-acard-text { grid-area: text; display: grid; gap: 2px; min-width: 0; }
+.ic-acard-title { font-size: var(--fs-16); line-height: 1.35; font-weight: 700; }
+.ic-acard-line { color: var(--muted-light); font-size: var(--fs-14); line-height: 1.45; font-weight: 400; }
+.ic-chevron { grid-area: chev; display: grid; place-items: center; width: 24px; color: var(--muted-light); transition: transform .2s ease; }
+.ic-acard.is-open .ic-chevron { transform: rotate(180deg); }
+.ic-acard-body { padding: var(--sp-4) var(--pad-card) var(--pad-card); border-top: 1px solid var(--line); }
+.ic-acard-p { margin: var(--sp-12) 0 0; }
+.ic-tested { display: flex; align-items: center; gap: 6px; min-height: var(--tap); margin: var(--sp-4) 0 0; color: var(--muted-light); font-size: var(--fs-14); }
+.ic-tested > span { flex: 0 0 auto; }
+.ic-tested a { display: inline-flex; align-items: center; gap: 4px; min-width: 0; min-height: var(--tap); color: var(--text); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.ic-tested a > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 32ch; }
+
+/* Rows inside an area card: name, value, status chip; why and how to fix expand inline. */
+.ic-rows { margin: 0; padding: 0; list-style: none; }
+.ic-row { border-top: 1px solid var(--line); }
+.ic-row:first-child { border-top: 0; }
+.ic-row-main { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "name chip" "value value"; align-items: center; gap: var(--sp-4) var(--sp-12); min-height: 56px; padding-top: var(--sp-12); }
+.ic-row-main .ic-name { grid-area: name; }
+.ic-row-main .ic-status { grid-area: chip; }
+.ic-row-value { grid-area: value; font-size: var(--fs-14); line-height: 1.45; overflow-wrap: anywhere; }
+.ic-row-value:empty { display: none; }
+.ic-row-toggle { display: inline-flex; align-items: center; gap: 6px; min-height: var(--tap); padding: 0; border: 0; background: transparent; color: var(--text); font: inherit; font-size: var(--fs-14); font-weight: 600; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
+.ic-row-toggle:hover { text-decoration-thickness: 2px; }
+.ic-row-toggle:active { opacity: .7; }
+.ic-row-more { margin: 0 0 var(--sp-12); padding: var(--sp-12) var(--sp-16); border-radius: var(--radius-inner); background: var(--grey); font-size: var(--fs-14); }
+.ic-row-more > p { margin: 0 0 var(--sp-8); }
+.ic-row-more > p:last-child { margin-bottom: 0; }
+.ic-page .ic-row-more .ic-baseline { margin: 0 0 var(--sp-8); }
+.ic-row-meta { display: flex; flex-wrap: wrap; gap: var(--sp-4) var(--sp-16); }
+.ic-row-sub { font-weight: 700; }
+.ic-row-more .ic-howto-steps { margin: 0 0 var(--sp-8); padding-left: 20px; }
+.ic-row-more .ic-offer-tag { background: var(--white); }
+
+.ic-details { display: grid; margin: var(--sp-16) 0 0; padding: var(--sp-4) var(--sp-16); border-radius: var(--radius-inner); background: var(--grey); font-size: var(--fs-14); }
+.ic-details > div { display: grid; gap: 2px; padding: var(--sp-8) 0; border-top: 1px solid var(--line); }
+.ic-details > div:first-child { border-top: 0; }
+.ic-details dt { color: var(--muted-light); font-weight: 600; }
+.ic-details dd { margin: 0; overflow-wrap: anywhere; }
+
+/* Nearby businesses (inside the Reviews card) */
+.ic-nearby { margin-top: var(--sp-16); padding-top: var(--sp-16); border-top: 1px solid var(--line); }
+.ic-page .ic-nearby h4 { margin: 0 0 var(--sp-8); }
+.ic-nearby-head p { margin: 0; }
+.ic-bars { display: grid; gap: var(--sp-8); margin: var(--sp-16) 0; padding: 0; list-style: none; font-size: var(--fs-14); }
+.ic-bars li { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "name count" "track track"; align-items: center; gap: var(--sp-4) var(--sp-12); }
+.ic-bars-name { grid-area: name; display: flex; align-items: center; gap: 6px; min-width: 0; font-weight: 500; }
+.ic-bars-name > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ic-bars .ic-you { flex: 0 0 auto; margin: 0; }
+.ic-bars li.is-you .ic-bars-name { font-weight: 700; }
+.ic-bars-track { grid-area: track; height: 12px; overflow: hidden; border-radius: 999px; background: var(--grey); }
+.ic-bars-track > span { display: block; height: 100%; border-radius: inherit; background: var(--muted-light); }
+.ic-bars li.is-you .ic-bars-track > span { background: var(--black); }
+.ic-bars-count { grid-area: count; font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+.ic-nearby-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--sp-8) var(--sp-16); margin-bottom: var(--sp-12); }
+.ic-page .ic-nearby-tools .ic-source { margin: 0; }
+.ic-page .ic-acard .ic-compare-form { margin-top: var(--sp-16); padding-top: var(--sp-16); border-top: 1px solid var(--line); }
+.ic-page .ic-acard .ic-compare-form > p { margin: 0 0 var(--sp-8); }
+.ic-page .ic-acard .ic-offer { margin-top: var(--sp-12); }
+.ic-page .ic-acard .ic-row-more .ic-offer { margin-top: 0; }
+.ic-page .ic-acard-body > .ic-howto { margin-top: var(--sp-12); }
+
+/* Closing block: one consistent row of buttons. */
+.ic-page .ic-closing-actions { gap: var(--sp-12); }
+.ic-page .ic-closing-actions .button { flex: 0 1 auto; }
+
+/* Loading skeletons while the checks run. */
+.ic-skel { display: block; border-radius: 8px; background: linear-gradient(90deg, var(--grey) 0%, color-mix(in srgb, var(--grey) 35%, var(--white)) 50%, var(--grey) 100%); background-size: 200% 100%; animation: ic-shimmer 1.4s ease-in-out infinite; }
+.ic-skel-line { width: 60%; height: 12px; margin-top: 6px; }
+.ic-skel-row { height: 44px; margin-top: var(--sp-12); }
+.ic-skel-chip { width: 96px; height: var(--chip-h); border-radius: 999px; }
+.ic-fix-skel { min-height: 168px; }
+@keyframes ic-shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+
+@media (min-width: 768px) {
+  .ic-acard-head { grid-template-columns: auto minmax(0, 1fr) auto auto; grid-template-areas: "icon text chip chev"; }
+  .ic-acard-head > .ic-status { justify-self: end; }
+  .ic-acard-icon { align-self: center; }
+  .ic-row-main { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr) 152px; grid-template-areas: "name value chip"; gap: var(--sp-16); padding-block: var(--sp-8); }
+  .ic-row-main .ic-status { justify-self: end; }
+  .ic-details > div { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: var(--sp-16); }
+  .ic-bars li { grid-template-columns: minmax(0, 220px) minmax(0, 1fr) 64px; grid-template-areas: "name track count"; }
+}
+@media (max-width: 767px) {
+  .ic-sectionbar { top: 64px; margin: 0 -20px; }
+  .ic-sectionbar ol { padding-inline: 20px; }
+  .ic-results [id] { scroll-margin-top: 128px; }
+  .ic-filters { width: 100%; }
+  .ic-filters button { flex: 1 1 auto; justify-content: center; padding: 0 var(--sp-8); }
+  .ic-page .ic-closing-actions .button { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ic-skel { animation: none; }
+  .ic-chevron, .ic-sectionbar a { transition: none; }
 }
 
 
@@ -894,4 +1045,8 @@ h1 em, h2 em { display: inline-block; font-style: normal; color: inherit; text-d
   .ic-area summary { cursor: default; }
   .ic-table-wrap { overflow: visible !important; }
   a { color: var(--text); text-decoration: none; }
+  /* Report layout (step 2): all area cards open, no section bar, filters or toggles. Step 3 replaces this with a dedicated A4 layout. */
+  .ic-sectionbar, .ic-filters, .ic-row-toggle, .ic-chevron, .ic-hero-actions, .ic-nearby-tools, .ic-skel { display: none !important; }
+  .ic-acard-body[hidden] { display: block !important; }
+  .ic-acard, .ic-row { break-inside: avoid; page-break-inside: avoid; }
 }

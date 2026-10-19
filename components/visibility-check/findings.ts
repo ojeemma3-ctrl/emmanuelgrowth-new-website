@@ -24,7 +24,17 @@ export type Area = {
   why: string;
   fix: string;
   fixes: Fix[];
+  pageTested?: string; // full address of the page checked; shown as a short domain link, never inline
 };
+
+// "https://www.example.co.uk/home?x=1" → "example.co.uk"
+export function domainOf(url: string) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '');
+  } catch {
+    return url;
+  }
+}
 
 export type Outcome<T> = { state: 'waiting' } | { state: 'done'; data: T } | { state: 'skipped'; reason: string } | { state: 'failed'; reason: string };
 
@@ -83,7 +93,7 @@ export function profileArea(profile: Profile | null, social: string | null): Are
     result('gbp-category', !profile.category ? 'Problem' : isGenericCategory(profile.categoryType, profile.category) ? 'Needs attention' : 'Good', !profile.category ? 'not set' : isGenericCategory(profile.categoryType, profile.category) ? `“${profile.category}” is very general` : profile.category),
     result('gbp-hours', profile.hasOpeningHours ? 'Good' : 'Needs attention', profile.hasOpeningHours ? 'listed' : 'missing'),
     result('gbp-phone', profile.phone ? 'Good' : 'Problem', profile.phone ?? 'missing'),
-    result('gbp-website', profile.website && !social ? 'Good' : 'Needs attention', !profile.website ? 'no website listed' : social ? `links to ${social}, not a website` : profile.website),
+    result('gbp-website', profile.website && !social ? 'Good' : 'Needs attention', !profile.website ? 'no website listed' : social ? `links to ${social}, not a website` : domainOf(profile.website)),
     result('gbp-photos', photos >= limits.photosGood ? 'Good' : photos > 0 ? 'Needs attention' : 'Problem', profile.photosCapped ? '10 or more' : String(photos)),
     manual('gbp-description'),
     manual('gbp-videos'),
@@ -184,11 +194,11 @@ export function websiteArea(outcome: Outcome<WebsiteReport>, hasWebsite: boolean
   const site = outcome.data;
   if (!site.reachable) {
     if (site.error || (site.status && BLOCKED_STATUSES.has(site.status))) {
-      return couldntCheck('website', 'We couldn’t load your website for this check. Some sites block automated visits.', [`Address checked: ${site.url}`, `Result: ${site.error ? site.error.replace(/_/g, ' ') : `status ${site.status}`}`]);
+      return { ...couldntCheck('website', 'We couldn’t load your website for this check. Some sites block automated visits.', [`Result: ${site.error ? site.error.replace(/_/g, ' ') : `status ${site.status}`}`]), pageTested: site.url };
     }
     return {
-      id: 'website', title: areaTitles.website, status: 'Problem', line: 'Your website returned an error page.', results: [], extra: [],
-      found: [`Address checked: ${site.url}`, `Result: status ${site.status}`],
+      id: 'website', title: areaTitles.website, status: 'Problem', line: 'Your website returned an error page.', results: [], extra: [], pageTested: site.url,
+      found: [`Result: status ${site.status}`],
       why: 'If the page shows an error for us, it may show one for some customers too.',
       fix: 'Check your website address is correct and that the home page loads on a phone.',
       fixes: [{ key: 'site-error', text: 'Check your website address and that the home page loads', area: 'website', severity: 2, priority: 0, effort: 4, label: 'Fix first' }],
@@ -203,7 +213,8 @@ export function websiteArea(outcome: Outcome<WebsiteReport>, hasWebsite: boolean
     result('web-open-graph', site.openGraph.title && site.openGraph.image ? 'Good' : 'Needs attention', `title ${yesNo(site.openGraph.title)}, image ${yesNo(site.openGraph.image)}`),
   ];
   const area = buildArea('website', results, (status) => (status === 'Good' ? 'The basic set-up search engines and phones need is in place.' : 'A few basics to tidy up.'));
-  area.extra.unshift(`Page tested: ${site.finalUrl}${site.redirectCount ? ` (after ${site.redirectCount} redirect${site.redirectCount === 1 ? '' : 's'})` : ''}`);
+  area.pageTested = site.finalUrl;
+  if (site.redirectCount) area.extra.unshift(`Redirects before the page loaded: ${site.redirectCount}`);
   return area;
 }
 
@@ -215,11 +226,12 @@ export function contactArea(site: WebsiteReport | null, profile: Profile | null 
   const formOnly = !ways.length && site.hasContactForm;
   const FORM_ONLY = 'We found a contact form, but no one-tap way to call, message or book.';
   const missing = formOnly
-    ? `${FORM_ONLY} Page tested: ${site.finalUrl}. Links added by scripts may not be visible to our check.`
-    : `We didn’t find a tap-to-call, WhatsApp or booking link on ${site.finalUrl}. Links added by scripts may not be visible to our check.`;
-  const results = [result('contact-links', ways.length ? 'Good' : 'Needs attention', ways.length ? `${ways.join(', ')} link${ways.length === 1 ? '' : 's'} on ${site.finalUrl}` : `${missing}${phoneAsText ? ' Your phone number does appear as plain text on the page.' : ''}`)];
+    ? `${FORM_ONLY} Links added by scripts may not be visible to our check.`
+    : 'We didn’t find a tap-to-call, WhatsApp or booking link on the page tested. Links added by scripts may not be visible to our check.';
+  const results = [result('contact-links', ways.length ? 'Good' : 'Needs attention', ways.length ? `${ways.join(', ')} link${ways.length === 1 ? '' : 's'} on the page tested` : `${missing}${phoneAsText ? ' Your phone number does appear as plain text on the page.' : ''}`)];
   const area = buildArea('contact', results, (status) => (status === 'Good' ? 'Customers can reach you in one tap from your website.' : formOnly ? FORM_ONLY : 'We found no one-tap way to call, message or book.'));
-  area.extra.push(`Page tested: ${site.finalUrl}`, `Email links: ${site.mailtoLinks}`, `Contact form: ${site.hasContactForm ? 'found' : 'not found'}`, `Social links: ${site.socialLinks.length ? site.socialLinks.join(', ') : 'none found'}`);
+  area.pageTested = site.finalUrl;
+  area.extra.push(`Email links: ${site.mailtoLinks}`, `Contact form: ${site.hasContactForm ? 'found' : 'not found'}`, `Social links: ${site.socialLinks.length ? site.socialLinks.join(', ') : 'none found'}`);
   return area;
 }
 
@@ -236,7 +248,7 @@ export function searchArea(site: WebsiteReport | null): Area | null {
     result('search-schema', b.found && !missingDetails.length ? 'Good' : 'Needs attention', b.found ? (missingDetails.length ? `present, missing: ${missingDetails.join(', ')}` : 'present with all seven details') : 'not found'),
     result('search-ai-crawlers', blockedBots.length ? 'Needs attention' : 'Good', blockedBots.length ? `blocked: ${blockedBots.join(', ')}` : 'none blocked'),
   ];
-  return buildArea('search', results, (status) => (status === 'Good' ? 'Search engines and AI assistants can read your site.' : 'A few signals that help search engines understand you are missing.'));
+  return { ...buildArea('search', results, (status) => (status === 'Good' ? 'Search engines and AI assistants can read your site.' : 'A few signals that help search engines understand you are missing.')), pageTested: site.finalUrl };
 }
 
 // "Scored 47 on 19 October 2026. Scores can vary between tests."
@@ -288,9 +300,10 @@ export function consistencyArea(profile: Profile | null, site: WebsiteReport | n
   ];
   const allMatch = nameMatch === true && addressMatch === true && phoneMatch === true;
   const area = buildArea('consistency', [result('consistency-nap', allMatch ? 'Good' : 'Needs attention', parts.join(', '))], (status) => (status === 'Good' ? 'Your name, address and phone match.' : 'Your details differ, or some are missing from your website.'));
+  area.pageTested = site.finalUrl;
   area.extra.push(
     `Google phone: ${googlePhone ?? 'not listed'}`,
-    `Phone numbers found on ${site.finalUrl}: ${sitePhones.length ? sitePhones.slice(0, 6).join(', ') : 'none found in links, structured data or page text'}`,
+    `Phone numbers found on the page tested: ${sitePhones.length ? sitePhones.slice(0, 6).join(', ') : 'none found in links, structured data or page text'}`,
     `Google address: ${profile.address || 'not shown'}`,
     `Business name on your website: ${site.namesFound.length ? site.namesFound.slice(0, 3).join(' · ') : 'not found'}`,
   );
