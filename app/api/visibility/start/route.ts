@@ -1,3 +1,5 @@
+import { REQUIRE_CONTACT_BEFORE_REPORT } from '../../../../lib/check-config';
+import { readContact } from '../../../../lib/visibility/contact';
 import { PlacesError, profile } from '../../../../lib/visibility/places';
 import { assertPublicUrl, FetchBlocked } from '../../../../lib/visibility/safe-fetch';
 import { json, readJson, signTicket, str, takeLimit, verifyTurnstile } from '../../../../lib/visibility/server';
@@ -7,11 +9,16 @@ import { normaliseUrl } from '../../../../lib/visibility/website';
 const KEYWORD = /^[\p{L}\p{N}][\p{L}\p{N} '&-]{1,39}$/u;
 
 // Starts a confirmed check: validates the form, applies limits, then runs check A (Google profile).
-// No contact details here: they are only asked for when the visitor unlocks the full report.
+// With REQUIRE_CONTACT_BEFORE_REPORT, the contact and consent are checked first, before any Google
+// or PageSpeed call. The contact isn't stored here; it is only validated.
 export async function POST(request: Request) {
   const body = await readJson(request);
   if (!body) return json({ error: 'invalid' }, 400);
   if (str(body.company_url)) return json({ error: 'invalid' }, 400); // honeypot
+  if (REQUIRE_CONTACT_BEFORE_REPORT) {
+    const checked = readContact(body);
+    if ('error' in checked) return json({ error: checked.error }, 400);
+  }
   const keyword = str(body.keyword, 40) || undefined;
   if (keyword && !KEYWORD.test(keyword)) return json({ error: 'keyword' }, 400);
   if (!(await verifyTurnstile(str(body.turnstileToken, 2048), request))) return json({ error: 'verification' }, 400);

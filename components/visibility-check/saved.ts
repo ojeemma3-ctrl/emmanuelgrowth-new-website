@@ -6,15 +6,15 @@ import type { CheckState } from './InstantCheck';
 const KEY = 'emmanuel-growth:visibility-check:v1';
 export const SAVED_MAX_AGE_MS = 2 * 60 * 60 * 1000;
 
-type Saved = { savedAt: number; check: CheckState; ticket: string | null; unlocked?: boolean };
+type Saved = { savedAt: number; check: CheckState; ticket: string | null };
 
-export function saveResult(check: CheckState, ticket: string | null, unlocked: boolean) {
+export function saveResult(check: CheckState, ticket: string | null) {
   try {
     // Updating the same check (a keyword comparison, unlocking, a restore) keeps the original time,
     // so a result never lives longer than 2 hours from when the check ran.
     const previous = loadResult();
     const savedAt = previous && previous.ticket === ticket ? previous.savedAt : Date.now();
-    const value: Saved = { savedAt, check, ticket, unlocked };
+    const value: Saved = { savedAt, check, ticket };
     sessionStorage.setItem(KEY, JSON.stringify(value));
   } catch {
     // Storage full or blocked: the result still shows, it just won't survive a refresh.

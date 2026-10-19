@@ -41,16 +41,20 @@ export async function autocomplete(input: string, sessionToken: string): Promise
     .map((p) => ({ placeId: p.placeId, main: p.structuredFormat?.mainText?.text ?? '', secondary: p.structuredFormat?.secondaryText?.text ?? '' }));
 }
 
-export type Preview = { placeId: string; name: string; address: string; category: string; rating?: number; reviewCount?: number };
+export type Preview = { placeId: string; name: string; address: string; category: string; rating?: number; reviewCount?: number; countryCode?: string };
 
 // "Is this you?" card. Uses the autocomplete session token, which closes the session.
+// The country picks the default "Send my report to" channel and phone country.
 export async function preview(placeId: string, sessionToken: string): Promise<Preview> {
-  type R = { id: string; displayName?: LocalizedText; formattedAddress?: string; primaryTypeDisplayName?: LocalizedText; rating?: number; userRatingCount?: number };
+  type R = { id: string; displayName?: LocalizedText; formattedAddress?: string; addressComponents?: { shortText?: string; types?: string[] }[]; primaryTypeDisplayName?: LocalizedText; rating?: number; userRatingCount?: number };
   const data = await call<R>(`/places/${encodeURIComponent(placeId)}?languageCode=en&sessionToken=${encodeURIComponent(sessionToken)}`, {
     method: 'GET',
-    fieldMask: 'id,displayName,formattedAddress,primaryTypeDisplayName,rating,userRatingCount',
+    fieldMask: 'id,displayName,formattedAddress,addressComponents,primaryTypeDisplayName,rating,userRatingCount',
   });
-  return { placeId: data.id, name: data.displayName?.text ?? '', address: data.formattedAddress ?? '', category: data.primaryTypeDisplayName?.text ?? '', rating: data.rating, reviewCount: data.userRatingCount };
+  return {
+    placeId: data.id, name: data.displayName?.text ?? '', address: data.formattedAddress ?? '', category: data.primaryTypeDisplayName?.text ?? '', rating: data.rating, reviewCount: data.userRatingCount,
+    countryCode: data.addressComponents?.find((c) => c.types?.includes('country'))?.shortText?.toUpperCase(),
+  };
 }
 
 export type Profile = {

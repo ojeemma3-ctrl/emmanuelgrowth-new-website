@@ -488,6 +488,9 @@ h1 em, h2 em { display: inline-block; font-style: normal; color: inherit; text-d
 .ic-phone-row { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px; }
 .ic-country-btn { display: inline-flex; align-items: center; gap: 8px; height: 54px; padding: 0 12px; border: 1px solid var(--muted-light); border-radius: 10px; background: var(--white); color: var(--text); font-size: 17px; font-weight: 600; cursor: pointer; }
 .ic-country-btn[aria-expanded="true"] { border-color: var(--text); }
+.ic-flag { display: block; flex: 0 0 auto; width: 24px; height: 16px; border-radius: 2px; box-shadow: 0 0 0 1px var(--border-light); }
+.ic-contact { margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--border-light); }
+.ic-contact .ic-channel-options { max-width: 420px; }
 .ic-code-pill { display: inline-flex; align-items: center; justify-content: center; min-width: 34px; height: 24px; padding: 0 6px; border-radius: 6px; background: var(--black); color: var(--white); font-size: 13px; line-height: 1; font-weight: 700; letter-spacing: .04em; }
 .ic-country-pop { position: absolute; z-index: 6; left: 0; right: 0; top: calc(100% + 6px); padding: 10px; border: 1px solid var(--border-light); border-radius: 12px; background: var(--white); box-shadow: 0 20px 40px -20px var(--shadow); }
 .ic-country-list { max-height: 280px; margin: 8px 0 0; padding: 0; overflow-y: auto; list-style: none; }

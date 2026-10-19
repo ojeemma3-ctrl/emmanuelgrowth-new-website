@@ -5,10 +5,13 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Competitor, Preview, Profile, Suggestion } from '../../lib/visibility/places';
 import type { PageSpeedReport } from '../../lib/visibility/pagespeed';
 import type { WebsiteReport } from '../../lib/visibility/website';
+import { REQUIRE_CONTACT_BEFORE_REPORT } from '../../lib/check-config';
 import { formatCount } from '../../lib/check-standard';
 import { whatsappNumber } from '../home/content';
 import { Arrow } from '../home/shared';
 import { BusinessSearch } from './BusinessSearch';
+import { checkContact, CONTACT_FIELD_IDS, ContactFields, initialContact, withBusinessCountry, type Contact, type ContactState } from './ContactFields';
+import { findCountry } from './CountryPhone';
 import type { Outcome } from './findings';
 import { ResultView } from './ResultView';
 import { clearResult, loadResult, saveResult } from './saved';
@@ -36,6 +39,9 @@ const errorText: Record<string, string> = {
   invalid: 'Please check the form and try again.',
   keyword: 'For “What do you do?”, please use a few words with letters and numbers only, for example plumber or hair salon.',
   expired: 'This check has expired. Please start again.',
+  consent: 'Please tick the box so we can send you your report.',
+  email: 'That email address doesn’t look right. Please check it.',
+  whatsapp: 'That WhatsApp number doesn’t look right. Please check it and the country.',
   upstream: 'Google didn’t respond just now. Please try again in a minute.',
 };
 
@@ -62,7 +68,7 @@ const markStep = (vcStep: StepEntry['vcStep'], push: boolean) => {
 const isFinished = (c: CheckState) => [c.competitors, c.site, c.speed].every((l) => l.state !== 'waiting');
 
 // The finished public result is kept in this browser tab for up to 2 hours (see saved.ts).
-// Contact details are only asked for when unlocking the full report, and are never saved in the browser.
+// The visitor's contact (step 1) lives in memory only and is never saved in the browser.
 export function InstantCheck() {
   const [stage, setStage] = useState<Stage>('form');
   const [sessionToken, setSessionToken] = useState(newToken);
@@ -75,8 +81,9 @@ export function InstantCheck() {
   const [turnstileKey, setTurnstileKey] = useState<string | null>(null);
   const [turnstileToken, setTurnstileToken] = useState('');
   const [check, setCheck] = useState<CheckState | null>(null);
-  const [unlocked, setUnlocked] = useState(false);
-  const [visitorCountry, setVisitorCountry] = useState<string | null>(null);
+  const [contactState, setContactState] = useState<ContactState>(() => initialContact());
+  const [contactError, setContactError] = useState<{ field: 'whatsapp' | 'email' | 'consent'; message: string } | null>(null);
+  const [contact, setContact] = useState<Contact | null>(null);
   const [ticket, setTicket] = useState<string | null>(null);
   const [restored, setRestored] = useState(false);
   const inFlight = useRef(false);
@@ -97,7 +104,6 @@ export function InstantCheck() {
       }
       setCheck(saved.check);
       setTicket(saved.ticket);
-      setUnlocked(Boolean(saved.unlocked));
       setRestored(true);
       if (currentStep() === 'business') {
         setStage('form'); // reloaded on the business step: stay there, with a link back to the results
@@ -129,8 +135,8 @@ export function InstantCheck() {
 
   // Save the public result once every check has finished, and again after a keyword comparison.
   useEffect(() => {
-    if (check && isFinished(check)) saveResult(check, ticket, unlocked);
-  }, [check, ticket, unlocked]);
+    if (check && isFinished(check)) saveResult(check, ticket);
+  }, [check, ticket]);
 
   const showResults = () => {
     setStage('running');
@@ -142,7 +148,9 @@ export function InstantCheck() {
     setCheck(null);
     setTicket(null);
     setRestored(false);
-    setUnlocked(false);
+    setContact(null);
+    setContactError(null);
+    setContactState((st) => ({ ...initialContact(), country: st.country }));
     setPreview(null);
     setManual(false);
     setError('');
@@ -159,7 +167,9 @@ export function InstantCheck() {
     fetch('/api/visibility/config').then((r) => r.json()).then((c: { turnstileSiteKey?: string | null; country?: string | null }) => {
       if (cancelled) return;
       if (c.turnstileSiteKey) setTurnstileKey(c.turnstileSiteKey);
-      setVisitorCountry(c.country ?? null);
+      // Until a business is picked, the phone country follows the visitor's country.
+      const visitor = findCountry(c.country);
+      if (visitor) setContactState((st) => (st.countryTouched ? st : { ...st, country: visitor }));
     }).catch(() => undefined);
     return () => { cancelled = true; };
   }, []);
@@ -182,7 +192,10 @@ export function InstantCheck() {
     const data = await post<{ place?: Preview }>('place', { placeId: s.placeId, sessionToken });
     setPreviewLoading(false);
     setSessionToken(newToken()); // the preview call ends the autocomplete session
-    if (data.place) setPreview(data.place);
+    if (data.place) {
+      setPreview(data.place);
+      setContactState((st) => withBusinessCountry(st, data.place?.countryCode));
+    }
     else setError(errorText[data.error ?? ''] ?? 'We couldn’t load that business. Please try again.');
   };
 
@@ -218,6 +231,18 @@ export function InstantCheck() {
       setError('Please pick your business from the suggestions, or choose “My business isn’t listed”.');
       return;
     }
+    let visitor: Contact | null = null;
+    if (REQUIRE_CONTACT_BEFORE_REPORT) {
+      const checked = checkContact(contactState);
+      if (!checked.ok) {
+        setContactError({ field: checked.field, message: checked.error });
+        document.getElementById(CONTACT_FIELD_IDS[checked.field])?.focus();
+        return;
+      }
+      setContactError(null);
+      if (checked.country && checked.country.code !== contactState.country.code) setContactState({ ...contactState, country: checked.country });
+      visitor = checked.contact;
+    }
     if (turnstileKey && !turnstileToken) {
       setError(errorText.verification);
       return;
@@ -231,6 +256,7 @@ export function InstantCheck() {
       town: String(form.get('manualTown') ?? ''),
       website: String(form.get('manualWebsite') ?? ''),
       keyword,
+      ...(visitor ? { channel: visitor.channel, email: visitor.email, whatsapp: visitor.whatsapp, consent: true, tips: visitor.tips } : {}),
       company_url: String(form.get('company_url') ?? ''),
       turnstileToken,
     };
@@ -241,7 +267,7 @@ export function InstantCheck() {
       setError(errorText[data.error ?? ''] ?? 'Something went wrong. Please try again.');
       return;
     }
-    setUnlocked(false);
+    setContact(visitor);
     const base: CheckState = {
       businessName: data.profile?.name ?? payload.name,
       profile: data.profile ?? null,
@@ -262,7 +288,7 @@ export function InstantCheck() {
       const d = await post<{ competitors?: Competitor[]; query?: string }>('competitors', { ticket, keyword });
       setCheck((c) => (c ? { ...c, competitors: d.skipped ? { state: 'skipped', reason: d.skipped } : d.error ? { state: 'failed', reason: d.error } : { state: 'done', data: { rows: d.competitors ?? [], query: d.query } } } : c));
     };
-    return <ResultView check={check} ticket={ticket} headingRef={resultsRef} whatsappHref={whatsappHref} onCompare={onCompare} restored={restored} onNewCheck={startNewCheck} unlocked={unlocked} onUnlocked={() => setUnlocked(true)} visitorCountry={visitorCountry} />;
+    return <ResultView check={check} ticket={ticket} headingRef={resultsRef} whatsappHref={whatsappHref} onCompare={onCompare} restored={restored} onNewCheck={startNewCheck} contact={contact} />;
   }
 
   return (
@@ -272,7 +298,7 @@ export function InstantCheck() {
       <header className="ic-hero">
         <p className="ic-hero-label">Step 1 of 3 · Your business</p>
         <h1>See how your business shows up online.</h1>
-        <p>Find your business and we’ll run automated checks of your public Google profile and website, then show you the top fixes in plain words.</p>
+        <p>Find your business{REQUIRE_CONTACT_BEFORE_REPORT ? ', tell us where to send your report,' : ''} and we’ll run automated checks of your public Google profile and website, then show you the top fixes in plain words.</p>
         {check && isFinished(check) ? (
           <div className="ic-resume">
             <button className="button button-dark" type="button" onClick={showResults}>Back to your results for {check.businessName} <Arrow /></button>
@@ -325,11 +351,13 @@ export function InstantCheck() {
           <label htmlFor="ic-company-url">Leave this empty</label>
           <input id="ic-company-url" name="company_url" tabIndex={-1} autoComplete="off" />
         </div>
+        {REQUIRE_CONTACT_BEFORE_REPORT ? <ContactFields value={contactState} onChange={(next) => { setContactState(next); setContactError(null); }} error={contactError} /> : null}
+
         {turnstileKey ? <div ref={turnstileRef} className="ic-turnstile" /> : null}
 
         {error ? <p className="ic-error" role="alert">{error}</p> : null}
         <button className="button button-growth ic-submit" type="submit" disabled={submitting} aria-disabled={submitting}>
-          {submitting ? 'Starting your check…' : manual ? 'Run my check' : preview ? 'Yes, this is me. Run my check' : 'Run my check'} <Arrow />
+          {submitting ? 'Starting your check…' : 'Show my report'} <Arrow />
         </button>
         <p className="vc-note">Automated checks of public information only. We don’t store the Google data or page content we look at. <Link href="/privacy-policy">Privacy policy</Link></p>
       </form>

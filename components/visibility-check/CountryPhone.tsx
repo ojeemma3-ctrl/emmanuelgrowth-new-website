@@ -2,7 +2,9 @@
 
 // WhatsApp number with a searchable country selector. Countries and dial codes come from
 // libphonenumber-js (min metadata); names come from the browser (Intl.DisplayNames).
-// Flags are shown as a two-letter code pill: SVG flags would need another dependency.
+// Flags are SVG files in public/flags (from country-flag-icons, MIT; see public/flags/LICENSE.txt),
+// served from this site and loaded only when shown. No emoji flags.
+import Image from 'next/image';
 import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import { getCountries, getCountryCallingCode, type CountryCode } from 'libphonenumber-js/min';
 import { Icon } from './ui';
@@ -21,11 +23,12 @@ export function countryList(): Country[] {
 
 export const findCountry = (code?: string | null) => countryList().find((c) => c.code === code?.toUpperCase());
 
-function CodePill({ country }: { country: Country }) {
-  return <span className="ic-code-pill" aria-hidden="true">{country.code}</span>;
+function Flag({ country }: { country: Country }) {
+  return <Image className="ic-flag" src={`/flags/${country.code}.svg`} alt="" width={24} height={16} loading="lazy" unoptimized />;
 }
 
-export function CountryPhone({ country, onCountry, value, onValue, invalid, describedBy }: {
+export function CountryPhone({ inputId, country, onCountry, value, onValue, invalid, describedBy }: {
+  inputId: string;
   country: Country;
   onCountry: (c: Country) => void;
   value: string;
@@ -45,7 +48,10 @@ export function CountryPhone({ country, onCountry, value, onValue, invalid, desc
   const matches = useMemo(() => {
     const q = query.trim().toLowerCase().replace(/^\+/, '');
     if (!q) return countryList();
-    return countryList().filter((c) => c.name.toLowerCase().includes(q) || c.code.toLowerCase() === q || c.dial.slice(1).startsWith(q));
+    // Names starting with the search come first ("ni" → Nicaragua, Niger, Nigeria…), then other matches.
+    const found = countryList().filter((c) => c.name.toLowerCase().includes(q) || c.code.toLowerCase() === q || c.dial.slice(1).startsWith(q));
+    const starts = (c: Country) => (c.name.toLowerCase().startsWith(q) || c.code.toLowerCase() === q ? 0 : 1);
+    return [...found].sort((a, b) => starts(a) - starts(b));
   }, [query]);
 
   useEffect(() => {
@@ -97,13 +103,13 @@ export function CountryPhone({ country, onCountry, value, onValue, invalid, desc
           aria-label={`Country code: ${country.name} ${country.dial}. Change country`}
           onClick={() => (open ? setOpen(false) : openList())}
         >
-          <CodePill country={country} />
+          <Flag country={country} />
           <span className="ic-country-dial">{country.dial}</span>
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6" /></svg>
         </button>
         <div className="ic-phone-input">
           <input
-            id="ic-unlock-whatsapp"
+            id={inputId}
             name="whatsapp"
             type="tel"
             inputMode="tel"
@@ -150,7 +156,7 @@ export function CountryPhone({ country, onCountry, value, onValue, invalid, desc
                 onClick={() => choose(c)}
                 onMouseEnter={() => setActive(i)}
               >
-                <CodePill country={c} />
+                <Flag country={c} />
                 <span className="ic-country-name">{c.name}</span>
                 <span className="ic-country-dial">{c.dial}</span>
               </li>

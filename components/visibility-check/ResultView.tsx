@@ -8,7 +8,7 @@ import { Arrow } from '../home/shared';
 import { competitorArea, consistencyArea, contactArea, notChecked, profileArea, reviewStats, searchArea, speedArea, speedNote, topFixes, UNFAIR_COMPARISON, websiteArea, type Area, type RuleResult, type Status } from './findings';
 import type { CheckState } from './InstantCheck';
 import { Icon, Ring, StatusChip, StepBar, type IconName } from './ui';
-import { UnlockForm } from './UnlockForm';
+import type { Contact } from './ContactFields';
 
 // WhatsApp number from site config, shown on the PDF cover as +44 7575 416197.
 const whatsappDisplay = `+${whatsappNumber.slice(0, 2)} ${whatsappNumber.slice(2, 6)} ${whatsappNumber.slice(6)}`;
@@ -147,7 +147,7 @@ function Tile({ tile }: { tile: TileData }) {
   );
 }
 
-export function ResultView({ check, ticket, headingRef, whatsappHref, onCompare, restored = false, onNewCheck, unlocked, onUnlocked, visitorCountry }: {
+export function ResultView({ check, ticket, headingRef, whatsappHref, onCompare, restored = false, onNewCheck, contact }: {
   check: CheckState;
   restored?: boolean; // shown again from this tab's saved copy
   onNewCheck: () => void;
@@ -155,9 +155,7 @@ export function ResultView({ check, ticket, headingRef, whatsappHref, onCompare,
   ticket: string | null;
   headingRef: RefObject<HTMLHeadingElement | null>;
   whatsappHref: string;
-  unlocked: boolean; // the free preview shows the ring, Top 3 fixes and area statuses; the rest needs unlocking
-  onUnlocked: () => void;
-  visitorCountry?: string | null;
+  contact: Contact | null; // from step 1, in memory only; null after a refresh or when contact isn't required
 }) {
   const business = check.businessName;
   const profile = check.profile;
@@ -168,8 +166,7 @@ export function ResultView({ check, ticket, headingRef, whatsappHref, onCompare,
   const competitorRows = check.competitors.state === 'done' ? check.competitors.data : null;
   const allDone = [check.competitors, check.site, check.speed].every((l) => l.state !== 'waiting');
   const [nearbyView, setNearbyView] = useState<'table' | 'cards'>('table');
-  const [justUnlocked, setJustUnlocked] = useState(false);
-  const fullRef = useRef<HTMLHeadingElement>(null);
+  const [reachedReport, setReachedReport] = useState(false);
   const [keyword, setKeyword] = useState('');
   const [comparing, setComparing] = useState(false);
   const skippedReason = check.competitors.state === 'skipped' ? check.competitors.reason : check.competitors.state === 'failed' ? 'failed' : null;
@@ -261,24 +258,37 @@ export function ResultView({ check, ticket, headingRef, whatsappHref, onCompare,
     headingRef.current?.focus({ preventScroll: true });
   }, [headingRef]);
 
-  // After unlocking, move to the start of the full report.
+  // Step bar: "Full report" is done once the visitor has scrolled to it.
   useEffect(() => {
-    if (!justUnlocked) return;
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    fullRef.current?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
-    fullRef.current?.focus({ preventScroll: true });
-  }, [justUnlocked]);
+    const report = document.getElementById('ic-full');
+    if (!report || reachedReport || !('IntersectionObserver' in window)) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) {
+        setReachedReport(true);
+        observer.disconnect();
+      }
+    }, { threshold: 0.1 });
+    observer.observe(report);
+    return () => observer.disconnect();
+  }, [reachedReport]);
 
-  // What the lead notification carries: area statuses and the Top 3 fixes.
-  const summary = () => ({
-    statuses: Object.fromEntries(areas.map((a) => [a.title, a.status])),
-    topFixes: fixes.map((f) => f.text),
+  // Send the lead once, when every check has finished (not when a saved result is shown again).
+  // The visitor never sees an error from this.
+  const leadSent = useRef(false);
+  useEffect(() => {
+    if (!allDone || !contact || !ticket || leadSent.current) return;
+    leadSent.current = true;
+    const body = {
+      ticket, ...contact, consent: true,
+      statuses: Object.fromEntries(areas.map((a) => [a.title, a.status])),
+      topFixes: fixes.map((f) => f.text),
+    };
+    void fetch('/api/visibility/complete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).catch(() => undefined);
   });
 
   return (
     <div className="ic-page ic-results">
-      {unlocked ? (
-        <section className="ic-print-cover" aria-hidden="true">
+      <section className="ic-print-cover" aria-hidden="true">
           <div className="ic-print-brand">
             <Image src="/favicon.svg" alt="" width={56} height={56} />
             <span>EMMANUEL <b>GROWTH</b></span>
@@ -294,12 +304,11 @@ export function ResultView({ check, ticket, headingRef, whatsappHref, onCompare,
             <p>WhatsApp: {whatsappDisplay}</p>
           </div>
         </section>
-      ) : null}
 
       <StepBar steps={[
         { label: 'Your business', state: 'done' },
-        { label: 'Your results', state: unlocked ? 'done' : 'current', href: '#ic-top' },
-        { label: 'Full report', state: unlocked ? 'done' : 'upcoming', href: unlocked ? '#ic-full' : allDone ? '#ic-unlock' : undefined },
+        { label: 'Your results', state: reachedReport ? 'done' : 'current', href: '#ic-top' },
+        { label: 'Full report', state: reachedReport ? 'done' : 'upcoming', href: '#ic-full' },
       ]} />
 
       <div className="ic-result-actions">
@@ -384,21 +393,9 @@ export function ResultView({ check, ticket, headingRef, whatsappHref, onCompare,
         </section>
       ) : null}
 
-      {allDone && !unlocked ? (
-        <UnlockForm
-          ticket={ticket}
-          businessCountry={profile?.countryCode}
-          visitorCountry={visitorCountry}
-          summary={summary}
-          onUnlocked={() => { setJustUnlocked(true); onUnlocked(); }}
-        />
-      ) : null}
-
-      {unlocked ? (
-        <>
+      <>
           <div className="ic-full-head" id="ic-full">
-            <h2 tabIndex={-1} ref={fullRef}>Your full report</h2>
-            {justUnlocked ? <p className="ic-hint" role="status">Thanks. Your full report is below.</p> : null}
+            <h2>Your full report</h2>
             <PdfButton business={business} />
           </div>
 
@@ -480,7 +477,6 @@ export function ResultView({ check, ticket, headingRef, whatsappHref, onCompare,
 
           <PdfButton business={business} />
         </>
-      ) : null}
 
       <div className="ic-cta">
         <a className="ic-soft-link" href={wa(`Hi Emmanuel, I ran the visibility check for ${business}. Could you do these fixes for me?`)} target="_blank" rel="noreferrer">Want me to do this for you?</a>
