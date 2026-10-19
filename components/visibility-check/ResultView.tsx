@@ -1,10 +1,10 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useRef, useState, type RefObject } from 'react';
+import { useEffect, useId, useRef, useState, type RefObject } from 'react';
 import { CONTACT_TOPICS, HELP_LINK, PLAN_LINKS } from '../../lib/check-config';
 import { offerFor, type Offer } from '../../lib/check-offers';
-import { BASELINE_LABEL, displayPriority, formatCount, isMeasured } from '../../lib/check-standard';
+import { BASELINE_LABEL, displayPriority, fixSteps, formatCount, isMeasured } from '../../lib/check-standard';
 import { useHomeInteractions } from '../home/HomeInteractions';
 import { contactEmail, whatsappNumber } from '../home/content';
 import { Arrow } from '../home/shared';
@@ -54,12 +54,35 @@ function OfferTag({ offer }: { offer: Offer | null }) {
   );
 }
 
+// "How to fix this": free steps, collapsed by default, on screen only.
+function FixSteps({ id }: { id: string }) {
+  const [open, setOpen] = useState(false);
+  const listId = useId();
+  const steps = fixSteps[id];
+  if (!steps?.length) return null;
+  return (
+    <div className="ic-howto">
+      <button className="ic-howto-toggle" type="button" aria-expanded={open} aria-controls={listId} onClick={() => setOpen(!open)}>
+        How to fix this <span aria-hidden="true">{open ? '−' : '+'}</span>
+      </button>
+      <ol className="ic-howto-steps" id={listId} hidden={!open}>
+        {steps.map((step) => <li key={step}>{step}</li>)}
+      </ol>
+    </div>
+  );
+}
+
 // Closing block, after the Top 3 and at the end of the report.
 function ClosingBlock({ realWebsite, id }: { realWebsite: boolean; id: string }) {
   const { openContact } = useHomeInteractions();
   return (
     <section className="ic-block ic-closing" aria-labelledby={id}>
-      <h2 className="sr-only" id={id}>Next steps</h2>
+      {realWebsite ? (
+        <p className="ic-closing-text"><strong id={id}>These fixes work together.</strong> A faster website, more reviews and quicker replies each help. Together they turn searches into customers.</p>
+      ) : (
+        <p className="ic-closing-text"><strong id={id}>A simple website is the first step,</strong> then reviews and quick replies.</p>
+      )}
+      <p className="ic-closing-contact">Questions about this report? Email {contactEmail} or WhatsApp {whatsappDisplay}.</p>
       <div className="ic-closing-actions">
         {realWebsite
           ? <a className="button button-growth" href={HELP_LINK}>See how I can help <Arrow /></a>
@@ -71,10 +94,9 @@ function ClosingBlock({ realWebsite, id }: { realWebsite: boolean; id: string })
   );
 }
 
-// Switch to true once the /guides/[rule-id] pages exist. Until then "Learn how" opens WhatsApp.
+// Switch to true once the /guides/[rule-id] pages exist; until then there is no "Learn how" link.
 const GUIDES_PUBLISHED = false;
 
-const wa = (text: string) => `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`;
 
 // Only rules we actually measured count towards "checks passed".
 const measured = (r: RuleResult) => r.rule.mode === 'automatic' && isMeasured(r.status);
@@ -84,9 +106,8 @@ function ProgressItem({ label, state }: { label: string; state: 'waiting' | 'don
   return <li className={`ic-progress-item is-${state}`}><span aria-hidden="true" />{label}<em>{text}</em></li>;
 }
 
-function Finding({ result, business }: { result: RuleResult; business: string }) {
+function Finding({ result }: { result: RuleResult }) {
   const { rule, status, value } = result;
-  const learnHref = GUIDES_PUBLISHED ? `/guides/${rule.id}` : wa(`Hi Emmanuel, I ran the visibility check for ${business}. Could you explain how to fix: ${rule.label}?`);
   return (
     <div className="ic-finding">
       <div className="ic-finding-head">
@@ -107,12 +128,12 @@ function Finding({ result, business }: { result: RuleResult; business: string })
       </dl>
       {rule.mode === 'automatic' ? <p className="ic-baseline">Good means: {rule.thresholds.good.toLowerCase()}.{rule.baseline ? ` ${BASELINE_LABEL}` : ''}</p> : null}
       {rule.note ? <p className="ic-baseline">{rule.note}</p> : null}
-      <a className="ic-learn" href={learnHref} {...(GUIDES_PUBLISHED ? {} : { target: '_blank', rel: 'noreferrer' })}>Learn how <Arrow /></a>
+      {GUIDES_PUBLISHED ? <a className="ic-learn" href={`/guides/${rule.id}`}>Learn how <Arrow /></a> : null}
     </div>
   );
 }
 
-function AreaCard({ area, business }: { area: Area; business: string }) {
+function AreaCard({ area }: { area: Area }) {
   return (
     <details className="ic-area">
       <summary>
@@ -125,7 +146,7 @@ function AreaCard({ area, business }: { area: Area; business: string }) {
       <div className="ic-area-body">
         {area.results.length ? (
           <>
-            {area.results.map((r) => <Finding result={r} business={business} key={r.rule.id} />)}
+            {area.results.map((r) => <Finding result={r} key={r.rule.id} />)}
             {area.extra.length ? (
               <>
                 <h4>Also found</h4>
@@ -396,7 +417,7 @@ export function ResultView({ check, ticket, headingRef, onCompare, restored = fa
                   <p className="ic-fix-text">{f.text}</p>
                   {f.rule ? <p className="ic-fix-effort">Effort: {f.rule.effort} (rough estimate)</p> : null}
                   <OfferTag offer={offerFor(f.key === 'reviews' || f.key === 'website' ? f.key : f.rule?.id ?? f.key, !noRealWebsite)} />
-                  <a className="ic-soft-link" href={wa(`Hi Emmanuel, I ran the visibility check for ${business}. Could you do this for me: ${f.text}?`)} target="_blank" rel="noreferrer">Want me to do this for you?</a>
+                  <FixSteps id={f.rule?.id ?? f.key} />
                 </li>
               ))}
             </ol>
@@ -450,8 +471,8 @@ export function ResultView({ check, ticket, headingRef, onCompare, restored = fa
               <h2><Icon name="alert" />What to fix</h2>
               {toFix.length || websiteNote ? (
                 <ul>
-                  {websiteNote ? <li><strong>Website:</strong> {websiteNote} <OfferTag offer={offerFor('website', false)} /></li> : null}
-                  {toFix.map((r) => <li key={r.rule.id}><strong>{r.rule.label}:</strong> {r.value} <StatusChip status={r.status} /> <OfferTag offer={offerFor(r.rule.id, !noRealWebsite)} /></li>)}
+                  {websiteNote ? <li><strong>Website:</strong> {websiteNote} <OfferTag offer={offerFor('website', false)} /><FixSteps id="gbp-website" /></li> : null}
+                  {toFix.map((r) => <li key={r.rule.id}><strong>{r.rule.label}:</strong> {r.value} <StatusChip status={r.status} /> <OfferTag offer={offerFor(r.rule.id, !noRealWebsite)} /><FixSteps id={r.rule.id} /></li>)}
                 </ul>
               ) : <p>Nothing to fix in the checks we could run.</p>}
             </div>
@@ -463,7 +484,6 @@ export function ResultView({ check, ticket, headingRef, onCompare, restored = fa
             <h2 id="ic-no-website">No website found</h2>
             {check.social ? <p>{profile ? `Your Google profile links to ${check.social}, not a website.` : `The address you gave is a ${check.social} page, not a website.`} {check.social} can be a good place to show your work, so we skipped the website checks and speed test rather than test {check.social}’s own site.</p> : <p>We didn’t find a website for this business, so the website checks were skipped.</p>}
             <p>Customers can still find you on Google Maps. A website helps by giving Google and AI assistants a page to read about your services and location, and by giving customers one place to see your work, prices and contact options. It may also make it easier for people who find you elsewhere to get in touch.</p>
-            <a className="ic-soft-link" href={wa(`Hi Emmanuel, I ran the visibility check for ${business}. We don’t have a website yet. Could you build one for us?`)} target="_blank" rel="noreferrer">Want me to build it?</a>
           </section>
         ) : null}
 
@@ -503,7 +523,7 @@ export function ResultView({ check, ticket, headingRef, onCompare, restored = fa
         <section className="ic-block" aria-labelledby="ic-areas-title" id="ic-areas">
           <h2 id="ic-areas-title">Every check, by area</h2>
           <p className="ic-hint" id="ic-areas-hint">Open an area to see what we found, why it matters and how much effort it takes.</p>
-          <div className="ic-areas">{cards.map((a) => <AreaCard area={a} business={business} key={a.id} />)}</div>
+          <div className="ic-areas">{cards.map((a) => <AreaCard area={a} key={a.id} />)}</div>
         </section>
 
         <section className="ic-block ic-panel ic-neutral" aria-labelledby="ic-not-checked">

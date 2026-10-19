@@ -532,6 +532,11 @@ h1 em, h2 em { display: inline-block; font-style: normal; color: inherit; text-d
 .ic-closing-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
 .ic-closing-talk { padding: 8px 0; border: 0; background: transparent; color: var(--text); font: inherit; font-size: 16px; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
 .ic-closing-contact { display: none; }
+.ic-howto { margin-top: 10px; }
+.ic-howto-toggle { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 4px 0; border: 0; background: transparent; color: var(--text); font: inherit; font-size: 15px; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
+.ic-howto-steps { margin: 6px 0 0; padding-left: 24px; list-style: decimal; font-size: 16px; line-height: 25px; }
+.ic-howto-steps li + li { margin-top: 6px; }
+.ic-split-col li .ic-offer { margin-left: 4px; }
 @media (min-width: 640px) { .ic-card.ic-unlock-form { padding: 36px; } }
 .ic-panel .ic-source { display: inline-block; margin-bottom: 12px; }
 .ic-you { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 999px; background: var(--green); color: var(--black); font-size: 13px; line-height: 17px; font-weight: 700; vertical-align: middle; }
@@ -775,7 +780,11 @@ h1 em, h2 em { display: inline-block; font-style: normal; color: inherit; text-d
   .skip-link, .site-header, #main-content ~ *, .cookie-banner { display: none !important; }
   .vc-section { padding: 0 !important; background: none !important; }
   .vc-container, .container { width: auto !important; max-width: none !important; padding: 0 !important; margin: 0 !important; }
-  .ic-steps, .ic-result-actions, .ic-cta, .ic-pdf, .ic-unlock, .ic-progress, .ic-toggle, .ic-compare-form, .ic-maps-link, .ic-soft-link, .ic-learn, .vc-back, .ic-ring, .ic-bar, .ic-score-note, button { display: none !important; }
+  .ic-steps, .ic-result-actions, .ic-cta, .ic-pdf, .ic-unlock, .ic-progress, .ic-toggle, .ic-compare-form, .ic-maps-link, .ic-soft-link, .ic-learn, .vc-back, .ic-ring, .ic-bar, .ic-score-note, .ic-howto, .ic-offer-tag, .ic-closing-actions, button { display: none !important; }
+  .ic-offer-print { display: inline; font-size: 10pt; color: var(--muted-light); }
+  .ic-fix-card .ic-offer-print { display: block; }
+  .ic-closing { padding: 12pt 0 0 !important; border: 0 !important; border-top: 1px solid var(--border-light) !important; }
+  .ic-closing-contact { display: block; margin: 0; }
   .ic-page { display: block; }
   .ic-page > * + * { margin-top: 18pt; }
   .ic-print-cover { display: flex; flex-direction: column; justify-content: center; min-height: 240mm; break-after: page; page-break-after: always; }

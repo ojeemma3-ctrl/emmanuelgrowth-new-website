@@ -284,3 +284,145 @@ export const effortOrder: Record<string, number> = {
 export const priorityOrder: Record<Priority, number> = { 'Fix first': 0, Next: 1, Later: 2 };
 
 export const ruleById = Object.fromEntries(rules.map((r) => [r.id, r])) as Record<string, Rule>;
+
+// "How to fix this": free, plain-English steps, shown on screen only (not in the PDF).
+// Keyed by rule id, plus "gbp" (no Google profile) and "site-error" (website shows an error).
+// Every rule that can appear in the Top 3 or in "What to fix" has steps here.
+const reviewSteps = [
+  'In your Google Business Profile, choose “Ask for reviews” to get your review link.',
+  'Send the link to customers soon after a job goes well, by WhatsApp, text or email.',
+  'Keep the message short and personal, for example: “Thanks for choosing us. Would you mind leaving a quick review?”',
+  'Reply to every review, good or bad, politely and briefly.',
+  'Don’t offer rewards or discounts for reviews: Google’s rules don’t allow it.',
+];
+
+export const fixSteps: Record<string, string[]> = {
+  gbp: [
+    'Go to google.com/business and sign in with the Google account you want to use for the business.',
+    'Search for your business. Claim it if it’s already listed, or add it if it isn’t.',
+    'Choose your main category and add your address or service area, phone number and opening hours.',
+    'Complete the verification Google asks for.',
+    'Add a few photos and a short description of what you do.',
+  ],
+  'site-error': [
+    'Open your website address on a phone and on a computer.',
+    'If it shows an error, contact your web host or website builder’s support.',
+    'Check that your domain name hasn’t expired.',
+    'Check that the website link on your Google profile is spelled correctly.',
+  ],
+  'gbp-status': [
+    'Search your business name on Google while signed in to the account that manages it.',
+    'Check the status shown under your business name.',
+    'If it says closed by mistake, choose Edit profile, then Hours, and set “Open with main hours”.',
+    'Save, then check again in a few days.',
+  ],
+  'gbp-category': [
+    'Search your business name on Google while signed in to the account that manages it.',
+    'Choose Edit profile, then Business category.',
+    'Pick the most specific main category for your main service, for example “Plumber” rather than “Service”.',
+    'Add a few extra categories for other services you really offer.',
+    'Save. Changes can take a few days to show.',
+  ],
+  'gbp-hours': [
+    'Open your Google profile and choose Edit profile, then Hours.',
+    'Add the days and times you’re open.',
+    'Add special hours for bank holidays and closures.',
+    'Save, and update them whenever your hours change.',
+  ],
+  'gbp-phone': [
+    'Open your Google profile and choose Edit profile, then Contact.',
+    'Add a phone number customers can call during your opening hours.',
+    'Use the same number as on your website.',
+    'Save and call it once to check it works.',
+  ],
+  'gbp-website': [
+    'Decide what one page needs to say: what you do, where, and how to contact you.',
+    'Build it with a simple website builder, or ask someone to set it up for you.',
+    'In your Google profile, choose Edit profile, then Contact, and add the website address.',
+    'Keep your social pages, and link to them from the website.',
+  ],
+  'gbp-photos': [
+    'Take clear photos of your work, your team, inside your premises and the outside, so people recognise it.',
+    'In your Google profile, choose Add photos.',
+    'Add at least 10 photos in good light, without heavy filters.',
+    'Add a few new photos every month.',
+  ],
+  'reviews-count': reviewSteps,
+  'reviews-rating': reviewSteps,
+  'web-https': [
+    'Ask your web host or website builder to turn on a free security certificate (SSL).',
+    'Make sure the plain http address always forwards to https.',
+    'Open your site and check the padlock shows next to the address.',
+    'Update the website link on your Google profile to the https address.',
+  ],
+  'web-mobile': [
+    'Open your website on your phone and note anything hard to read or tap.',
+    'If you use a website builder, switch to a mobile-friendly (responsive) theme.',
+    'If someone built your site, ask them to add the mobile viewport setting and make text and buttons fit the screen.',
+    'Check again on your phone.',
+  ],
+  'web-title': [
+    'Find the page title setting in your website builder, usually under SEO or Page settings.',
+    'Say what you do and where, for example “Plumber in Leeds | Smith Plumbing”.',
+    'Keep it to about 60 characters.',
+    'Save and publish.',
+  ],
+  'web-description': [
+    'Open the SEO or Page settings for your home page.',
+    'Write one or two sentences about your service, your area and how to get in touch.',
+    'Keep it to about 150 characters.',
+    'Save and publish.',
+  ],
+  'web-h1': [
+    'Open your home page in your website editor.',
+    'Make sure there is one main heading at the top, set as “Heading 1”.',
+    'Say what you do and where, in plain words.',
+    'Use smaller headings for the other sections.',
+  ],
+  'web-open-graph': [
+    'In your website builder, look for the social sharing or SEO settings.',
+    'Add a share title and a share image (about 1200 × 630 pixels).',
+    'Paste your website link into a WhatsApp chat with yourself to check the preview.',
+  ],
+  'search-indexable': [
+    'In your website builder, check the search engine visibility setting and make sure the site isn’t hidden.',
+    'If someone built your site, ask them to remove any “noindex” tag or robots.txt line that blocks all search engines.',
+    'In Google Search Console, ask Google to index your home page.',
+  ],
+  'search-sitemap': [
+    'Check your website builder’s settings: many create a sitemap automatically.',
+    'If not, use your platform’s SEO plugin to create sitemap.xml.',
+    'Add the sitemap address in Google Search Console.',
+  ],
+  'search-schema': [
+    'Look for “local business” or “business details” settings in your website builder or SEO plugin.',
+    'Fill in your name, address, phone, opening hours, website and logo, exactly as on Google.',
+    'Test the page with Google’s Rich Results Test.',
+    'Fix anything it flags, then test again.',
+  ],
+  'search-ai-crawlers': [
+    'Open yourwebsite.com/robots.txt to see which assistants are blocked.',
+    'Decide whether you want AI assistants to read your site. It’s your choice.',
+    'If you do, remove the lines that block them, or ask whoever manages your site to.',
+  ],
+  'contact-links': [
+    'Add a “Call” button that links to your number in international format (tel:+44…).',
+    'Add a WhatsApp button that links to wa.me/ followed by your number.',
+    'If you take bookings, add a button to your booking page.',
+    'Put them near the top of your home page and in the footer.',
+    'Tap each one on your phone to check it works.',
+  ],
+  'speed-mobile': [
+    'Run your page through Google PageSpeed Insights and read the top suggestions.',
+    'Shrink large images and use a modern format such as WebP.',
+    'Remove plugins, apps or scripts you no longer use.',
+    'Ask your host or website builder whether caching is switched on.',
+    'Test again. Scores can vary between tests.',
+  ],
+  'consistency-nap': [
+    'Write down your business name, address and phone exactly as they appear on Google.',
+    'Use exactly the same details on your website, for example in the footer.',
+    'Update your social pages and other listings to match.',
+    'If any detail has changed, update Google first.',
+  ],
+};
