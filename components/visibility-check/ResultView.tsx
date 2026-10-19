@@ -7,6 +7,7 @@ import { Arrow } from '../home/shared';
 import { competitorArea, consistencyArea, contactArea, notChecked, profileArea, reviewStats, searchArea, speedArea, topFixes, websiteArea, type Area, type RuleResult, type Status } from './findings';
 import type { CheckState } from './InstantCheck';
 import { Icon, Ring, StatusChip, StepBar, type IconName } from './ui';
+import { UnlockForm } from './UnlockForm';
 
 // Switch to true once the /guides/[rule-id] pages exist. Until then "Learn how" opens WhatsApp.
 const GUIDES_PUBLISHED = false;
@@ -118,15 +119,17 @@ function Tile({ tile }: { tile: TileData }) {
   );
 }
 
-export function ResultView({ check, ticket, contact, headingRef, whatsappHref, onCompare, restored = false, onNewCheck }: {
+export function ResultView({ check, ticket, headingRef, whatsappHref, onCompare, restored = false, onNewCheck, unlocked, onUnlocked, visitorCountry }: {
   check: CheckState;
-  restored?: boolean; // shown again from this tab's saved copy: no notification is sent
+  restored?: boolean; // shown again from this tab's saved copy
   onNewCheck: () => void;
   onCompare?: (keyword: string) => Promise<void>;
   ticket: string | null;
-  contact: { email: string; whatsapp: string };
   headingRef: RefObject<HTMLHeadingElement | null>;
   whatsappHref: string;
+  unlocked: boolean; // the free preview shows the ring, Top 3 fixes and area statuses; the rest needs unlocking
+  onUnlocked: () => void;
+  visitorCountry?: string | null;
 }) {
   const business = check.businessName;
   const profile = check.profile;
@@ -137,7 +140,8 @@ export function ResultView({ check, ticket, contact, headingRef, whatsappHref, o
   const competitorRows = check.competitors.state === 'done' ? check.competitors.data : null;
   const allDone = [check.competitors, check.site, check.speed].every((l) => l.state !== 'waiting');
   const [nearbyView, setNearbyView] = useState<'table' | 'cards'>('table');
-  const [reachedReport, setReachedReport] = useState(false);
+  const [justUnlocked, setJustUnlocked] = useState(false);
+  const fullRef = useRef<HTMLHeadingElement>(null);
   const [keyword, setKeyword] = useState('');
   const [comparing, setComparing] = useState(false);
   const skippedReason = check.competitors.state === 'skipped' ? check.competitors.reason : check.competitors.state === 'failed' ? 'failed' : null;
@@ -223,40 +227,32 @@ export function ResultView({ check, ticket, contact, headingRef, whatsappHref, o
     },
   ];
 
-  useEffect(() => {
-    const report = document.getElementById('ic-areas');
-    if (!report || reachedReport || !('IntersectionObserver' in window)) return;
-    const observer = new IntersectionObserver((entries) => {
-      if (entries.some((e) => e.isIntersecting)) {
-        setReachedReport(true);
-        observer.disconnect();
-      }
-    }, { threshold: 0.1 });
-    observer.observe(report);
-    return () => observer.disconnect();
-  }, [reachedReport]);
-
   // Bring the result into view and move focus to it once, when it first appears.
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
     headingRef.current?.focus({ preventScroll: true });
   }, [headingRef]);
 
-  // Send the lead notification once, when every check has finished.
-  const notified = useRef(restored);
+  // After unlocking, move to the start of the full report.
   useEffect(() => {
-    if (!allDone || !ticket || notified.current) return;
-    notified.current = true;
-    const statuses = Object.fromEntries(areas.map((a) => [a.title, a.status]));
-    void fetch('/api/visibility/notify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticket, email: contact.email, whatsapp: contact.whatsapp, statuses }) }).catch(() => undefined);
+    if (!justUnlocked) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    fullRef.current?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    fullRef.current?.focus({ preventScroll: true });
+  }, [justUnlocked]);
+
+  // What the lead notification carries: area statuses and the Top 3 fixes.
+  const summary = () => ({
+    statuses: Object.fromEntries(areas.map((a) => [a.title, a.status])),
+    topFixes: fixes.map((f) => f.text),
   });
 
   return (
     <div className="ic-page ic-results">
       <StepBar steps={[
         { label: 'Your business', state: 'done' },
-        { label: 'Your results', state: 'current', href: '#ic-top' },
-        { label: 'Full report', state: reachedReport ? 'done' : 'upcoming', href: '#ic-areas' },
+        { label: 'Your results', state: unlocked ? 'done' : 'current', href: '#ic-top' },
+        { label: 'Full report', state: unlocked ? 'done' : 'upcoming', href: unlocked ? '#ic-full' : allDone ? '#ic-unlock' : undefined },
       ]} />
 
       <div className="ic-result-actions">
@@ -318,35 +314,12 @@ export function ResultView({ check, ticket, contact, headingRef, whatsappHref, o
         ) : <p className="ic-hint">Working out your top fixes as the checks finish…</p>}
       </section>
 
-      <section className="ic-block" aria-labelledby="ic-overview">
-        <h2 id="ic-overview">At a glance</h2>
-        <div className="ic-tiles">{tiles.map((t) => <Tile tile={t} key={t.title} />)}</div>
-      </section>
-
-      {allDone && (working.length || toFix.length || websiteNote) ? (
-        <section className="ic-block ic-split" aria-label="What’s working and what to fix">
-          <div className="ic-split-col is-working">
-            <h2><Icon name="check" />What’s working</h2>
-            {working.length ? <ul>{working.map((r) => <li key={r.rule.id}><strong>{r.rule.label}:</strong> {r.value}</li>)}</ul> : <p>Nothing passed in the checks we could run.</p>}
-          </div>
-          <div className="ic-split-col is-fix">
-            <h2><Icon name="alert" />What to fix</h2>
-            {toFix.length || websiteNote ? (
-              <ul>
-                {websiteNote ? <li><strong>Website:</strong> {websiteNote}</li> : null}
-                {toFix.map((r) => <li key={r.rule.id}><strong>{r.rule.label}:</strong> {r.value} <StatusChip status={r.status} /></li>)}
-              </ul>
-            ) : <p>Nothing to fix in the checks we could run.</p>}
-          </div>
-        </section>
-      ) : null}
-
-      {noRealWebsite ? (
-        <section className="ic-block ic-panel" aria-labelledby="ic-no-website">
-          <h2 id="ic-no-website">No website found</h2>
-          {check.social ? <p>{profile ? `Your Google profile links to ${check.social}, not a website.` : `The address you gave is a ${check.social} page, not a website.`} {check.social} can be a good place to show your work, so we skipped the website checks and speed test rather than test {check.social}’s own site.</p> : <p>We didn’t find a website for this business, so the website checks were skipped.</p>}
-          <p>Customers can still find you on Google Maps. A website helps by giving Google and AI assistants a page to read about your services and location, and by giving customers one place to see your work, prices and contact options. It may also make it easier for people who find you elsewhere to get in touch.</p>
-          <a className="ic-soft-link" href={wa(`Hi Emmanuel, I ran the visibility check for ${business}. We don’t have a website yet. Could you build one for us?`)} target="_blank" rel="noreferrer">Want me to build it?</a>
+      {allDone ? (
+        <section className="ic-block" aria-labelledby="ic-statuses">
+          <h2 id="ic-statuses">Area statuses</h2>
+          <ul className="ic-status-list">
+            {areas.map((a) => <li key={a.id}><span>{a.title}</span><StatusChip status={a.status} /></li>)}
+          </ul>
         </section>
       ) : null}
 
@@ -364,48 +337,100 @@ export function ResultView({ check, ticket, contact, headingRef, whatsappHref, o
         </section>
       ) : null}
 
-      {competitorRows && profile && competitorRows.rows.length && stats ? (
-        <section className="ic-block ic-panel" aria-labelledby="ic-compare">
-          <div className="ic-panel-head">
-            <div>
-              <h2 id="ic-compare">Nearby businesses on Google</h2>
-              <p>Similar businesses nearby typically have <strong>{stats.typical} reviews</strong> (from {stats.min} to {stats.max}). By review count, {profile.name} ranks {stats.rank} of {stats.of}.</p>
-            </div>
-            <div className="ic-toggle" role="group" aria-label="Show nearby businesses as">
-              <button type="button" aria-pressed={nearbyView === 'table'} onClick={() => setNearbyView('table')}><Icon name="table" size={16} />Table</button>
-              <button type="button" aria-pressed={nearbyView === 'cards'} onClick={() => setNearbyView('cards')}><Icon name="cards" size={16} />Cards</button>
-            </div>
-          </div>
-          <p className="ic-source">From Google Maps · one search for “{competitorRows.query}”, shown as Google returned them</p>
-          {nearbyView === 'table' ? (
-            <div className="ic-table-wrap">
-              <table className="ic-table">
-                <thead><tr><th scope="col">Business</th><th scope="col">Rating</th><th scope="col">Reviews</th><th scope="col">Website listed</th></tr></thead>
-                <tbody>
-                  <tr className="is-you"><th scope="row">{profile.name} <span className="ic-you">You</span></th><td>{profile.rating ?? '–'}</td><td>{profile.reviewCount ?? 0}</td><td>{profile.website ? (check.social ? `${check.social} page` : 'Yes') : 'No'}</td></tr>
-                  {competitorRows.rows.map((r) => <tr key={r.name}><th scope="row">{r.name}</th><td>{r.rating ?? '–'}</td><td>{r.reviewCount ?? 0}</td><td>{r.hasWebsite ? 'Yes' : 'No'}</td></tr>)}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <ul className="ic-nearby-cards">
-              <li className="is-you"><strong>{profile.name} <span className="ic-you">You</span></strong><span>Rating {profile.rating ?? '–'}</span><span>{profile.reviewCount ?? 0} reviews</span><span>Website: {profile.website ? (check.social ? `${check.social} page` : 'Yes') : 'No'}</span></li>
-              {competitorRows.rows.map((r) => <li key={r.name}><strong>{r.name}</strong><span>Rating {r.rating ?? '–'}</span><span>{r.reviewCount ?? 0} reviews</span><span>Website: {r.hasWebsite ? 'Yes' : 'No'}</span></li>)}
-            </ul>
-          )}
-        </section>
+      {allDone && !unlocked ? (
+        <UnlockForm
+          ticket={ticket}
+          businessCountry={profile?.countryCode}
+          visitorCountry={visitorCountry}
+          summary={summary}
+          onUnlocked={() => { setJustUnlocked(true); onUnlocked(); }}
+        />
       ) : null}
 
-      <section className="ic-block" aria-labelledby="ic-areas-title" id="ic-areas">
-        <h2 id="ic-areas-title">Full report</h2>
-        <p className="ic-hint" id="ic-areas-hint">Open an area to see what we found, why it matters and how much effort it takes.</p>
-        <div className="ic-areas">{cards.map((a) => <AreaCard area={a} business={business} key={a.id} />)}</div>
-      </section>
+      {unlocked ? (
+        <>
+          <div className="ic-full-head" id="ic-full">
+            <h2 tabIndex={-1} ref={fullRef}>Your full report</h2>
+            {justUnlocked ? <p className="ic-hint" role="status">Thanks. Your full report is below.</p> : null}
+          </div>
 
-      <section className="ic-block ic-panel ic-neutral" aria-labelledby="ic-not-checked">
-        <h2 id="ic-not-checked">Not checked here</h2>
-        <p>These need a person to look at, so this automated check doesn’t cover them: {notChecked.join(', ')}.</p>
-      </section>
+        <section className="ic-block" aria-labelledby="ic-overview">
+          <h2 id="ic-overview">At a glance</h2>
+          <div className="ic-tiles">{tiles.map((t) => <Tile tile={t} key={t.title} />)}</div>
+        </section>
+
+        {allDone && (working.length || toFix.length || websiteNote) ? (
+          <section className="ic-block ic-split" aria-label="What’s working and what to fix">
+            <div className="ic-split-col is-working">
+              <h2><Icon name="check" />What’s working</h2>
+              {working.length ? <ul>{working.map((r) => <li key={r.rule.id}><strong>{r.rule.label}:</strong> {r.value}</li>)}</ul> : <p>Nothing passed in the checks we could run.</p>}
+            </div>
+            <div className="ic-split-col is-fix">
+              <h2><Icon name="alert" />What to fix</h2>
+              {toFix.length || websiteNote ? (
+                <ul>
+                  {websiteNote ? <li><strong>Website:</strong> {websiteNote}</li> : null}
+                  {toFix.map((r) => <li key={r.rule.id}><strong>{r.rule.label}:</strong> {r.value} <StatusChip status={r.status} /></li>)}
+                </ul>
+              ) : <p>Nothing to fix in the checks we could run.</p>}
+            </div>
+          </section>
+        ) : null}
+
+        {noRealWebsite ? (
+          <section className="ic-block ic-panel" aria-labelledby="ic-no-website">
+            <h2 id="ic-no-website">No website found</h2>
+            {check.social ? <p>{profile ? `Your Google profile links to ${check.social}, not a website.` : `The address you gave is a ${check.social} page, not a website.`} {check.social} can be a good place to show your work, so we skipped the website checks and speed test rather than test {check.social}’s own site.</p> : <p>We didn’t find a website for this business, so the website checks were skipped.</p>}
+            <p>Customers can still find you on Google Maps. A website helps by giving Google and AI assistants a page to read about your services and location, and by giving customers one place to see your work, prices and contact options. It may also make it easier for people who find you elsewhere to get in touch.</p>
+            <a className="ic-soft-link" href={wa(`Hi Emmanuel, I ran the visibility check for ${business}. We don’t have a website yet. Could you build one for us?`)} target="_blank" rel="noreferrer">Want me to build it?</a>
+          </section>
+        ) : null}
+
+        {competitorRows && profile && competitorRows.rows.length && stats ? (
+          <section className="ic-block ic-panel" aria-labelledby="ic-compare">
+            <div className="ic-panel-head">
+              <div>
+                <h2 id="ic-compare">Nearby businesses on Google</h2>
+                <p>Similar businesses nearby typically have <strong>{stats.typical} reviews</strong> (from {stats.min} to {stats.max}). By review count, {profile.name} ranks {stats.rank} of {stats.of}.</p>
+              </div>
+              <div className="ic-toggle" role="group" aria-label="Show nearby businesses as">
+                <button type="button" aria-pressed={nearbyView === 'table'} onClick={() => setNearbyView('table')}><Icon name="table" size={16} />Table</button>
+                <button type="button" aria-pressed={nearbyView === 'cards'} onClick={() => setNearbyView('cards')}><Icon name="cards" size={16} />Cards</button>
+              </div>
+            </div>
+            <p className="ic-source">From Google Maps · one search for “{competitorRows.query}”, shown as Google returned them</p>
+            {nearbyView === 'table' ? (
+              <div className="ic-table-wrap">
+                <table className="ic-table">
+                  <thead><tr><th scope="col">Business</th><th scope="col">Rating</th><th scope="col">Reviews</th><th scope="col">Website listed</th></tr></thead>
+                  <tbody>
+                    <tr className="is-you"><th scope="row">{profile.name} <span className="ic-you">You</span></th><td>{profile.rating ?? '–'}</td><td>{profile.reviewCount ?? 0}</td><td>{profile.website ? (check.social ? `${check.social} page` : 'Yes') : 'No'}</td></tr>
+                    {competitorRows.rows.map((r) => <tr key={r.name}><th scope="row">{r.name}</th><td>{r.rating ?? '–'}</td><td>{r.reviewCount ?? 0}</td><td>{r.hasWebsite ? 'Yes' : 'No'}</td></tr>)}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <ul className="ic-nearby-cards">
+                <li className="is-you"><strong>{profile.name} <span className="ic-you">You</span></strong><span>Rating {profile.rating ?? '–'}</span><span>{profile.reviewCount ?? 0} reviews</span><span>Website: {profile.website ? (check.social ? `${check.social} page` : 'Yes') : 'No'}</span></li>
+                {competitorRows.rows.map((r) => <li key={r.name}><strong>{r.name}</strong><span>Rating {r.rating ?? '–'}</span><span>{r.reviewCount ?? 0} reviews</span><span>Website: {r.hasWebsite ? 'Yes' : 'No'}</span></li>)}
+              </ul>
+            )}
+          </section>
+        ) : null}
+
+        <section className="ic-block" aria-labelledby="ic-areas-title" id="ic-areas">
+          <h2 id="ic-areas-title">Every check, by area</h2>
+          <p className="ic-hint" id="ic-areas-hint">Open an area to see what we found, why it matters and how much effort it takes.</p>
+          <div className="ic-areas">{cards.map((a) => <AreaCard area={a} business={business} key={a.id} />)}</div>
+        </section>
+
+        <section className="ic-block ic-panel ic-neutral" aria-labelledby="ic-not-checked">
+          <h2 id="ic-not-checked">Not checked here</h2>
+          <p>These need a person to look at, so this automated check doesn’t cover them: {notChecked.join(', ')}.</p>
+        </section>
+
+        </>
+      ) : null}
 
       <div className="ic-cta">
         <a className="ic-soft-link" href={wa(`Hi Emmanuel, I ran the visibility check for ${business}. Could you do these fixes for me?`)} target="_blank" rel="noreferrer">Want me to do this for you?</a>

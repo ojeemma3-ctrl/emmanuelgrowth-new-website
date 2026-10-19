@@ -71,6 +71,7 @@ export type Profile = {
   businessStatus?: string;
   latestReviewDate?: string;
   mapsUrl?: string;
+  countryCode?: string; // ISO 3166-1 alpha-2, from the address
 };
 
 // Full profile for check A. Only called after the visitor confirms the business.
@@ -79,7 +80,7 @@ export async function profile(placeId: string): Promise<Profile> {
     id: string;
     displayName?: LocalizedText;
     formattedAddress?: string;
-    addressComponents?: { longText?: string; types?: string[] }[];
+    addressComponents?: { longText?: string; shortText?: string; types?: string[] }[];
     primaryType?: string;
     primaryTypeDisplayName?: LocalizedText;
     nationalPhoneNumber?: string;
@@ -118,6 +119,7 @@ export async function profile(placeId: string): Promise<Profile> {
     businessStatus: data.businessStatus,
     latestReviewDate: reviewDates.at(-1),
     mapsUrl: data.googleMapsUri,
+    countryCode: data.addressComponents?.find((c) => c.types?.includes('country'))?.shortText?.toUpperCase(),
   };
 }
 

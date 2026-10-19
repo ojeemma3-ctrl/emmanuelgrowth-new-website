@@ -465,6 +465,43 @@ h1 em, h2 em { display: inline-block; font-style: normal; color: inherit; text-d
 .ic-toggle { display: inline-flex; gap: 4px; padding: 4px; border: 1px solid var(--border-light); border-radius: 12px; background: var(--grey); }
 .ic-toggle button { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 8px 14px; border: 0; border-radius: 9px; background: transparent; color: var(--text); font-size: 16px; font-weight: 600; cursor: pointer; }
 .ic-toggle button[aria-pressed="true"] { background: var(--black); color: var(--white); }
+/* Visibility check: area statuses (free preview). */
+.ic-status-list { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; border: 1px solid var(--border-light); border-radius: 16px; background: var(--white); }
+.ic-status-list li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 14px 18px; border-top: 1px solid var(--border-light); font-size: 17px; font-weight: 600; }
+.ic-status-list li:first-child { border-top: 0; }
+/* Visibility check: unlock the full report. */
+.ic-unlock { display: grid; gap: 18px; }
+.ic-unlock-intro p { max-width: 62ch; margin: 0; font-size: 17px; line-height: 27px; }
+.ic-unlock-intro h2 { margin-bottom: 8px; }
+.ic-card.ic-unlock-form { padding: 24px 20px; }
+.ic-channel { margin: 0; padding: 0; border: 0; min-width: 0; }
+.ic-form .ic-channel legend { margin: 0 0 10px; padding: 0; font-size: 14px; line-height: 18px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text); }
+.ic-channel-options { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 4px; border: 1px solid var(--border-light); border-radius: 12px; background: var(--grey); }
+.ic-form .ic-channel-options label { position: relative; display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; margin: 0; padding: 8px 14px; border-radius: 9px; color: var(--text); font-size: 16px; line-height: 20px; font-weight: 600; letter-spacing: 0; text-transform: none; cursor: pointer; }
+.ic-channel-options input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.ic-channel-options label.is-on { background: var(--black); color: var(--white); }
+.ic-channel-options label:has(input:focus-visible) { outline: 3px solid var(--text); outline-offset: 2px; }
+.ic-phone { position: relative; }
+.ic-phone-input { min-width: 0; }
+.ic-card .ic-phone-input input { padding-inline: 12px; }
+@media (max-width: 420px) { .ic-country-btn { gap: 6px; padding: 0 10px; } .ic-country-btn > svg { display: none; } }
+.ic-phone-row { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px; }
+.ic-country-btn { display: inline-flex; align-items: center; gap: 8px; height: 54px; padding: 0 12px; border: 1px solid var(--muted-light); border-radius: 10px; background: var(--white); color: var(--text); font-size: 17px; font-weight: 600; cursor: pointer; }
+.ic-country-btn[aria-expanded="true"] { border-color: var(--text); }
+.ic-code-pill { display: inline-flex; align-items: center; justify-content: center; min-width: 34px; height: 24px; padding: 0 6px; border-radius: 6px; background: var(--black); color: var(--white); font-size: 13px; line-height: 1; font-weight: 700; letter-spacing: .04em; }
+.ic-country-pop { position: absolute; z-index: 6; left: 0; right: 0; top: calc(100% + 6px); padding: 10px; border: 1px solid var(--border-light); border-radius: 12px; background: var(--white); box-shadow: 0 20px 40px -20px var(--shadow); }
+.ic-country-list { max-height: 280px; margin: 8px 0 0; padding: 0; overflow-y: auto; list-style: none; }
+.ic-country-list li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px; min-height: 44px; padding: 8px 10px; border-radius: 8px; font-size: 16px; cursor: pointer; }
+.ic-country-list li[aria-selected="true"] { background: var(--grey); outline: 2px solid var(--text); outline-offset: -2px; }
+.ic-country-list li.is-current .ic-country-name { font-weight: 700; }
+.ic-country-list .ic-country-dial { color: var(--muted-light); }
+.ic-country-list li.ic-country-empty { display: block; color: var(--muted-light); cursor: default; }
+.ic-field-error { display: flex; align-items: flex-start; gap: 8px; margin: 10px 0 0; color: var(--text); font-size: 16px; line-height: 24px; font-weight: 600; }
+.ic-field-error .ic-icon { margin-top: 4px; color: var(--red); }
+.ic-card input[aria-invalid="true"] { border-color: var(--red); border-width: 2px; }
+.ic-full-head h2 { margin: 0; font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; outline: none; scroll-margin-top: 96px; }
+.ic-full-head .ic-hint { margin-top: 6px; }
+@media (min-width: 640px) { .ic-card.ic-unlock-form { padding: 36px; } }
 .ic-panel .ic-source { display: inline-block; margin-bottom: 12px; }
 .ic-you { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 999px; background: var(--green); color: var(--black); font-size: 13px; line-height: 17px; font-weight: 700; vertical-align: middle; }
 .ic-table tr.is-you th { box-shadow: inset 4px 0 0 var(--green); }

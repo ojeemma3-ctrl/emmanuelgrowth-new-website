@@ -27,10 +27,17 @@ export const config = {
   perIpChecks: () => envLimit(['CHECK_LIMIT_PER_IP_PER_DAY'], isDevelopment() ? 50 : 3),
   perIpAutocomplete: 120,
   perIpPreviews: 20,
+  perIpUnlocks: 10,
 };
 
 export function json(data: unknown, status = 200) {
   return Response.json(data, { status, headers: { 'Cache-Control': 'no-store' } });
+}
+
+// Visitor country from Cloudflare (two letters), used only to pre-select the phone country.
+export function visitorCountry(request: Request) {
+  const code = request.headers.get('CF-IPCountry')?.toUpperCase() ?? '';
+  return /^[A-Z]{2}$/.test(code) && code !== 'XX' && code !== 'T1' ? code : null;
 }
 
 export function clientIp(request: Request) {
@@ -76,13 +83,13 @@ function rollDay() {
   }
 }
 
-export type LimitKind = 'check' | 'autocomplete' | 'preview';
+export type LimitKind = 'check' | 'autocomplete' | 'preview' | 'unlock';
 
 export async function takeLimit(request: Request, kind: LimitKind): Promise<{ ok: true } | { ok: false; reason: 'daily_cap' | 'ip_limit' }> {
   rollDay();
   const ipKey = `${kind}:${await sha256Hex(`${counterDay}:${clientIp(request)}`)}`;
   const ipCount = counters.get(ipKey) ?? 0;
-  const ipMax = kind === 'check' ? config.perIpChecks() : kind === 'autocomplete' ? config.perIpAutocomplete : config.perIpPreviews;
+  const ipMax = kind === 'check' ? config.perIpChecks() : kind === 'autocomplete' ? config.perIpAutocomplete : kind === 'unlock' ? config.perIpUnlocks : config.perIpPreviews;
   if (kind === 'check') {
     const globalCount = counters.get('global:check') ?? 0;
     if (globalCount >= config.dailyCap()) return { ok: false, reason: 'daily_cap' };
@@ -128,6 +135,7 @@ export type Ticket = {
   website?: string;
   address?: string;
   social?: string; // platform name when the "website" is a social or link-in-bio page
+  keyword?: string; // optional "What do you do?" from step 1, used for the nearby comparison
   exp: number;
 };
 
@@ -145,7 +153,9 @@ export async function signTicket(ticket: Omit<Ticket, 'exp'>) {
   return `${b64url(payload)}.${b64url(sig)}`;
 }
 
-export async function readTicket(value: unknown): Promise<Ticket | null> {
+// graceMs lets a finished check be unlocked later (the result is kept in the tab for up to 2 hours)
+// without allowing new Google or PageSpeed calls on an old ticket.
+export async function readTicket(value: unknown, graceMs = 0): Promise<Ticket | null> {
   if (typeof value !== 'string' || value.length > 4000) return null;
   const [payloadPart, sigPart] = value.split('.');
   if (!payloadPart || !sigPart) return null;
@@ -154,7 +164,7 @@ export async function readTicket(value: unknown): Promise<Ticket | null> {
     const valid = await crypto.subtle.verify('HMAC', await signingKey(), fromB64url(sigPart), payload);
     if (!valid) return null;
     const ticket = JSON.parse(new TextDecoder().decode(payload)) as Ticket;
-    return ticket.exp > Date.now() ? ticket : null;
+    return ticket.exp + graceMs > Date.now() ? ticket : null;
   } catch {
     return null;
   }

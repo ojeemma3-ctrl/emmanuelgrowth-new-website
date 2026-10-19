@@ -32,7 +32,8 @@ const errorText: Record<string, string> = {
   not_configured: 'The automatic check isn’t switched on yet. Please message us on WhatsApp instead.',
   verification: 'Please complete the verification and try again.',
   bad_website: 'That website address can’t be checked. Please check it and try again.',
-  invalid: 'Please check the form: a valid email and the consent box are needed.',
+  invalid: 'Please check the form and try again.',
+  keyword: 'For “What do you do?”, please use a few words with letters and numbers only, for example plumber or hair salon.',
   expired: 'This check has expired. Please start again.',
   upstream: 'Google didn’t respond just now. Please try again in a minute.',
 };
@@ -59,8 +60,8 @@ const markStep = (vcStep: StepEntry['vcStep'], push: boolean) => {
 };
 const isFinished = (c: CheckState) => [c.competitors, c.site, c.speed].every((l) => l.state !== 'waiting');
 
-// The finished public result is kept in this browser tab for up to 2 hours (see saved.ts);
-// the visitor's email and WhatsApp number stay in memory only.
+// The finished public result is kept in this browser tab for up to 2 hours (see saved.ts).
+// Contact details are only asked for when unlocking the full report, and are never saved in the browser.
 export function InstantCheck() {
   const [stage, setStage] = useState<Stage>('form');
   const [sessionToken, setSessionToken] = useState(newToken);
@@ -73,7 +74,8 @@ export function InstantCheck() {
   const [turnstileKey, setTurnstileKey] = useState<string | null>(null);
   const [turnstileToken, setTurnstileToken] = useState('');
   const [check, setCheck] = useState<CheckState | null>(null);
-  const [contact, setContact] = useState({ email: '', whatsapp: '' });
+  const [unlocked, setUnlocked] = useState(false);
+  const [visitorCountry, setVisitorCountry] = useState<string | null>(null);
   const [ticket, setTicket] = useState<string | null>(null);
   const [restored, setRestored] = useState(false);
   const inFlight = useRef(false);
@@ -94,6 +96,7 @@ export function InstantCheck() {
       }
       setCheck(saved.check);
       setTicket(saved.ticket);
+      setUnlocked(Boolean(saved.unlocked));
       setRestored(true);
       if (currentStep() === 'business') {
         setStage('form'); // reloaded on the business step: stay there, with a link back to the results
@@ -125,8 +128,8 @@ export function InstantCheck() {
 
   // Save the public result once every check has finished, and again after a keyword comparison.
   useEffect(() => {
-    if (check && isFinished(check)) saveResult(check, ticket);
-  }, [check, ticket]);
+    if (check && isFinished(check)) saveResult(check, ticket, unlocked);
+  }, [check, ticket, unlocked]);
 
   const showResults = () => {
     setStage('running');
@@ -138,7 +141,7 @@ export function InstantCheck() {
     setCheck(null);
     setTicket(null);
     setRestored(false);
-    setContact({ email: '', whatsapp: '' });
+    setUnlocked(false);
     setPreview(null);
     setManual(false);
     setError('');
@@ -152,8 +155,10 @@ export function InstantCheck() {
   // Turnstile only when the server has both keys.
   useEffect(() => {
     let cancelled = false;
-    fetch('/api/visibility/config').then((r) => r.json()).then((c: { turnstileSiteKey?: string | null }) => {
-      if (!cancelled && c.turnstileSiteKey) setTurnstileKey(c.turnstileSiteKey);
+    fetch('/api/visibility/config').then((r) => r.json()).then((c: { turnstileSiteKey?: string | null; country?: string | null }) => {
+      if (cancelled) return;
+      if (c.turnstileSiteKey) setTurnstileKey(c.turnstileSiteKey);
+      setVisitorCountry(c.country ?? null);
     }).catch(() => undefined);
     return () => { cancelled = true; };
   }, []);
@@ -206,8 +211,7 @@ export function InstantCheck() {
     if (inFlight.current) return; // ignore double clicks and repeated Enter while a check is starting or running
     setError('');
     const form = new FormData(event.currentTarget);
-    const email = String(form.get('email') ?? '').trim();
-    const whatsapp = String(form.get('whatsapp') ?? '').trim();
+    const keyword = String(form.get('keyword') ?? '').trim();
     if (!formRef.current?.reportValidity()) return;
     if (!manual && !preview) {
       setError('Please pick your business from the suggestions, or choose “My business isn’t listed”.');
@@ -225,9 +229,7 @@ export function InstantCheck() {
       name: String(form.get('manualName') ?? ''),
       town: String(form.get('manualTown') ?? ''),
       website: String(form.get('manualWebsite') ?? ''),
-      email,
-      whatsapp,
-      consent: form.get('consent') === 'on',
+      keyword,
       company_url: String(form.get('company_url') ?? ''),
       turnstileToken,
     };
@@ -238,7 +240,7 @@ export function InstantCheck() {
       setError(errorText[data.error ?? ''] ?? 'Something went wrong. Please try again.');
       return;
     }
-    setContact({ email, whatsapp });
+    setUnlocked(false);
     const base: CheckState = {
       businessName: data.profile?.name ?? payload.name,
       profile: data.profile ?? null,
@@ -259,7 +261,7 @@ export function InstantCheck() {
       const d = await post<{ competitors?: Competitor[]; query?: string }>('competitors', { ticket, keyword });
       setCheck((c) => (c ? { ...c, competitors: d.skipped ? { state: 'skipped', reason: d.skipped } : d.error ? { state: 'failed', reason: d.error } : { state: 'done', data: { rows: d.competitors ?? [], query: d.query } } } : c));
     };
-    return <ResultView check={check} ticket={ticket} contact={contact} headingRef={resultsRef} whatsappHref={whatsappHref} onCompare={onCompare} restored={restored} onNewCheck={startNewCheck} />;
+    return <ResultView check={check} ticket={ticket} headingRef={resultsRef} whatsappHref={whatsappHref} onCompare={onCompare} restored={restored} onNewCheck={startNewCheck} unlocked={unlocked} onUnlocked={() => setUnlocked(true)} visitorCountry={visitorCountry} />;
   }
 
   return (
@@ -315,32 +317,20 @@ export function InstantCheck() {
           </fieldset>
         )}
 
-        <div className="ic-fields ic-grid-2">
-          <div>
-            <label htmlFor="ic-email">Email</label>
-            <div className="ic-field"><Icon name="mail" /><input id="ic-email" name="email" type="email" required maxLength={200} autoComplete="email" /></div>
-          </div>
-          <div>
-            <label htmlFor="ic-whatsapp">WhatsApp (optional)</label>
-            <div className="ic-field"><Icon name="phone" /><input id="ic-whatsapp" name="whatsapp" type="tel" maxLength={30} autoComplete="tel" placeholder="+44 7…" /></div>
-          </div>
-        </div>
+        <label htmlFor="ic-what">What do you do? (optional)</label>
+        <div className="ic-field"><Icon name="search" /><input id="ic-what" name="keyword" type="text" maxLength={40} autoComplete="off" aria-describedby="ic-what-hint" /></div>
+        <p className="ic-hint" id="ic-what-hint">For example plumber, hair salon or restaurant. We use it to compare you with similar businesses nearby.</p>
         <div className="ic-honeypot" aria-hidden="true">
           <label htmlFor="ic-company-url">Leave this empty</label>
           <input id="ic-company-url" name="company_url" tabIndex={-1} autoComplete="off" />
         </div>
-        <label className="ic-consent">
-          <input type="checkbox" name="consent" required aria-labelledby="ic-consent-text" />
-          <span id="ic-consent-text">I agree that Emmanuel Growth can contact me about my visibility check. <Link href="/privacy-policy" target="_blank">Privacy policy</Link></span>
-        </label>
-
         {turnstileKey ? <div ref={turnstileRef} className="ic-turnstile" /> : null}
 
         {error ? <p className="ic-error" role="alert">{error}</p> : null}
         <button className="button button-growth ic-submit" type="submit" disabled={submitting} aria-disabled={submitting}>
           {submitting ? 'Starting your check…' : manual ? 'Run my check' : preview ? 'Yes, this is me. Run my check' : 'Run my check'} <Arrow />
         </button>
-        <p className="vc-note">Automated checks of public information only. We don’t store the Google data or page content we look at.</p>
+        <p className="vc-note">Automated checks of public information only. We don’t store the Google data or page content we look at. <Link href="/privacy-policy">Privacy policy</Link></p>
       </form>
     </div>
   );

@@ -1,28 +1,33 @@
-// Lead notification for the visibility check.
+// Lead notification for the visibility check, sent when a visitor unlocks the full report.
 //
 // NOT CONNECTED YET. This hosting has no email-sending binding, and the existing contact route
 // adds a Brevo contact rather than sending an email, so there is no email pattern to reuse.
 // Brevo is intentionally not connected for this check yet. Plug a transport into `send` below
-// (for example Brevo's transactional email API or Cloudflare Email Routing) when ready.
+// (for example Cloudflare Email Routing or a transactional email API) when ready.
 // Until then leads are NOT delivered; only the error type is logged, never the lead details.
 
 export type Lead = {
   businessName: string;
   mapsUrl?: string;
-  email: string;
-  whatsapp?: string;
+  channel: 'whatsapp' | 'email';
+  email?: string;
+  whatsapp?: string; // international format, e.g. +2348012345678
   statuses: Record<string, string>;
+  topFixes: string[];
 };
 
 export function formatLead(lead: Lead) {
   return [
     `New visibility check: ${lead.businessName}`,
     lead.mapsUrl ? `Google Maps: ${lead.mapsUrl}` : 'Google Maps: (not listed / not selected)',
-    `Email: ${lead.email}`,
-    `WhatsApp: ${lead.whatsapp || '(not given)'}`,
+    `Send the report by: ${lead.channel === 'whatsapp' ? 'WhatsApp' : 'Email'}`,
+    lead.channel === 'whatsapp' ? `WhatsApp: ${lead.whatsapp}` : `Email: ${lead.email}`,
     '',
     'Area statuses:',
     ...Object.entries(lead.statuses).map(([area, status]) => `- ${area}: ${status}`),
+    '',
+    'Top 3 fixes:',
+    ...(lead.topFixes.length ? lead.topFixes.map((fix, i) => `${i + 1}. ${fix}`) : ['(none)']),
   ].join('\n');
 }
 
