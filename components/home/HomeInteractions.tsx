@@ -10,7 +10,8 @@ type QuickMessageResult = {
 type HomeInteractionContextValue = {
   contactOpen: boolean;
   contactRef: RefObject<HTMLElement | null>;
-  openContact: () => void;
+  contactTopic: string | null; // e.g. "Get Found" or "Waitlist: Convert Enquiries", prefilled in the contact box
+  openContact: (topic?: string) => void;
   closeContact: () => void;
   submitQuickMessage: (event: FormEvent<HTMLFormElement>, onResult?: (result: QuickMessageResult) => void) => Promise<void>;
 };
@@ -27,9 +28,11 @@ export function HomeInteractions({ children }: { children: ReactNode }) {
   const contactRef = useRef<HTMLElement>(null);
   const dialogTrigger = useRef<HTMLElement | null>(null);
   const [contactOpen, setContactOpen] = useState(false);
+  const [contactTopic, setContactTopic] = useState<string | null>(null);
 
-  const openContact = () => {
+  const openContact = (topic?: string) => {
     dialogTrigger.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    setContactTopic(typeof topic === 'string' && topic ? topic : null);
     setContactOpen(true);
   };
   const closeContact = () => {
@@ -108,6 +111,7 @@ export function HomeInteractions({ children }: { children: ReactNode }) {
   return (
     <HomeInteractionContext.Provider value={{
       contactOpen,
+      contactTopic,
       contactRef,
       openContact,
       closeContact,

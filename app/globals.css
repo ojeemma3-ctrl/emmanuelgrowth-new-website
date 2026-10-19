@@ -230,6 +230,18 @@ h1 em, h2 em { display: inline-block; font-style: normal; color: inherit; text-d
 .price-card .button-dark { border-color: var(--border-dark); background: var(--black); }
 .price-card .button-dark:hover { border-color: var(--muted-dark); }
 .price-card.is-highlighted { border-color: var(--green); }
+.price-card-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; margin-bottom: 20px; }
+.price-card-head h3 { margin: 0; }
+.price-tag { padding: 4px 10px; border: 1px solid var(--green); border-radius: 999px; color: var(--green); font-size: 13px; line-height: 16px; font-weight: 700; letter-spacing: .02em; }
+.price-amount { flex-wrap: wrap; }
+.price-billing { margin: -4px 0 12px; font-size: 14px; line-height: 20px; font-weight: 600; color: var(--white); }
+.price-fine { margin-bottom: 24px; }
+.price-fine p { margin: 0 0 6px; font-size: 14px; line-height: 21px; color: var(--muted-dark); }
+.price-actions { display: grid; gap: 12px; margin-top: auto; }
+.price-actions .price-button { margin-top: 0; }
+.price-details { justify-self: center; padding: 4px 0; color: var(--white); font-size: 15px; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; }
+.price-details:hover { color: var(--green); }
+.pricing-note { max-width: 720px; margin: 36px auto 0; text-align: center; font-size: 16px; line-height: 25px; color: var(--muted-dark); }
 
 .faq-section { padding-block: 112px; background: var(--white); }
 .faq-grid { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: 64px; align-items: start; }
