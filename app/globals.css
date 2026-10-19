@@ -571,6 +571,87 @@ h1 em, h2 em { display: inline-block; font-style: normal; color: inherit; text-d
   .ic-step > a, .ic-step > span { flex-direction: column; align-items: flex-start; gap: 6px; padding: 10px; font-size: 15px; }
 }
 
+/* Visibility check: type and tokens. Scoped to the check (page and review dialog); the rest of the site is unchanged.
+   To use a condensed font for big titles later, change --font-display only. */
+.ic-page, .ic-review {
+  --font-ui: var(--font-inter), Arial, sans-serif;
+  --font-display: var(--font-ui);
+  --fs-12: 12px; --fs-14: 14px; --fs-16: 16px; --fs-20: 20px; --fs-28: 28px; --fs-40: 40px;
+  --lh-body: 1.5; --lh-head: 1.15;
+  --sp-4: 4px; --sp-8: 8px; --sp-12: 12px; --sp-16: 16px; --sp-24: 24px; --sp-32: 32px; --sp-48: 48px;
+  --radius-card: 16px; --radius-inner: 12px;
+  --line: #E4E4DF;
+  --pad-card: 20px;
+  --tap: 44px;
+  --chip-h: 28px;
+  font-family: var(--font-ui);
+  font-size: var(--fs-16);
+  line-height: var(--lh-body);
+}
+@media (min-width: 768px) { .ic-page, .ic-review { --pad-card: 24px; } }
+.ic-page :is(h1, h2, h3, h4), .ic-review :is(h1, h2, h3, h4) { font-family: var(--font-display); font-weight: 700; line-height: var(--lh-head); letter-spacing: -.02em; text-wrap: balance; }
+.ic-page h1 { font-size: var(--fs-28); }
+.ic-page h2, .ic-review h2 { font-size: var(--fs-20); }
+.ic-page h3, .ic-page h4 { font-size: var(--fs-16); }
+@media (min-width: 768px) {
+  .ic-page h1 { font-size: var(--fs-40); }
+  .ic-page h2 { font-size: var(--fs-28); }
+}
+.ic-page p, .ic-page li, .ic-page dd { max-width: 68ch; }
+.ic-page :is(.ic-ring-text, .ic-table td, .ic-fix-num, .ic-tile-count, .ic-tile-figure, .ic-result-score, .ic-nearby-cards, .ic-bars), .ic-num { font-variant-numeric: tabular-nums; }
+
+/* Text sizes on the scale: body 16, secondary 14, small labels 12 (never body copy). */
+.ic-page :is(.ic-hint, .vc-note, .ic-area-line, .ic-baseline, .ic-tile-count, .ic-fix-effort, .ic-score-note, .ic-source, .ic-hero-label, .ic-chips li) { font-size: var(--fs-14); line-height: var(--lh-body); }
+.ic-page :is(.ic-hero > p:not(.ic-hero-label), .ic-result-main > p:not(.ic-hero-label), .ic-tile-figure, .ic-closing-text, .ic-unlock-intro p, .ic-area-body, .ic-finding dl, .ic-split-col ul, .ic-howto-steps, .ic-table) { font-size: var(--fs-16); line-height: var(--lh-body); }
+.ic-page :is(.ic-fix-text, .ic-confirm strong, .ic-closing-text strong) { font-size: var(--fs-20); line-height: 1.35; }
+.ic-page :is(.ic-area-head strong, .ic-finding-head strong, .ic-result-score p) { font-size: var(--fs-16); line-height: 1.35; }
+.ic-page .ic-tile-title, .ic-page .ic-form label, .ic-page .ic-form .ic-manual legend, .ic-page .ic-form .ic-channel legend, .ic-page .ic-confirm-title { font-size: var(--fs-14); letter-spacing: 0; text-transform: none; font-weight: 600; }
+.ic-page .ic-card input:is([type="email"], [type="tel"], [type="text"], :not([type])), .ic-page .ic-country-btn, .ic-page .ic-compare-row input { font-size: var(--fs-16); }
+.ic-page .ic-ring-text strong, .ic-page .ic-fix-num { font-family: var(--font-ui); font-weight: 700; }
+.ic-page .ic-ring-text strong { font-size: var(--fs-28); }
+.ic-page .ic-fix-num { font-size: var(--fs-16); }
+.ic-name { display: grid; gap: 2px; min-width: 0; }
+.ic-tech { color: var(--muted-light); font-size: var(--fs-14); line-height: 1.35; font-weight: 400; }
+
+/* Cards: radius 16 (inner 12), 1px hairline, no heavy shadows, one padding. */
+.ic-page :is(.ic-card, .ic-panel, .ic-tile, .ic-fix-card, .ic-closing, .ic-split-col, .ic-status-list, .ic-area) { border: 1px solid var(--line); border-radius: var(--radius-card); box-shadow: none; }
+.ic-page :is(.ic-card, .ic-panel, .ic-tile, .ic-fix-card, .ic-closing) { padding: var(--pad-card); }
+.ic-page .ic-split-col { padding: var(--pad-card); border-left-width: 4px; }
+.ic-page .ic-hero { padding: var(--pad-card); border-radius: var(--radius-card); }
+@media (min-width: 768px) { .ic-page .ic-hero { padding: var(--sp-32); } }
+.ic-page .ic-area summary, .ic-page .ic-status-list li { padding: var(--sp-16) var(--pad-card); }
+.ic-page .ic-area-body { padding: 0 var(--pad-card) var(--pad-card); }
+.ic-page :is(.ic-confirm, .ic-table-wrap, .ic-nearby-cards li, .ic-toggle, .ic-channel-options, .ic-country-pop, .ic-suggestions, .ic-step > a, .ic-step > span, .ic-result-score) { border-radius: var(--radius-inner); }
+.ic-page :is(.ic-table-wrap, .ic-nearby-cards li, .ic-step > a, .ic-step > span) { border-color: var(--line); }
+.ic-page .ic-table :is(th, td) { border-bottom-color: var(--line); }
+.ic-page .ic-area[open] { border-color: var(--muted-light); }
+.ic-page { gap: var(--sp-24); }
+.ic-page .ic-block { margin-top: 0; }
+.ic-page .ic-block > h2 { margin-bottom: var(--sp-16); }
+
+/* Buttons and tap targets: 44px minimum, visible focus, clear hover and pressed states. */
+.ic-page :is(.button, .vc-back, .ic-closing-talk, .ic-howto-toggle, .ic-offer-tag, .ic-maps-link, .ic-toggle button), .ic-review :is(.button, .icon-button) { min-height: var(--tap); }
+.ic-page :is(.vc-back, .ic-closing-talk, .ic-howto-toggle, .ic-maps-link) { display: inline-flex; align-items: center; font-size: var(--fs-16); }
+.ic-page .ic-offer-tag { font-size: var(--fs-14); padding: 0 var(--sp-16); border-color: var(--line); }
+.ic-page .button { gap: var(--sp-8); border-radius: var(--radius-inner); font-size: var(--fs-16); }
+.ic-page .button-dark:active, .ic-page .button-outline:active, .ic-review .button-dark:active { transform: translateY(1px); }
+.ic-page .button-outline { border-color: var(--line); }
+.ic-page .button-outline:hover { border-color: var(--text); background: var(--grey); }
+.ic-page :is(.vc-back, .ic-closing-talk, .ic-howto-toggle):hover { text-decoration-thickness: 2px; }
+.ic-page :is(.vc-back, .ic-closing-talk, .ic-howto-toggle):active { opacity: .7; }
+.ic-page .ic-offer-tag:active, .ic-page .ic-toggle button:active { transform: translateY(1px); }
+.ic-page :focus-visible, .ic-review :focus-visible { outline: 3px solid var(--text); outline-offset: 2px; }
+.ic-page .ic-hero :focus-visible { outline-color: var(--green); }
+
+/* Status chips: icon plus text, 13px / 600, one fixed height, never wrapping. */
+.ic-page .ic-status, .ic-review .ic-status { display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto; height: var(--chip-h); padding: 0 10px; border-radius: 999px; font-size: 13px; line-height: 1; font-weight: 600; white-space: nowrap; }
+.ic-page .ic-status.is-unknown { border: 1px solid var(--line); }
+.ic-page .ic-split-col .ic-status { padding: 0 10px; font-size: 13px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ic-page .button, .ic-page .ic-offer-tag, .ic-page .ic-toggle button { transition: none; transform: none !important; }
+}
+
 
 .site-footer { position: relative; z-index: 20; padding-block: 72px 0; background: var(--black); color: var(--white); }
 .site-footer .brand-label b { color: var(--green); }
@@ -675,7 +756,6 @@ h1 em, h2 em { display: inline-block; font-style: normal; color: inherit; text-d
   .ic-finding dl { grid-template-columns: 1fr; gap: 2px; }
   .ic-finding dd { margin-bottom: 8px; }
   .ic-card { padding: 28px 20px; border-radius: 18px; }
-  .ic-block h2 { font-size: 24px; }
   .vc-section { padding-block: 32px 72px; }
   .vc-card { padding: 28px 20px; border-radius: 18px; }
   .stage-tags { position: static; flex-wrap: wrap; justify-content: flex-start; gap: 8px; margin-bottom: 14px; }

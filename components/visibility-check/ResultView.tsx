@@ -112,7 +112,7 @@ function Finding({ result }: { result: RuleResult }) {
   return (
     <div className="ic-finding">
       <div className="ic-finding-head">
-        <strong>{rule.label}</strong>
+        <span className="ic-name"><strong>{rule.displayName}</strong>{rule.technicalName ? <small className="ic-tech">{rule.technicalName}</small> : null}</span>
         <StatusChip status={status} />
       </div>
       <dl>
@@ -470,14 +470,14 @@ export function ResultView({ check, ticket, headingRef, onCompare, restored = fa
           <section className="ic-block ic-split" aria-label="What’s working and what to fix">
             <div className="ic-split-col is-working">
               <h2><Icon name="check" />What’s working</h2>
-              {working.length ? <ul>{working.map((r) => <li key={r.rule.id}><strong>{r.rule.label}:</strong> {r.value}</li>)}</ul> : <p>Nothing passed in the checks we could run.</p>}
+              {working.length ? <ul>{working.map((r) => <li key={r.rule.id}><strong>{r.rule.displayName}:</strong> {r.value}</li>)}</ul> : <p>Nothing passed in the checks we could run.</p>}
             </div>
             <div className="ic-split-col is-fix">
               <h2><Icon name="alert" />What to fix</h2>
               {toFix.length || websiteNote ? (
                 <ul>
                   {websiteNote ? <li><strong>Website:</strong> {websiteNote} <OfferTag offer={offerFor('website', false)} /><FixSteps id="gbp-website" /></li> : null}
-                  {toFix.map((r) => <li key={r.rule.id}><strong>{r.rule.label}:</strong> {r.value} <StatusChip status={r.status} /> <OfferTag offer={offerFor(r.rule.id, !noRealWebsite)} /><FixSteps id={r.rule.id} /></li>)}
+                  {toFix.map((r) => <li key={r.rule.id}><strong>{r.rule.displayName}:</strong> {r.value} <StatusChip status={r.status} /> <OfferTag offer={offerFor(r.rule.id, !noRealWebsite)} /><FixSteps id={r.rule.id} /></li>)}
                 </ul>
               ) : <p>Nothing to fix in the checks we could run.</p>}
             </div>

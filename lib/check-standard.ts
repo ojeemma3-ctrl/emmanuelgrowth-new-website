@@ -27,7 +27,8 @@ export type AreaId = 'profile' | 'reviews' | 'website' | 'search' | 'contact' | 
 export type Rule = {
   id: string;
   area: AreaId;
-  label: string;
+  displayName: string; // plain-English name shown as the title
+  technicalName: string | null; // shown as small grey text when it helps; null when the plain name says it all
   measured: string; // how we measure it
   thresholds: { good: string; attention?: string; problem?: string };
   baseline: boolean; // true = the thresholds are our baseline, not a Google requirement
@@ -67,49 +68,49 @@ export const areaTitles: Record<AreaId, string> = {
 export const rules: Rule[] = [
   // Google business profile
   {
-    id: 'gbp-status', area: 'profile', label: 'Business status', mode: 'automatic', baseline: false,
+    id: 'gbp-status', area: 'profile', displayName: 'Business status', technicalName: null, mode: 'automatic', baseline: false,
     measured: 'The business status Google shows on the profile.',
     thresholds: { good: 'Marked as open (operational)', problem: 'Marked as temporarily or permanently closed' },
     why: 'If Google shows the business as closed, customers may not try to contact you.',
     priority: 'Fix first', effort: 'About 10 minutes', action: 'Check your business status on Google is correct',
   },
   {
-    id: 'gbp-category', area: 'profile', label: 'Business category', mode: 'automatic', baseline: true,
+    id: 'gbp-category', area: 'profile', displayName: 'Business category', technicalName: null, mode: 'automatic', baseline: true,
     measured: 'The primary category Google returns for the profile, and whether it is specific or very general (for example “Services”).',
     thresholds: { good: 'A specific primary category', attention: 'A very general category, such as “Services”', problem: 'No category set' },
     why: 'Your category helps Google match you to the right searches.',
     priority: 'Fix first', effort: 'About 10 minutes', action: 'Choose a specific category so Google can match the right searches',
   },
   {
-    id: 'gbp-hours', area: 'profile', label: 'Opening hours', mode: 'automatic', baseline: true,
+    id: 'gbp-hours', area: 'profile', displayName: 'Opening hours', technicalName: null, mode: 'automatic', baseline: true,
     measured: 'Whether the profile lists opening hours for every day of the week.',
     thresholds: { good: 'Hours listed for all 7 days', attention: 'Hours missing or incomplete' },
     why: 'Clear hours help customers know when they can reach you.',
     priority: 'Next', effort: 'About 10 minutes', action: 'Add your opening hours to your Google profile',
   },
   {
-    id: 'gbp-phone', area: 'profile', label: 'Phone number', mode: 'automatic', baseline: true,
+    id: 'gbp-phone', area: 'profile', displayName: 'Phone number', technicalName: null, mode: 'automatic', baseline: true,
     measured: 'Whether the profile lists a phone number.',
     thresholds: { good: 'Phone number present', problem: 'No phone number' },
     why: 'A phone number on your profile lets customers call you straight from Google.',
     priority: 'Fix first', effort: 'About 5 minutes', action: 'Add your phone number to your Google profile',
   },
   {
-    id: 'gbp-website', area: 'profile', label: 'Website link', mode: 'automatic', baseline: true,
+    id: 'gbp-website', area: 'profile', displayName: 'Website link', technicalName: null, mode: 'automatic', baseline: true,
     measured: 'Whether the profile links to a real website (not a social or link-in-bio page).',
     thresholds: { good: 'Links to a real website', attention: 'No website, or a social / link-in-bio page instead' },
     why: 'A website gives customers one place to see your services, work and contact options.',
     priority: 'Next', effort: 'A few days for a simple site', action: 'Add a simple website and link it from your Google profile', issue: 'website',
   },
   {
-    id: 'gbp-photos', area: 'profile', label: 'Photos', mode: 'automatic', baseline: true,
+    id: 'gbp-photos', area: 'profile', displayName: 'Photos', technicalName: null, mode: 'automatic', baseline: true,
     measured: 'Number of photos Google returns for the profile. Google returns at most 10, so 10 means “10 or more”.',
     thresholds: { good: '10 or more', attention: '1 to 9', problem: 'None' },
     why: 'Photos help customers see what you do before they get in touch.',
     priority: 'Next', effort: 'About 30 minutes', action: 'Add more photos of your work, team and premises',
   },
   {
-    id: 'gbp-description', area: 'profile', label: 'Business description', mode: 'manual', baseline: false,
+    id: 'gbp-description', area: 'profile', displayName: 'Business description', technicalName: null, mode: 'manual', baseline: false,
     measured: 'Not available from Google’s data, so not checked automatically.',
     thresholds: { good: 'A clear description of what you do and where' },
     why: 'A description isn’t a ranking factor, but it can help customers trust they’ve found the right business.',
@@ -117,14 +118,14 @@ export const rules: Rule[] = [
     note: 'Customer-trust note only.',
   },
   {
-    id: 'gbp-videos', area: 'profile', label: 'Videos', mode: 'manual', baseline: false,
+    id: 'gbp-videos', area: 'profile', displayName: 'Videos', technicalName: null, mode: 'manual', baseline: false,
     measured: 'Not available from Google’s data, so not checked automatically.',
     thresholds: { good: 'Some short videos of your work' },
     why: 'Short videos can show customers your work and premises.',
     priority: 'Later', effort: 'About 30 minutes', action: 'Add a few short videos to your profile',
   },
   {
-    id: 'gbp-total-photos', area: 'profile', label: 'Total photo count', mode: 'manual', baseline: false,
+    id: 'gbp-total-photos', area: 'profile', displayName: 'Total photo count', technicalName: null, mode: 'manual', baseline: false,
     measured: 'Google only returns up to 10 photos, so the full count is not checked automatically.',
     thresholds: { good: 'Regularly updated photos' },
     why: 'Fresh photos show customers the business is active.',
@@ -133,7 +134,7 @@ export const rules: Rule[] = [
 
   // Reviews
   {
-    id: 'reviews-count', area: 'reviews', label: 'Review count compared with nearby businesses', mode: 'automatic', baseline: true,
+    id: 'reviews-count', area: 'reviews', displayName: 'Review count compared with nearby businesses', technicalName: null, mode: 'automatic', baseline: true,
     measured: 'Your Google review count compared with the typical (median) count of nearby businesses with the same Google category. Only compared when your category is specific and we find at least 3 of them.',
     thresholds: { good: 'At or above the typical count', attention: 'Under half of the typical count', problem: 'Under a quarter of the typical count, or fewer than 10 reviews' },
     why: 'Customers often compare a few local options side by side, and reviews are one of the first things they see.',
@@ -141,21 +142,21 @@ export const rules: Rule[] = [
     note: 'Between half and the typical count is shown as Good (close to typical), unless you have fewer than 10 reviews.',
   },
   {
-    id: 'reviews-rating', area: 'reviews', label: 'Star rating', mode: 'automatic', baseline: true,
+    id: 'reviews-rating', area: 'reviews', displayName: 'Star rating', technicalName: null, mode: 'automatic', baseline: true,
     measured: 'Your average Google rating.',
     thresholds: { good: '4.5 or higher', attention: 'Below 4.5, or no rating yet' },
     why: 'Your rating is shown next to your name in search results and on Maps.',
     priority: 'Next', effort: 'Ongoing', action: 'Ask happy customers for reviews and reply to every review', issue: 'reviews',
   },
   {
-    id: 'reviews-recent', area: 'reviews', label: 'Recent review', mode: 'manual', baseline: true,
+    id: 'reviews-recent', area: 'reviews', displayName: 'Recent review', technicalName: null, mode: 'manual', baseline: true,
     measured: 'Google returns at most 5 reviews, sorted by relevance rather than date, so the newest review can’t be checked reliably.',
     thresholds: { good: 'At least one review in the last 60 days (check on your profile)' },
     why: 'Recent reviews show customers the business is active.',
     priority: 'Next', effort: 'A few minutes after each job', action: 'Ask recent customers for a Google review', issue: 'reviews',
   },
   {
-    id: 'reviews-owner-replies', area: 'reviews', label: 'Replies to reviews', mode: 'manual', baseline: false,
+    id: 'reviews-owner-replies', area: 'reviews', displayName: 'Replies to reviews', technicalName: null, mode: 'manual', baseline: false,
     measured: 'Google’s data doesn’t include owner replies, so not checked automatically.',
     thresholds: { good: 'You reply to reviews, good and bad' },
     why: 'Replies show customers you care about feedback.',
@@ -164,42 +165,42 @@ export const rules: Rule[] = [
 
   // Website basics
   {
-    id: 'web-https', area: 'website', label: 'Secure https', mode: 'automatic', baseline: false,
+    id: 'web-https', area: 'website', displayName: 'Secure connection (padlock)', technicalName: 'HTTPS', mode: 'automatic', baseline: false,
     measured: 'Whether the home page loads on a secure https address.',
     thresholds: { good: 'Loads on https', problem: 'Loads on plain http' },
     why: 'Browsers warn visitors about pages that aren’t secure.',
     priority: 'Fix first', effort: 'About an hour', action: 'Switch your website to https',
   },
   {
-    id: 'web-mobile', area: 'website', label: 'Mobile layout', mode: 'automatic', baseline: false,
+    id: 'web-mobile', area: 'website', displayName: 'Fits phone screens', technicalName: 'Mobile viewport', mode: 'automatic', baseline: false,
     measured: 'Whether the page sets a mobile viewport.',
     thresholds: { good: 'Mobile viewport set', attention: 'No mobile viewport' },
     why: 'Most local searches happen on phones, and the page needs to fit the screen.',
     priority: 'Fix first', effort: 'Depends on the site', action: 'Make your website fit phone screens',
   },
   {
-    id: 'web-title', area: 'website', label: 'Page title', mode: 'automatic', baseline: false,
+    id: 'web-title', area: 'website', displayName: 'Page title', technicalName: 'Title tag', mode: 'automatic', baseline: false,
     measured: 'Whether the home page has a title.',
     thresholds: { good: 'Title present', attention: 'No title' },
     why: 'The title is usually the headline Google shows for your page.',
     priority: 'Next', effort: 'About 10 minutes', action: 'Add a page title that says what you do and where',
   },
   {
-    id: 'web-description', area: 'website', label: 'Search description', mode: 'automatic', baseline: false,
+    id: 'web-description', area: 'website', displayName: 'Search description', technicalName: 'Meta description', mode: 'automatic', baseline: false,
     measured: 'Whether the home page has a meta description.',
     thresholds: { good: 'Description present', attention: 'No description' },
     why: 'Google may use it as the short text under your page title.',
     priority: 'Later', effort: 'About 10 minutes', action: 'Add a short search description',
   },
   {
-    id: 'web-h1', area: 'website', label: 'Main heading (H1)', mode: 'automatic', baseline: true,
+    id: 'web-h1', area: 'website', displayName: 'Main page heading', technicalName: 'H1', mode: 'automatic', baseline: true,
     measured: 'Number of H1 headings on the home page.',
     thresholds: { good: 'Exactly one H1', attention: 'No H1, or more than one' },
     why: 'One clear main heading helps visitors and search engines see what the page is about.',
     priority: 'Later', effort: 'About 10 minutes', action: 'Use one clear main heading that says what you do',
   },
   {
-    id: 'web-open-graph', area: 'website', label: 'Sharing tags (Open Graph)', mode: 'automatic', baseline: false,
+    id: 'web-open-graph', area: 'website', displayName: 'Link preview when shared', technicalName: 'Open Graph tags', mode: 'automatic', baseline: false,
     measured: 'Whether the page has og:title and og:image tags.',
     thresholds: { good: 'Title and image tags present', attention: 'Missing' },
     why: 'They control how your link looks when someone shares it.',
@@ -208,21 +209,21 @@ export const rules: Rule[] = [
 
   // Search engines and AI assistants
   {
-    id: 'search-indexable', area: 'search', label: 'Open to search engines', mode: 'automatic', baseline: false,
+    id: 'search-indexable', area: 'search', displayName: 'Open to search engines', technicalName: 'robots.txt and noindex', mode: 'automatic', baseline: false,
     measured: 'Whether robots.txt blocks all crawlers, or the page asks not to be listed (noindex).',
     thresholds: { good: 'Not blocked', problem: 'Blocked by robots.txt or noindex' },
     why: 'If search engines are blocked, your site can’t appear in search results.',
     priority: 'Fix first', effort: 'About 15 minutes', action: 'Let search engines read your website',
   },
   {
-    id: 'search-sitemap', area: 'search', label: 'Sitemap', mode: 'automatic', baseline: false,
+    id: 'search-sitemap', area: 'search', displayName: 'Page list for search engines', technicalName: 'Sitemap (sitemap.xml)', mode: 'automatic', baseline: false,
     measured: 'Whether a sitemap.xml is found (linked from robots.txt or at /sitemap.xml).',
     thresholds: { good: 'Sitemap found', attention: 'No sitemap found' },
     why: 'A sitemap helps search engines find all your pages.',
     priority: 'Later', effort: 'About 15 minutes', action: 'Add a sitemap.xml',
   },
   {
-    id: 'search-schema', area: 'search', label: 'LocalBusiness structured data', mode: 'automatic', baseline: true,
+    id: 'search-schema', area: 'search', displayName: 'Business details for Google and AI', technicalName: 'LocalBusiness structured data', mode: 'automatic', baseline: true,
     measured: 'Whether the page has LocalBusiness (or similar) structured data with name, address, phone, hours, website, image and social links.',
     thresholds: { good: 'Present with all seven details', attention: 'Present but missing details, or not present' },
     why: 'Structured data spells out your business details in a format search engines and AI assistants read directly.',
@@ -230,7 +231,7 @@ export const rules: Rule[] = [
     note: 'We don’t recommend adding review or AggregateRating markup about your own business. FAQ markup is optional.',
   },
   {
-    id: 'search-ai-crawlers', area: 'search', label: 'AI assistants can read the site', mode: 'automatic', baseline: true,
+    id: 'search-ai-crawlers', area: 'search', displayName: 'AI assistants can read the site', technicalName: 'AI crawler rules in robots.txt', mode: 'automatic', baseline: true,
     measured: 'Whether robots.txt blocks GPTBot, ChatGPT-User, PerplexityBot, Google-Extended or ClaudeBot.',
     thresholds: { good: 'None blocked', attention: 'One or more blocked' },
     why: 'AI assistants can only describe your business from your site if they’re allowed to read it.',
@@ -240,7 +241,7 @@ export const rules: Rule[] = [
 
   // Contact
   {
-    id: 'contact-links', area: 'contact', label: 'Tap to call, WhatsApp or book', mode: 'automatic', baseline: true,
+    id: 'contact-links', area: 'contact', displayName: 'Tap to call, WhatsApp or book', technicalName: null, mode: 'automatic', baseline: true,
     measured: 'Tap-to-call (tel:), WhatsApp (wa.me) and booking links on the home page.',
     thresholds: { good: 'At least one one-tap way to call, message or book', attention: 'None found' },
     why: 'One-tap contact makes it easy for interested visitors to reach you.',
@@ -249,7 +250,7 @@ export const rules: Rule[] = [
 
   // Speed
   {
-    id: 'speed-mobile', area: 'speed', label: 'Mobile speed score', mode: 'automatic', baseline: true,
+    id: 'speed-mobile', area: 'speed', displayName: 'Mobile speed score', technicalName: 'Google PageSpeed performance', mode: 'automatic', baseline: true,
     measured: 'Google PageSpeed Insights performance score on mobile.',
     thresholds: { good: '90 or higher', attention: '50 to 89', problem: 'Under 50' },
     why: 'A page that loads slowly on a phone is easy to give up on.',
@@ -258,7 +259,7 @@ export const rules: Rule[] = [
 
   // Consistency
   {
-    id: 'consistency-nap', area: 'consistency', label: 'Name, address and phone match', mode: 'automatic', baseline: true,
+    id: 'consistency-nap', area: 'consistency', displayName: 'Name, address and phone match', technicalName: 'NAP consistency', mode: 'automatic', baseline: true,
     measured: 'Whether the name, address and phone on your website match your Google profile.',
     thresholds: { good: 'All three match', attention: 'One or more differ or are missing from the website' },
     why: 'Matching details help customers and search engines trust they’ve found the right business.',

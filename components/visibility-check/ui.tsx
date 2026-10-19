@@ -33,13 +33,14 @@ export function Icon({ name, size = 18 }: { name: IconName; size?: number }) {
   );
 }
 
-const statusLook: Record<Status, { cls: string; icon: IconName }> = {
-  Good: { cls: 'is-good', icon: 'check' },
-  'Needs attention': { cls: 'is-attention', icon: 'alert' },
-  Problem: { cls: 'is-problem', icon: 'cross' },
-  'Couldn’t check': { cls: 'is-unknown', icon: 'question' },
-  'Couldn’t compare fairly': { cls: 'is-unknown', icon: 'question' },
-  'Not checked automatically': { cls: 'is-unknown', icon: 'question' },
+// `short` keeps every chip on one line; the full status is in the chip's title.
+const statusLook: Record<Status, { cls: string; icon: IconName; short: string }> = {
+  Good: { cls: 'is-good', icon: 'check', short: 'Good' },
+  'Needs attention': { cls: 'is-attention', icon: 'alert', short: 'Needs attention' },
+  Problem: { cls: 'is-problem', icon: 'cross', short: 'Problem' },
+  'Couldn’t check': { cls: 'is-unknown', icon: 'question', short: 'Couldn’t check' },
+  'Couldn’t compare fairly': { cls: 'is-unknown', icon: 'question', short: 'Not comparable' },
+  'Not checked automatically': { cls: 'is-unknown', icon: 'question', short: 'Manual check' },
 };
 
 export const statusClass = (status: Status) => statusLook[status].cls;
@@ -47,7 +48,8 @@ export const statusClass = (status: Status) => statusLook[status].cls;
 // Status is always shown with an icon and its text label, never colour alone.
 export function StatusChip({ status, label }: { status: Status; label?: string }) {
   const look = statusLook[status];
-  return <span className={`ic-status ${look.cls}`}><Icon name={look.icon} size={14} />{label ?? status}</span>;
+  const text = label ?? look.short;
+  return <span className={`ic-status ${look.cls}`} title={text === status ? undefined : status}><Icon name={look.icon} size={14} />{text}</span>;
 }
 
 export type StepState = 'done' | 'current' | 'upcoming';

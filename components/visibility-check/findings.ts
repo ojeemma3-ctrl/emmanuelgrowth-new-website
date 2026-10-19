@@ -53,7 +53,7 @@ function buildArea(id: AreaId, results: RuleResult[], line: (status: Status) => 
     line: line(status),
     results,
     extra: [],
-    found: results.map((r) => `${r.rule.label}: ${r.value}${r.rule.mode === 'automatic' && isMeasured(r.status) ? ` (${r.status})` : ''}`),
+    found: results.map((r) => `${r.rule.displayName}: ${r.value}${r.rule.mode === 'automatic' && isMeasured(r.status) ? ` (${r.status})` : ''}`),
     why: (failing[0] ?? results[0]).rule.why,
     fix: failing.length ? failing.map((r) => r.rule.action).join('. ') + '.' : 'Nothing urgent here.',
     fixes,
