@@ -501,6 +501,10 @@ h1 em, h2 em { display: inline-block; font-style: normal; color: inherit; text-d
 .ic-card input[aria-invalid="true"] { border-color: var(--red); border-width: 2px; }
 .ic-full-head h2 { margin: 0; font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; outline: none; scroll-margin-top: 96px; }
 .ic-full-head .ic-hint { margin-top: 6px; }
+.ic-pdf { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-top: 16px; }
+.ic-pdf .button { display: inline-flex; align-items: center; gap: 8px; }
+.ic-pdf .ic-hint { margin: 0; }
+.ic-print-cover { display: none; }
 @media (min-width: 640px) { .ic-card.ic-unlock-form { padding: 36px; } }
 .ic-panel .ic-source { display: inline-block; margin-bottom: 12px; }
 .ic-you { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 999px; background: var(--green); color: var(--black); font-size: 13px; line-height: 17px; font-weight: 700; vertical-align: middle; }
@@ -735,4 +739,38 @@ h1 em, h2 em { display: inline-block; font-style: normal; color: inherit; text-d
   .story-card, .story-text small, .story-card em { opacity: 1; transform: none; transition: none; }
   .story-stars i { animation: none; color: var(--amber); }
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+/* Visibility check: print / "Save as PDF". Cover page, report only, no buttons or navigation. */
+@media print {
+  @page { size: A4; margin: 16mm 14mm; }
+  html, body { background: var(--white) !important; color: var(--text); font-size: 11pt; }
+  .skip-link, .site-header, #main-content ~ *, .cookie-banner { display: none !important; }
+  .vc-section { padding: 0 !important; background: none !important; }
+  .vc-container, .container { width: auto !important; max-width: none !important; padding: 0 !important; margin: 0 !important; }
+  .ic-steps, .ic-result-actions, .ic-cta, .ic-pdf, .ic-unlock, .ic-progress, .ic-toggle, .ic-compare-form, .ic-maps-link, .ic-soft-link, .ic-learn, .vc-back, .ic-ring, .ic-bar, .ic-score-note, button { display: none !important; }
+  .ic-page { display: block; }
+  .ic-page > * + * { margin-top: 18pt; }
+  .ic-print-cover { display: flex; flex-direction: column; justify-content: center; min-height: 240mm; break-after: page; page-break-after: always; }
+  .ic-print-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 40mm; font-size: 16pt; font-weight: 800; letter-spacing: .04em; }
+  .ic-print-brand b { color: var(--text); }
+  .ic-print-kicker { margin: 0 0 6pt; font-size: 12pt; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-light); }
+  .ic-print-cover h1 { margin: 0 0 12pt; font-size: 30pt; line-height: 1.1; color: var(--text); }
+  .ic-print-cover p { margin: 0 0 4pt; font-size: 12pt; }
+  .ic-print-note { margin-top: 10pt !important; font-weight: 700; }
+  .ic-print-contact { margin-top: auto; padding-top: 12pt; border-top: 1px solid var(--border-light); }
+  .ic-hero, .ic-result-hero { padding: 0 !important; border: 0 !important; background: none !important; color: var(--text) !important; }
+  .ic-hero h1, .ic-hero p, .ic-hero .ic-address, .ic-result-main > p:not(.ic-hero-label) { color: var(--text) !important; }
+  .ic-hero-label, .ic-chips li { border-color: var(--border-light) !important; background: none !important; color: var(--text) !important; }
+  .ic-result-score { padding: 0 !important; border: 0 !important; background: none !important; color: var(--text) !important; }
+  .ic-panel, .ic-tile, .ic-area, .ic-fix-card, .ic-status-list, .ic-split-col { box-shadow: none !important; background: var(--white) !important; }
+  .ic-status, .ic-code-pill, .ic-priority, .ic-fix-num { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  h2, h3, h4 { break-after: avoid; page-break-after: avoid; }
+  .ic-fix-card, .ic-tile, .ic-finding, .ic-status-list li, .ic-table tr, .ic-nearby-cards li, .ic-area summary { break-inside: avoid; page-break-inside: avoid; }
+  .ic-results > :not(.ic-print-cover) { zoom: .85; }
+  .ic-full-head { margin-top: 24pt !important; }
+  .ic-fix-cards, .ic-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10pt; }
+  .ic-area summary { cursor: default; }
+  .ic-table-wrap { overflow: visible !important; }
+  a { color: var(--text); text-decoration: none; }
 }

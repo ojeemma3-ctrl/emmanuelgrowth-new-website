@@ -1,13 +1,41 @@
 'use client';
 
+import Image from 'next/image';
 import { useEffect, useRef, useState, type RefObject } from 'react';
 import { BASELINE_LABEL } from '../../lib/check-standard';
-import { whatsappNumber } from '../home/content';
+import { contactEmail, whatsappNumber } from '../home/content';
 import { Arrow } from '../home/shared';
 import { competitorArea, consistencyArea, contactArea, notChecked, profileArea, reviewStats, searchArea, speedArea, topFixes, websiteArea, type Area, type RuleResult, type Status } from './findings';
 import type { CheckState } from './InstantCheck';
 import { Icon, Ring, StatusChip, StepBar, type IconName } from './ui';
 import { UnlockForm } from './UnlockForm';
+
+// WhatsApp number from site config, shown on the PDF cover as +44 7575 416197.
+const whatsappDisplay = `+${whatsappNumber.slice(0, 2)} ${whatsappNumber.slice(2, 6)} ${whatsappNumber.slice(6)}`;
+
+// "Download PDF": the browser's own print window, where the visitor picks "Save as PDF".
+// The PDF is made in the visitor's browser; nothing is sent to a server. Closed area sections
+// are opened for printing and closed again afterwards; the file name follows the page title.
+function printReport(business: string) {
+  const closed = [...document.querySelectorAll<HTMLDetailsElement>('.ic-area:not([open])')];
+  const title = document.title;
+  closed.forEach((d) => { d.open = true; });
+  document.title = `Visibility check - ${business} - ${new Date().toISOString().slice(0, 10)}`;
+  window.addEventListener('afterprint', () => {
+    closed.forEach((d) => { d.open = false; });
+    document.title = title;
+  }, { once: true });
+  window.print();
+}
+
+function PdfButton({ business }: { business: string }) {
+  return (
+    <div className="ic-pdf">
+      <button className="button button-dark" type="button" onClick={() => printReport(business)}><Icon name="download" size={18} />Download PDF</button>
+      <p className="ic-hint">Opens your browser’s print window. Choose “Save as PDF” as the printer.</p>
+    </div>
+  );
+}
 
 // Switch to true once the /guides/[rule-id] pages exist. Until then "Learn how" opens WhatsApp.
 const GUIDES_PUBLISHED = false;
@@ -249,6 +277,25 @@ export function ResultView({ check, ticket, headingRef, whatsappHref, onCompare,
 
   return (
     <div className="ic-page ic-results">
+      {unlocked ? (
+        <section className="ic-print-cover" aria-hidden="true">
+          <div className="ic-print-brand">
+            <Image src="/favicon.svg" alt="" width={56} height={56} />
+            <span>EMMANUEL <b>GROWTH</b></span>
+          </div>
+          <p className="ic-print-kicker">Visibility check report</p>
+          <h1>{business}</h1>
+          {profile ? <p>{profile.address}</p> : null}
+          <p>{today}</p>
+          <p className="ic-print-note">Automated checks of public information</p>
+          <div className="ic-print-contact">
+            <p>Questions about this report?</p>
+            <p>Email: {contactEmail}</p>
+            <p>WhatsApp: {whatsappDisplay}</p>
+          </div>
+        </section>
+      ) : null}
+
       <StepBar steps={[
         { label: 'Your business', state: 'done' },
         { label: 'Your results', state: unlocked ? 'done' : 'current', href: '#ic-top' },
@@ -352,6 +399,7 @@ export function ResultView({ check, ticket, headingRef, whatsappHref, onCompare,
           <div className="ic-full-head" id="ic-full">
             <h2 tabIndex={-1} ref={fullRef}>Your full report</h2>
             {justUnlocked ? <p className="ic-hint" role="status">Thanks. Your full report is below.</p> : null}
+            <PdfButton business={business} />
           </div>
 
         <section className="ic-block" aria-labelledby="ic-overview">
@@ -429,6 +477,7 @@ export function ResultView({ check, ticket, headingRef, whatsappHref, onCompare,
           <p>These need a person to look at, so this automated check doesn’t cover them: {notChecked.join(', ')}.</p>
         </section>
 
+          <PdfButton business={business} />
         </>
       ) : null}
 
