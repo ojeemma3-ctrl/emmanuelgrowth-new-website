@@ -10,6 +10,7 @@ import { Arrow } from '../home/shared';
 import { BusinessSearch } from './BusinessSearch';
 import type { Outcome } from './findings';
 import { ResultView } from './ResultView';
+import { clearResult, loadResult, saveResult } from './saved';
 import { Icon, StepBar } from './ui';
 
 type Stage = 'form' | 'running';
@@ -49,7 +50,17 @@ async function post<T>(path: string, body: unknown): Promise<T & { error?: strin
   return res.json().catch(() => ({ error: 'upstream' }));
 }
 
-// Everything lives in memory for this page view only: nothing is stored in the browser.
+type StepEntry = { vcStep: 'business' | 'results' };
+const currentStep = () => (history.state as StepEntry | null)?.vcStep;
+const markStep = (vcStep: StepEntry['vcStep'], push: boolean) => {
+  const entry = { ...(history.state ?? {}), vcStep };
+  if (push) history.pushState(entry, '', window.location.pathname + window.location.search);
+  else history.replaceState(entry, '');
+};
+const isFinished = (c: CheckState) => [c.competitors, c.site, c.speed].every((l) => l.state !== 'waiting');
+
+// The finished public result is kept in this browser tab for up to 2 hours (see saved.ts);
+// the visitor's email and WhatsApp number stay in memory only.
 export function InstantCheck() {
   const [stage, setStage] = useState<Stage>('form');
   const [sessionToken, setSessionToken] = useState(newToken);
@@ -63,9 +74,80 @@ export function InstantCheck() {
   const [turnstileToken, setTurnstileToken] = useState('');
   const [check, setCheck] = useState<CheckState | null>(null);
   const [contact, setContact] = useState({ email: '', whatsapp: '' });
+  const [ticket, setTicket] = useState<string | null>(null);
+  const [restored, setRestored] = useState(false);
+  const inFlight = useRef(false);
   const formRef = useRef<HTMLFormElement>(null);
   const turnstileRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLHeadingElement>(null);
+
+  // On load: show a result saved in this tab in the last 2 hours, without calling Google or PageSpeed
+  // (so it doesn't count against the daily limits). Back from the results goes to the business step.
+  useEffect(() => {
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (cancelled) return;
+      const saved = loadResult();
+      if (!saved) {
+        markStep('business', false);
+        return;
+      }
+      setCheck(saved.check);
+      setTicket(saved.ticket);
+      setRestored(true);
+      if (currentStep() === 'business') {
+        setStage('form'); // reloaded on the business step: stay there, with a link back to the results
+        return;
+      }
+      setStage('running');
+      if (currentStep() !== 'results') {
+        markStep('business', false);
+        markStep('results', true);
+      }
+    });
+    return () => { cancelled = true; };
+  }, []);
+
+  // Back and Forward move between the business step and the results. Entries without a step
+  // (for example an in-page link) are ignored, so they never reset the check.
+  useEffect(() => {
+    const onPop = (event: PopStateEvent) => {
+      const step = (event.state as StepEntry | null)?.vcStep;
+      if (step === 'business') setStage('form');
+      if (step === 'results') {
+        setCheck((c) => c ?? loadResult()?.check ?? null);
+        setStage('running');
+      }
+    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
+
+  // Save the public result once every check has finished, and again after a keyword comparison.
+  useEffect(() => {
+    if (check && isFinished(check)) saveResult(check, ticket);
+  }, [check, ticket]);
+
+  const showResults = () => {
+    setStage('running');
+    markStep('results', true);
+  };
+
+  const startNewCheck = () => {
+    clearResult();
+    setCheck(null);
+    setTicket(null);
+    setRestored(false);
+    setContact({ email: '', whatsapp: '' });
+    setPreview(null);
+    setManual(false);
+    setError('');
+    setTurnstileToken('');
+    setSessionToken(newToken());
+    setStage('form');
+    markStep('business', true);
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  };
 
   // Turnstile only when the server has both keys.
   useEffect(() => {
@@ -105,7 +187,10 @@ export function InstantCheck() {
 
   const runChecks = async (ticket: string, base: CheckState) => {
     setCheck(base);
+    setTicket(ticket);
+    setRestored(false);
     setStage('running');
+    markStep('results', true);
     const update = (patch: Partial<CheckState>) => setCheck((c) => (c ? { ...c, ...patch } : c));
     const toLoad = <T,>(data: { error?: string; skipped?: string }, value: () => T): Load<T> => (data.skipped ? { state: 'skipped', reason: data.skipped } : data.error ? { state: 'failed', reason: data.error } : { state: 'done', data: value() });
     await Promise.all([
@@ -118,6 +203,7 @@ export function InstantCheck() {
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (inFlight.current) return; // ignore double clicks and repeated Enter while a check is starting or running
     setError('');
     const form = new FormData(event.currentTarget);
     const email = String(form.get('email') ?? '').trim();
@@ -131,6 +217,7 @@ export function InstantCheck() {
       setError(errorText.verification);
       return;
     }
+    inFlight.current = true;
     setSubmitting(true);
     const payload = {
       mode: manual ? 'manual' : 'place',
@@ -147,6 +234,7 @@ export function InstantCheck() {
     const data = await post<{ ticket?: string; profile?: Profile | null; website?: string | null; social?: string | null }>('start', payload);
     setSubmitting(false);
     if (!data.ticket) {
+      inFlight.current = false;
       setError(errorText[data.error ?? ''] ?? 'Something went wrong. Please try again.');
       return;
     }
@@ -161,10 +249,8 @@ export function InstantCheck() {
       speed: { state: 'waiting' },
     };
     await runChecks(data.ticket, base);
-    setTicket(data.ticket);
+    inFlight.current = false;
   };
-
-  const [ticket, setTicket] = useState<string | null>(null);
 
   if (stage === 'running' && check) {
     const whatsappHref = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Hi Emmanuel, I ran the visibility check for ${check.businessName}. Could you walk me through the fixes?`)}`;
@@ -173,7 +259,7 @@ export function InstantCheck() {
       const d = await post<{ competitors?: Competitor[]; query?: string }>('competitors', { ticket, keyword });
       setCheck((c) => (c ? { ...c, competitors: d.skipped ? { state: 'skipped', reason: d.skipped } : d.error ? { state: 'failed', reason: d.error } : { state: 'done', data: { rows: d.competitors ?? [], query: d.query } } } : c));
     };
-    return <ResultView check={check} ticket={ticket} contact={contact} headingRef={resultsRef} whatsappHref={whatsappHref} onCompare={onCompare} />;
+    return <ResultView check={check} ticket={ticket} contact={contact} headingRef={resultsRef} whatsappHref={whatsappHref} onCompare={onCompare} restored={restored} onNewCheck={startNewCheck} />;
   }
 
   return (
@@ -184,6 +270,12 @@ export function InstantCheck() {
         <p className="ic-hero-label">Step 1 of 3 · Your business</p>
         <h1>See how your business shows up online.</h1>
         <p>Find your business and we’ll run automated checks of your public Google profile and website, then show you the top fixes in plain words.</p>
+        {check && isFinished(check) ? (
+          <div className="ic-resume">
+            <button className="button button-dark" type="button" onClick={showResults}>Back to your results for {check.businessName} <Arrow /></button>
+            <button className="vc-back" type="button" onClick={startNewCheck}>Start a new check</button>
+          </div>
+        ) : null}
       </header>
 
       <form className="ic-card ic-form" ref={formRef} onSubmit={onSubmit} noValidate={false}>
@@ -245,7 +337,7 @@ export function InstantCheck() {
         {turnstileKey ? <div ref={turnstileRef} className="ic-turnstile" /> : null}
 
         {error ? <p className="ic-error" role="alert">{error}</p> : null}
-        <button className="button button-growth ic-submit" type="submit" disabled={submitting}>
+        <button className="button button-growth ic-submit" type="submit" disabled={submitting} aria-disabled={submitting}>
           {submitting ? 'Starting your check…' : manual ? 'Run my check' : preview ? 'Yes, this is me. Run my check' : 'Run my check'} <Arrow />
         </button>
         <p className="vc-note">Automated checks of public information only. We don’t store the Google data or page content we look at.</p>

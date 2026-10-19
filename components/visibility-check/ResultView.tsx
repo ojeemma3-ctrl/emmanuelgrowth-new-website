@@ -118,8 +118,10 @@ function Tile({ tile }: { tile: TileData }) {
   );
 }
 
-export function ResultView({ check, ticket, contact, headingRef, whatsappHref, onCompare }: {
+export function ResultView({ check, ticket, contact, headingRef, whatsappHref, onCompare, restored = false, onNewCheck }: {
   check: CheckState;
+  restored?: boolean; // shown again from this tab's saved copy: no notification is sent
+  onNewCheck: () => void;
   onCompare?: (keyword: string) => Promise<void>;
   ticket: string | null;
   contact: { email: string; whatsapp: string };
@@ -241,7 +243,7 @@ export function ResultView({ check, ticket, contact, headingRef, whatsappHref, o
   }, [headingRef]);
 
   // Send the lead notification once, when every check has finished.
-  const notified = useRef(false);
+  const notified = useRef(restored);
   useEffect(() => {
     if (!allDone || !ticket || notified.current) return;
     notified.current = true;
@@ -256,6 +258,11 @@ export function ResultView({ check, ticket, contact, headingRef, whatsappHref, o
         { label: 'Your results', state: 'current', href: '#ic-top' },
         { label: 'Full report', state: reachedReport ? 'done' : 'upcoming', href: '#ic-areas' },
       ]} />
+
+      <div className="ic-result-actions">
+        {restored ? <p className="ic-hint">Showing your saved results from earlier in this tab.</p> : null}
+        <button className="vc-back" type="button" onClick={onNewCheck}>Start a new check</button>
+      </div>
 
       <header className="ic-hero ic-result-hero" id="ic-top">
         <div className="ic-result-main">
@@ -403,6 +410,7 @@ export function ResultView({ check, ticket, contact, headingRef, whatsappHref, o
       <div className="ic-cta">
         <a className="ic-soft-link" href={wa(`Hi Emmanuel, I ran the visibility check for ${business}. Could you do these fixes for me?`)} target="_blank" rel="noreferrer">Want me to do this for you?</a>
         <a className="button button-growth" href={whatsappHref} target="_blank" rel="noreferrer">Want me to walk you through these fixes? Message me on WhatsApp <Arrow /></a>
+        <button className="vc-back" type="button" onClick={onNewCheck}>Start a new check</button>
       </div>
     </div>
   );

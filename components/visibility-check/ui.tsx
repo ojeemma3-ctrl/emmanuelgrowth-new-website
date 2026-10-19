@@ -1,5 +1,5 @@
 // Small presentational pieces for the visibility check: inline SVG icons, status chip, step bar, ring.
-import type { CSSProperties, ReactNode } from 'react';
+import type { CSSProperties, MouseEvent, ReactNode } from 'react';
 import type { Status } from './findings';
 
 const paths: Record<string, ReactNode> = {
@@ -50,6 +50,18 @@ export function StatusChip({ status, label }: { status: Status; label?: string }
 
 export type StepState = 'done' | 'current' | 'upcoming';
 
+// In-page links scroll without adding a history entry, so Back still goes to the previous step.
+export function jumpTo(event: MouseEvent<HTMLAnchorElement>) {
+  const id = event.currentTarget.getAttribute('href')?.slice(1);
+  const target = id ? document.getElementById(id) : null;
+  if (!target) return;
+  event.preventDefault();
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+  target.focus({ preventScroll: true });
+}
+
 export function StepBar({ steps }: { steps: { label: string; state: StepState; href?: string }[] }) {
   return (
     <nav className="ic-steps" aria-label="Check progress">
@@ -63,7 +75,7 @@ export function StepBar({ steps }: { steps: { label: string; state: StepState; h
           );
           return (
             <li key={step.label} className={`ic-step is-${step.state}`} aria-current={step.state === 'current' ? 'step' : undefined}>
-              {step.href ? <a href={step.href}>{body}</a> : <span>{body}</span>}
+              {step.href ? <a href={step.href} onClick={jumpTo}>{body}</a> : <span>{body}</span>}
             </li>
           );
         })}
