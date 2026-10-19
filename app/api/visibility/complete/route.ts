@@ -1,3 +1,4 @@
+import { errorType, shortSummary, upsertVisibilityContact } from '../../../../lib/visibility/brevo';
 import { readContact } from '../../../../lib/visibility/contact';
 import { notifyLead } from '../../../../lib/visibility/notify';
 import { json, readJson, readTicket, str, takeLimit } from '../../../../lib/visibility/server';
@@ -25,6 +26,13 @@ export async function POST(request: Request) {
   }
   const topFixes = Array.isArray(body.topFixes) ? body.topFixes.slice(0, 3).map((f) => str(f, 160)).filter(Boolean) : [];
   const { contact } = checked;
+
+  // Brevo contact first; any failure is logged by type only and never shown to the visitor.
+  try {
+    await upsertVisibilityContact(contact, { businessName: ticket.name, websiteUrl: ticket.website, summary: shortSummary(statuses, topFixes), personalReview: false });
+  } catch (error) {
+    console.error('visibility_brevo_failed', errorType(error));
+  }
 
   const sent = await notifyLead({
     businessName: ticket.name,

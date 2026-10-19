@@ -1,10 +1,9 @@
-// Lead notification for the visibility check, sent when a visitor unlocks the full report.
-//
-// NOT CONNECTED YET. This hosting has no email-sending binding, and the existing contact route
-// adds a Brevo contact rather than sending an email, so there is no email pattern to reuse.
-// Brevo is intentionally not connected for this check yet. Plug a transport into `send` below
-// (for example Cloudflare Email Routing or a transactional email API) when ready.
-// Until then leads are NOT delivered; only the error type is logged, never the lead details.
+// Lead notification for the visibility check, emailed to the owner when a check completes
+// (and when a personal review is requested), through Brevo's transactional email API.
+// Needs BREVO_API_KEY and a verified sender (BREVO_SENDER_EMAIL). If sending fails, only the
+// error type is logged, never the lead details, and the visitor sees nothing.
+
+import { emailOwner } from './brevo';
 
 export type Lead = {
   businessName: string;
@@ -32,9 +31,7 @@ export function formatLead(lead: Lead) {
 }
 
 async function send(subject: string, text: string): Promise<void> {
-  void subject;
-  void text;
-  throw new Error('notification_not_configured');
+  await emailOwner(subject, text);
 }
 
 export async function notifyLead(lead: Lead) {
