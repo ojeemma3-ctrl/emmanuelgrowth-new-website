@@ -2,10 +2,10 @@
 
 import Image from 'next/image';
 import { useEffect, useRef, useState, type RefObject } from 'react';
-import { BASELINE_LABEL } from '../../lib/check-standard';
+import { BASELINE_LABEL, displayPriority, formatCount, isMeasured } from '../../lib/check-standard';
 import { contactEmail, whatsappNumber } from '../home/content';
 import { Arrow } from '../home/shared';
-import { competitorArea, consistencyArea, contactArea, notChecked, profileArea, reviewStats, searchArea, speedArea, topFixes, websiteArea, type Area, type RuleResult, type Status } from './findings';
+import { competitorArea, consistencyArea, contactArea, notChecked, profileArea, reviewStats, searchArea, speedArea, speedNote, topFixes, UNFAIR_COMPARISON, websiteArea, type Area, type RuleResult, type Status } from './findings';
 import type { CheckState } from './InstantCheck';
 import { Icon, Ring, StatusChip, StepBar, type IconName } from './ui';
 import { UnlockForm } from './UnlockForm';
@@ -43,7 +43,7 @@ const GUIDES_PUBLISHED = false;
 const wa = (text: string) => `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`;
 
 // Only rules we actually measured count towards "checks passed".
-const measured = (r: RuleResult) => r.rule.mode === 'automatic' && r.status !== 'Couldn’t check' && r.status !== 'Not checked automatically';
+const measured = (r: RuleResult) => r.rule.mode === 'automatic' && isMeasured(r.status);
 
 function ProgressItem({ label, state }: { label: string; state: 'waiting' | 'done' | 'skipped' | 'failed' }) {
   const text = { waiting: 'Checking…', done: 'Done', skipped: 'Not applicable', failed: 'Could not check' }[state];
@@ -64,10 +64,10 @@ function Finding({ result, business }: { result: RuleResult; business: string })
         <dd>{value}</dd>
         <dt>Why it matters</dt>
         <dd>{rule.why}</dd>
-        {status === 'Problem' || status === 'Needs attention' ? (
+        {displayPriority(rule, status) ? (
           <>
             <dt>Priority and effort</dt>
-            <dd>{rule.priority} · {rule.effort} (rough estimate)</dd>
+            <dd>{displayPriority(rule, status)} · {rule.effort} (rough estimate)</dd>
           </>
         ) : null}
       </dl>
@@ -174,13 +174,14 @@ export function ResultView({ check, ticket, headingRef, whatsappHref, onCompare,
   const [comparing, setComparing] = useState(false);
   const skippedReason = check.competitors.state === 'skipped' ? check.competitors.reason : check.competitors.state === 'failed' ? 'failed' : null;
 
+  const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
   const areas: Area[] = [
     profileArea(profile, check.social),
     competitorArea(profile, check.competitors),
     websiteArea(check.site, hasWebsite, check.social, Boolean(profile)),
     contactArea(site, profile),
     searchArea(site),
-    speedArea(check.speed),
+    speedArea(check.speed, today),
     consistencyArea(profile, site),
   ].filter((a): a is Area => Boolean(a));
   const byId = Object.fromEntries(areas.map((a) => [a.id, a])) as Record<string, Area | undefined>;
@@ -188,7 +189,6 @@ export function ResultView({ check, ticket, headingRef, whatsappHref, onCompare,
   // With no real website, the "No website found" section replaces the website card.
   const cards = noRealWebsite ? areas.filter((a) => a.id !== 'website') : areas;
   const fixes = topFixes(areas);
-  const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
   const stats = profile && competitorRows?.rows.length ? reviewStats(profile.reviewCount ?? 0, competitorRows.rows) : null;
 
   const allResults = areas.flatMap((a) => a.results).filter(measured);
@@ -209,7 +209,7 @@ export function ResultView({ check, ticket, headingRef, whatsappHref, onCompare,
   const sum = (a: ReturnType<typeof counts>, b: ReturnType<typeof counts>) => ({ passed: a.passed + b.passed, total: a.total + b.total, problems: a.problems + b.problems, attention: a.attention + b.attention });
   const websiteCounts = sum(counts(websiteArea_), counts(speedArea_));
   const worse = (a?: Status, b?: Status): Status | null => {
-    const rank: Record<string, number> = { Problem: 3, 'Needs attention': 2, Good: 1, 'Couldn’t check': 0, 'Not checked automatically': 0 };
+    const rank: Record<string, number> = { Problem: 3, 'Needs attention': 2, Good: 1, 'Couldn’t check': 0, 'Couldn’t compare fairly': 0, 'Not checked automatically': 0 };
     if (!a && !b) return null;
     if (!a) return b ?? null;
     if (!b) return a;
@@ -224,7 +224,7 @@ export function ResultView({ check, ticket, headingRef, whatsappHref, onCompare,
     },
     {
       title: 'Reviews', icon: 'star', status: byId.reviews?.status ?? null,
-      figure: profile ? (stats ? `${profile.reviewCount ?? 0} reviews, typically ${stats.typical} nearby${profile.rating ? ` · rated ${profile.rating}` : ''}` : `${profile.reviewCount ?? 0} reviews${profile.rating ? ` · rated ${profile.rating}` : ''}`) : 'No Google profile to read reviews from.',
+      figure: profile ? (stats && stats.fair ? `${formatCount(profile.reviewCount ?? 0)} reviews, typically ${formatCount(stats.typical)} nearby${profile.rating ? ` · rated ${profile.rating}` : ''}` : `${formatCount(profile.reviewCount ?? 0)} reviews${profile.rating ? ` · rated ${profile.rating}` : ''}`) : 'No Google profile to read reviews from.',
       ...counts(byId.reviews), sources: profile ? ['From Google Maps'] : [],
     },
     noRealWebsite ? {
@@ -233,7 +233,7 @@ export function ResultView({ check, ticket, headingRef, whatsappHref, onCompare,
       sources: check.social && profile ? ['From Google Maps'] : [],
     } : {
       title: 'Website', icon: 'globe', status: worse(websiteArea_?.status, speedArea_?.status),
-      figure: [websiteArea_ ? websiteArea_.line : 'Checking your website…', speed?.scores.performance !== undefined ? `Mobile speed ${speed.scores.performance} out of 100.` : null, site ? `Page tested: ${site.finalUrl}` : null].filter(Boolean).join(' '),
+      figure: [websiteArea_ ? websiteArea_.line : 'Checking your website…', speed?.scores.performance !== undefined ? `Mobile speed ${speed.scores.performance} out of 100. ${speedNote(speed, today)}` : null, site ? `Page tested: ${site.finalUrl}` : null].filter(Boolean).join(' '),
       ...websiteCounts,
       sources: [site ? 'From your website' : null, speed?.scores.performance !== undefined ? 'From Google PageSpeed' : null].filter((x): x is string => Boolean(x)),
     },
@@ -349,7 +349,7 @@ export function ResultView({ check, ticket, headingRef, whatsappHref, onCompare,
                 <li className="ic-fix-card" key={f.key}>
                   <div className="ic-fix-meta">
                     <span className="ic-fix-num" aria-hidden="true">{i + 1}</span>
-                    {f.rule ? <span className={`ic-priority is-${f.rule.priority.toLowerCase().replace(' ', '-')}`}>{f.rule.priority}</span> : null}
+                    {f.priority ? <span className={`ic-priority is-${f.priority.toLowerCase().replace(' ', '-')}`}>{f.priority}</span> : null}
                   </div>
                   <p className="ic-fix-text">{f.text}</p>
                   {f.rule ? <p className="ic-fix-effort">Effort: {f.rule.effort} (rough estimate)</p> : null}
@@ -439,7 +439,8 @@ export function ResultView({ check, ticket, headingRef, whatsappHref, onCompare,
             <div className="ic-panel-head">
               <div>
                 <h2 id="ic-compare">Nearby businesses on Google</h2>
-                <p>Similar businesses nearby typically have <strong>{stats.typical} reviews</strong> (from {stats.min} to {stats.max}). By review count, {profile.name} ranks {stats.rank} of {stats.of}.</p>
+                <p>Similar businesses nearby typically have <strong>{formatCount(stats.typical)} reviews</strong> (from {formatCount(stats.min)} to {formatCount(stats.max)}). {stats.fair ? `By review count, ${profile.name} ranks ${stats.rank} of ${stats.of}.` : null}</p>
+              {stats.fair ? null : <p className="ic-unfair"><StatusChip status="Couldn’t compare fairly" /> {UNFAIR_COMPARISON}</p>}
               </div>
               <div className="ic-toggle" role="group" aria-label="Show nearby businesses as">
                 <button type="button" aria-pressed={nearbyView === 'table'} onClick={() => setNearbyView('table')}><Icon name="table" size={16} />Table</button>
@@ -452,15 +453,15 @@ export function ResultView({ check, ticket, headingRef, whatsappHref, onCompare,
                 <table className="ic-table">
                   <thead><tr><th scope="col">Business</th><th scope="col">Rating</th><th scope="col">Reviews</th><th scope="col">Website listed</th></tr></thead>
                   <tbody>
-                    <tr className="is-you"><th scope="row">{profile.name} <span className="ic-you">You</span></th><td>{profile.rating ?? '–'}</td><td>{profile.reviewCount ?? 0}</td><td>{profile.website ? (check.social ? `${check.social} page` : 'Yes') : 'No'}</td></tr>
-                    {competitorRows.rows.map((r) => <tr key={r.name}><th scope="row">{r.name}</th><td>{r.rating ?? '–'}</td><td>{r.reviewCount ?? 0}</td><td>{r.hasWebsite ? 'Yes' : 'No'}</td></tr>)}
+                    <tr className="is-you"><th scope="row">{profile.name} <span className="ic-you">You</span></th><td>{profile.rating ?? '–'}</td><td>{formatCount(profile.reviewCount ?? 0)}</td><td>{profile.website ? (check.social ? `${check.social} page` : 'Yes') : 'No'}</td></tr>
+                    {competitorRows.rows.map((r) => <tr key={r.name}><th scope="row">{r.name}</th><td>{r.rating ?? '–'}</td><td>{formatCount(r.reviewCount ?? 0)}</td><td>{r.hasWebsite ? 'Yes' : 'No'}</td></tr>)}
                   </tbody>
                 </table>
               </div>
             ) : (
               <ul className="ic-nearby-cards">
-                <li className="is-you"><strong>{profile.name} <span className="ic-you">You</span></strong><span>Rating {profile.rating ?? '–'}</span><span>{profile.reviewCount ?? 0} reviews</span><span>Website: {profile.website ? (check.social ? `${check.social} page` : 'Yes') : 'No'}</span></li>
-                {competitorRows.rows.map((r) => <li key={r.name}><strong>{r.name}</strong><span>Rating {r.rating ?? '–'}</span><span>{r.reviewCount ?? 0} reviews</span><span>Website: {r.hasWebsite ? 'Yes' : 'No'}</span></li>)}
+                <li className="is-you"><strong>{profile.name} <span className="ic-you">You</span></strong><span>Rating {profile.rating ?? '–'}</span><span>{formatCount(profile.reviewCount ?? 0)} reviews</span><span>Website: {profile.website ? (check.social ? `${check.social} page` : 'Yes') : 'No'}</span></li>
+                {competitorRows.rows.map((r) => <li key={r.name}><strong>{r.name}</strong><span>Rating {r.rating ?? '–'}</span><span>{formatCount(r.reviewCount ?? 0)} reviews</span><span>Website: {r.hasWebsite ? 'Yes' : 'No'}</span></li>)}
               </ul>
             )}
           </section>

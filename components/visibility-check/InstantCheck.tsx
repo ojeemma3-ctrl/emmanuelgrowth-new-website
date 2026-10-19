@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Competitor, Preview, Profile, Suggestion } from '../../lib/visibility/places';
 import type { PageSpeedReport } from '../../lib/visibility/pagespeed';
 import type { WebsiteReport } from '../../lib/visibility/website';
+import { formatCount } from '../../lib/check-standard';
 import { whatsappNumber } from '../home/content';
 import { Arrow } from '../home/shared';
 import { BusinessSearch } from './BusinessSearch';
@@ -287,7 +288,7 @@ export function InstantCheck() {
               <p className="ic-confirm-title" id="ic-confirm-title">Is this you?</p>
               <strong>{preview.name}</strong>
               <span className="ic-confirm-line"><Icon name="pin" size={16} />{preview.address}</span>
-              <span className="ic-confirm-line"><Icon name="star" size={16} />{[preview.category, preview.rating ? `${preview.rating} from ${preview.reviewCount ?? 0} reviews on Google` : 'No rating yet'].filter(Boolean).join(' · ')}</span>
+              <span className="ic-confirm-line"><Icon name="star" size={16} />{[preview.category, preview.rating ? `${preview.rating} from ${formatCount(preview.reviewCount ?? 0)} reviews on Google` : 'No rating yet'].filter(Boolean).join(' · ')}</span>
               <button className="vc-back" type="button" onClick={() => setPreview(null)}>Not me, search again</button>
             </div>
           ) : (

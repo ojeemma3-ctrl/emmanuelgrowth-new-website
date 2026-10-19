@@ -6,7 +6,21 @@
 // - No invented statistics, fear wording or fake scarcity.
 // - Effort is a rough estimate for a typical small business, not a promise.
 
-export type Status = 'Good' | 'Needs attention' | 'Problem' | 'Couldn’t check' | 'Not checked automatically';
+export type Status = 'Good' | 'Needs attention' | 'Problem' | 'Couldn’t check' | 'Couldn’t compare fairly' | 'Not checked automatically';
+
+// Only these statuses come from a real measurement and count towards "checks passed".
+export const isMeasured = (status: Status) => status === 'Good' || status === 'Needs attention' || status === 'Problem';
+
+// Priority shown to visitors: every Problem is "Fix first"; Needs attention is "Next" or "Later"
+// (a rule's "Fix first" becomes "Next"); Good and unmeasured items show no priority or effort.
+export function displayPriority(rule: { priority: Priority }, status: Status): Priority | null {
+  if (status === 'Problem') return 'Fix first';
+  if (status === 'Needs attention') return rule.priority === 'Later' ? 'Later' : 'Next';
+  return null;
+}
+
+// Numbers with thousands separators: 3,523 and 16,389.
+export const formatCount = (n: number) => n.toLocaleString('en-GB', { maximumFractionDigits: 1 });
 export type Priority = 'Fix first' | 'Next' | 'Later';
 export type AreaId = 'profile' | 'reviews' | 'website' | 'search' | 'contact' | 'speed' | 'consistency';
 

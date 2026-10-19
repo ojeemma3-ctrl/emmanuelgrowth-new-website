@@ -38,6 +38,7 @@ const statusLook: Record<Status, { cls: string; icon: IconName }> = {
   'Needs attention': { cls: 'is-attention', icon: 'alert' },
   Problem: { cls: 'is-problem', icon: 'cross' },
   'Couldn’t check': { cls: 'is-unknown', icon: 'question' },
+  'Couldn’t compare fairly': { cls: 'is-unknown', icon: 'question' },
   'Not checked automatically': { cls: 'is-unknown', icon: 'question' },
 };
 
