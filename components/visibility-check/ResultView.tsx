@@ -1,8 +1,8 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useId, useRef, useState, type RefObject } from 'react';
-import { CONTACT_TOPICS, HELP_LINK, PLAN_LINKS } from '../../lib/check-config';
+import { useCallback, useEffect, useId, useRef, useState, type RefObject } from 'react';
+import { HELP_LINK, PLAN_LINKS } from '../../lib/check-config';
 import { offerFor, type Offer } from '../../lib/check-offers';
 import { BASELINE_LABEL, displayPriority, fixSteps, formatCount, isMeasured } from '../../lib/check-standard';
 import { useHomeInteractions } from '../home/HomeInteractions';
@@ -12,6 +12,7 @@ import { competitorArea, consistencyArea, contactArea, notChecked, profileArea, 
 import type { CheckState } from './InstantCheck';
 import { Icon, Ring, StatusChip, StepBar, type IconName } from './ui';
 import type { Contact } from './ContactFields';
+import { PersonalReview } from './PersonalReview';
 
 // WhatsApp number from site config, shown on the PDF cover as +44 7575 416197.
 const whatsappDisplay = `+${whatsappNumber.slice(0, 2)} ${whatsappNumber.slice(2, 6)} ${whatsappNumber.slice(6)}`;
@@ -73,7 +74,7 @@ function FixSteps({ id }: { id: string }) {
 }
 
 // Closing block, after the Top 3 and at the end of the report.
-function ClosingBlock({ realWebsite, id }: { realWebsite: boolean; id: string }) {
+function ClosingBlock({ realWebsite, id, onPersonalReview }: { realWebsite: boolean; id: string; onPersonalReview: () => void }) {
   const { openContact } = useHomeInteractions();
   return (
     <section className="ic-block ic-closing" aria-labelledby={id}>
@@ -87,7 +88,7 @@ function ClosingBlock({ realWebsite, id }: { realWebsite: boolean; id: string })
         {realWebsite
           ? <a className="button button-growth" href={HELP_LINK}>See how I can help <Arrow /></a>
           : <a className="button button-growth" href={PLAN_LINKS.getFound}>See how I build it <Arrow /></a>}
-        <button className="button button-outline" type="button" aria-haspopup="dialog" onClick={() => openContact(CONTACT_TOPICS.personalReview)}>Get a free personal review</button>
+        <button className="button button-outline" type="button" aria-haspopup="dialog" onClick={onPersonalReview}>Get a free personal review</button>
         <button className="ic-closing-talk" type="button" aria-haspopup="dialog" onClick={() => openContact()}>Talk to me directly</button>
       </div>
     </section>
@@ -202,7 +203,7 @@ function Tile({ tile }: { tile: TileData }) {
   );
 }
 
-export function ResultView({ check, ticket, headingRef, onCompare, restored = false, onNewCheck, contact }: {
+export function ResultView({ check, ticket, headingRef, onCompare, restored = false, onNewCheck, contact, onContact }: {
   check: CheckState;
   restored?: boolean; // shown again from this tab's saved copy
   onNewCheck: () => void;
@@ -210,6 +211,7 @@ export function ResultView({ check, ticket, headingRef, onCompare, restored = fa
   ticket: string | null;
   headingRef: RefObject<HTMLHeadingElement | null>;
   contact: Contact | null; // from step 1, in memory only; null after a refresh or when contact isn't required
+  onContact: (c: Contact) => void; // contact given in the personal review dialog (memory only)
 }) {
   const business = check.businessName;
   const profile = check.profile;
@@ -221,6 +223,7 @@ export function ResultView({ check, ticket, headingRef, onCompare, restored = fa
   const allDone = [check.competitors, check.site, check.speed].every((l) => l.state !== 'waiting');
   const [nearbyView, setNearbyView] = useState<'table' | 'cards'>('table');
   const [reachedReport, setReachedReport] = useState(false);
+  const [reviewOpen, setReviewOpen] = useState(false);
   const [keyword, setKeyword] = useState('');
   const [comparing, setComparing] = useState(false);
   const skippedReason = check.competitors.state === 'skipped' ? check.competitors.reason : check.competitors.state === 'failed' ? 'failed' : null;
@@ -326,6 +329,8 @@ export function ResultView({ check, ticket, headingRef, onCompare, restored = fa
     return () => observer.disconnect();
   }, [reachedReport]);
 
+  const closeReview = useCallback(() => setReviewOpen(false), []);
+
   // Send the lead once, when every check has finished (not when a saved result is shown again).
   // The visitor never sees an error from this.
   const leadSent = useRef(false);
@@ -425,7 +430,7 @@ export function ResultView({ check, ticket, headingRef, onCompare, restored = fa
         ) : <p className="ic-hint">Working out your top fixes as the checks finish…</p>}
       </section>
 
-      {allDone ? <ClosingBlock realWebsite={!noRealWebsite} id="ic-closing-top" /> : null}
+      {allDone ? <ClosingBlock realWebsite={!noRealWebsite} id="ic-closing-top" onPersonalReview={() => setReviewOpen(true)} /> : null}
 
       {allDone ? (
         <section className="ic-block" aria-labelledby="ic-statuses">
@@ -534,11 +539,22 @@ export function ResultView({ check, ticket, headingRef, onCompare, restored = fa
           <PdfButton business={business} />
         </>
 
-      {allDone ? <ClosingBlock realWebsite={!noRealWebsite} id="ic-closing-end" /> : null}
+      {allDone ? <ClosingBlock realWebsite={!noRealWebsite} id="ic-closing-end" onPersonalReview={() => setReviewOpen(true)} /> : null}
 
       <div className="ic-cta">
         <button className="vc-back" type="button" onClick={onNewCheck}>Start a new check</button>
       </div>
+
+      <PersonalReview
+        open={reviewOpen}
+        onClose={closeReview}
+        ticket={ticket}
+        contact={contact}
+        onContact={onContact}
+        businessName={business}
+        businessCountry={profile?.countryCode}
+        summary={() => ({ statuses: Object.fromEntries(areas.map((a) => [a.title, a.status])), topFixes: fixes.map((f) => f.text) })}
+      />
     </div>
   );
 }

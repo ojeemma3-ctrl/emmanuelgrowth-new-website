@@ -6,6 +6,7 @@
 import { emailOwner } from './brevo';
 
 export type Lead = {
+  kind?: 'check' | 'review'; // a completed check, or a free personal review request
   businessName: string;
   mapsUrl?: string;
   channel: 'whatsapp' | 'email';
@@ -17,9 +18,9 @@ export type Lead = {
 
 export function formatLead(lead: Lead) {
   return [
-    `New visibility check: ${lead.businessName}`,
+    lead.kind === 'review' ? `Free personal review requested: ${lead.businessName}` : `New visibility check: ${lead.businessName}`,
     lead.mapsUrl ? `Google Maps: ${lead.mapsUrl}` : 'Google Maps: (not listed / not selected)',
-    `Send the report by: ${lead.channel === 'whatsapp' ? 'WhatsApp' : 'Email'}`,
+    `Best way to reach: ${lead.channel === 'whatsapp' ? 'WhatsApp' : 'Email'}`,
     lead.channel === 'whatsapp' ? `WhatsApp: ${lead.whatsapp}` : `Email: ${lead.email}`,
     '',
     'Area statuses:',
@@ -36,7 +37,7 @@ async function send(subject: string, text: string): Promise<void> {
 
 export async function notifyLead(lead: Lead) {
   try {
-    await send(`Visibility check: ${lead.businessName}`, formatLead(lead));
+    await send(`${lead.kind === 'review' ? 'Personal review request' : 'Visibility check'}: ${lead.businessName}`, formatLead(lead));
     return true;
   } catch (error) {
     console.error('visibility_notify_failed', error instanceof Error ? error.message : 'unknown_error');

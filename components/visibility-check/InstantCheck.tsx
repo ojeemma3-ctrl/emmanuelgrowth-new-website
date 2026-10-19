@@ -286,7 +286,7 @@ export function InstantCheck() {
       const d = await post<{ competitors?: Competitor[]; query?: string }>('competitors', { ticket, keyword });
       setCheck((c) => (c ? { ...c, competitors: d.skipped ? { state: 'skipped', reason: d.skipped } : d.error ? { state: 'failed', reason: d.error } : { state: 'done', data: { rows: d.competitors ?? [], query: d.query } } } : c));
     };
-    return <ResultView check={check} ticket={ticket} headingRef={resultsRef} onCompare={onCompare} restored={restored} onNewCheck={startNewCheck} contact={contact} />;
+    return <ResultView check={check} ticket={ticket} headingRef={resultsRef} onCompare={onCompare} restored={restored} onNewCheck={startNewCheck} contact={contact} onContact={setContact} />;
   }
 
   return (

@@ -532,6 +532,11 @@ h1 em, h2 em { display: inline-block; font-style: normal; color: inherit; text-d
 .ic-closing-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
 .ic-closing-talk { padding: 8px 0; border: 0; background: transparent; color: var(--text); font: inherit; font-size: 16px; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
 .ic-closing-contact { display: none; }
+.ic-review { max-width: 560px; }
+.ic-review-body { display: grid; justify-items: start; gap: 16px; }
+.ic-review-body p { margin: 0; }
+.ic-card.ic-review-form { width: 100%; padding: 0; border: 0; border-radius: 0; background: transparent; }
+.ic-review-form .ic-contact { margin-top: 0; padding-top: 0; border-top: 0; }
 .ic-howto { margin-top: 10px; }
 .ic-howto-toggle { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 4px 0; border: 0; background: transparent; color: var(--text); font: inherit; font-size: 15px; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
 .ic-howto-steps { margin: 6px 0 0; padding-left: 24px; list-style: decimal; font-size: 16px; line-height: 25px; }
