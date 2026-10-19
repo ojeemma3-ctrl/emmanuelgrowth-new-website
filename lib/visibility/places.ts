@@ -44,7 +44,7 @@ export async function autocomplete(input: string, sessionToken: string): Promise
 export type Preview = { placeId: string; name: string; address: string; category: string; rating?: number; reviewCount?: number; countryCode?: string };
 
 // "Is this you?" card. Uses the autocomplete session token, which closes the session.
-// The country picks the default "Send my report to" channel and phone country.
+// The country picks the default "Best way to reach you" channel and phone country.
 export async function preview(placeId: string, sessionToken: string): Promise<Preview> {
   type R = { id: string; displayName?: LocalizedText; formattedAddress?: string; addressComponents?: { shortText?: string; types?: string[] }[]; primaryTypeDisplayName?: LocalizedText; rating?: number; userRatingCount?: number };
   const data = await call<R>(`/places/${encodeURIComponent(placeId)}?languageCode=en&sessionToken=${encodeURIComponent(sessionToken)}`, {

@@ -521,6 +521,17 @@ h1 em, h2 em { display: inline-block; font-style: normal; color: inherit; text-d
 .ic-pdf .button { display: inline-flex; align-items: center; gap: 8px; }
 .ic-pdf .ic-hint { margin: 0; }
 .ic-print-cover { display: none; }
+.ic-offer { display: inline-flex; vertical-align: middle; }
+.ic-offer-tag { display: inline-flex; align-items: center; min-height: 32px; padding: 4px 12px; border: 1px solid var(--border-light); border-radius: 999px; background: var(--white); color: var(--text); font: inherit; font-size: 14px; line-height: 20px; font-weight: 600; text-decoration: none; cursor: pointer; }
+.ic-offer-tag:hover { border-color: var(--text); }
+.ic-offer-print { display: none; }
+.ic-fix-card .ic-offer { margin-top: 10px; }
+.ic-closing { padding: 24px; border: 1px solid var(--border-light); border-radius: 16px; background: var(--white); }
+.ic-closing-text { max-width: 62ch; margin: 0 0 18px; font-size: 17px; line-height: 27px; }
+.ic-closing-text strong { display: block; margin-bottom: 4px; font-size: 20px; line-height: 28px; }
+.ic-closing-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
+.ic-closing-talk { padding: 8px 0; border: 0; background: transparent; color: var(--text); font: inherit; font-size: 16px; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
+.ic-closing-contact { display: none; }
 @media (min-width: 640px) { .ic-card.ic-unlock-form { padding: 36px; } }
 .ic-panel .ic-source { display: inline-block; margin-bottom: 12px; }
 .ic-you { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 999px; background: var(--green); color: var(--black); font-size: 13px; line-height: 17px; font-weight: 700; vertical-align: middle; }

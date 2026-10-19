@@ -4,8 +4,21 @@
 // false: step 1 asks only for the business; contact is asked for when the visitor requests a personal review.
 export const REQUIRE_CONTACT_BEFORE_REPORT = true;
 
-// Where "See how I can help" points.
+// Where "See how I can help" points (the pricing section on the home page).
 export const HELP_LINK = '/#pricing';
+
+// Plan pages used by the report's tags and closing block (real routes; pricing cards are /#<plan>-plan).
+export const PLAN_LINKS = {
+  getFound: '/get-found',
+  getMoreReviews: '/build-trust',
+  convertEnquiries: '/convert-enquiries', // early access: the page and pricing card offer the waitlist
+};
+
+// Topics prefilled in the existing contact box.
+export const CONTACT_TOPICS = {
+  websiteImprovements: 'Website improvements',
+  personalReview: 'Free personal review',
+};
 
 // The owner's contact details, shown in the report, the PDF and used for WhatsApp links.
 export const OWNER = {

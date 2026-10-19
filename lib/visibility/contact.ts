@@ -1,4 +1,4 @@
-// Server-side check of "Send my report to": one channel, a valid email or WhatsApp number, and consent.
+// Server-side check of "Best way to reach you": one channel, a valid email or WhatsApp number, and consent.
 import { isValidPhoneNumber, parsePhoneNumberWithError } from 'libphonenumber-js/min';
 import { str } from './server';
 

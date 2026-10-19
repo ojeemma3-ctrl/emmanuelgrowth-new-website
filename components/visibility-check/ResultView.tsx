@@ -2,7 +2,10 @@
 
 import Image from 'next/image';
 import { useEffect, useRef, useState, type RefObject } from 'react';
+import { CONTACT_TOPICS, HELP_LINK, PLAN_LINKS } from '../../lib/check-config';
+import { offerFor, type Offer } from '../../lib/check-offers';
 import { BASELINE_LABEL, displayPriority, formatCount, isMeasured } from '../../lib/check-standard';
+import { useHomeInteractions } from '../home/HomeInteractions';
 import { contactEmail, whatsappNumber } from '../home/content';
 import { Arrow } from '../home/shared';
 import { competitorArea, consistencyArea, contactArea, notChecked, profileArea, reviewStats, searchArea, speedArea, speedNote, topFixes, UNFAIR_COMPARISON, websiteArea, type Area, type RuleResult, type Status } from './findings';
@@ -34,6 +37,37 @@ function PdfButton({ business }: { business: string }) {
       <button className="button button-dark" type="button" onClick={() => printReport(business)}><Icon name="download" size={18} />Download PDF</button>
       <p className="ic-hint">Opens your browser’s print window. Choose “Save as PDF” as the printer.</p>
     </div>
+  );
+}
+
+// Small tag next to a fix: a plan page, or the contact box with a topic. In the PDF: "Covered by: …".
+function OfferTag({ offer }: { offer: Offer | null }) {
+  const { openContact } = useHomeInteractions();
+  if (!offer) return null;
+  return (
+    <span className="ic-offer">
+      {offer.kind === 'link'
+        ? <a className="ic-offer-tag" href={offer.href}>{offer.label}</a>
+        : <button className="ic-offer-tag" type="button" aria-haspopup="dialog" onClick={() => openContact(offer.topic)}>{offer.label}</button>}
+      <span className="ic-offer-print">Covered by: {offer.covers}</span>
+    </span>
+  );
+}
+
+// Closing block, after the Top 3 and at the end of the report.
+function ClosingBlock({ realWebsite, id }: { realWebsite: boolean; id: string }) {
+  const { openContact } = useHomeInteractions();
+  return (
+    <section className="ic-block ic-closing" aria-labelledby={id}>
+      <h2 className="sr-only" id={id}>Next steps</h2>
+      <div className="ic-closing-actions">
+        {realWebsite
+          ? <a className="button button-growth" href={HELP_LINK}>See how I can help <Arrow /></a>
+          : <a className="button button-growth" href={PLAN_LINKS.getFound}>See how I build it <Arrow /></a>}
+        <button className="button button-outline" type="button" aria-haspopup="dialog" onClick={() => openContact(CONTACT_TOPICS.personalReview)}>Get a free personal review</button>
+        <button className="ic-closing-talk" type="button" aria-haspopup="dialog" onClick={() => openContact()}>Talk to me directly</button>
+      </div>
+    </section>
   );
 }
 
@@ -147,14 +181,13 @@ function Tile({ tile }: { tile: TileData }) {
   );
 }
 
-export function ResultView({ check, ticket, headingRef, whatsappHref, onCompare, restored = false, onNewCheck, contact }: {
+export function ResultView({ check, ticket, headingRef, onCompare, restored = false, onNewCheck, contact }: {
   check: CheckState;
   restored?: boolean; // shown again from this tab's saved copy
   onNewCheck: () => void;
   onCompare?: (keyword: string) => Promise<void>;
   ticket: string | null;
   headingRef: RefObject<HTMLHeadingElement | null>;
-  whatsappHref: string;
   contact: Contact | null; // from step 1, in memory only; null after a refresh or when contact isn't required
 }) {
   const business = check.businessName;
@@ -362,6 +395,7 @@ export function ResultView({ check, ticket, headingRef, whatsappHref, onCompare,
                   </div>
                   <p className="ic-fix-text">{f.text}</p>
                   {f.rule ? <p className="ic-fix-effort">Effort: {f.rule.effort} (rough estimate)</p> : null}
+                  <OfferTag offer={offerFor(f.key === 'reviews' || f.key === 'website' ? f.key : f.rule?.id ?? f.key, !noRealWebsite)} />
                   <a className="ic-soft-link" href={wa(`Hi Emmanuel, I ran the visibility check for ${business}. Could you do this for me: ${f.text}?`)} target="_blank" rel="noreferrer">Want me to do this for you?</a>
                 </li>
               ))}
@@ -369,6 +403,8 @@ export function ResultView({ check, ticket, headingRef, whatsappHref, onCompare,
           ) : <p>We didn’t find anything urgent in these checks.</p>
         ) : <p className="ic-hint">Working out your top fixes as the checks finish…</p>}
       </section>
+
+      {allDone ? <ClosingBlock realWebsite={!noRealWebsite} id="ic-closing-top" /> : null}
 
       {allDone ? (
         <section className="ic-block" aria-labelledby="ic-statuses">
@@ -414,8 +450,8 @@ export function ResultView({ check, ticket, headingRef, whatsappHref, onCompare,
               <h2><Icon name="alert" />What to fix</h2>
               {toFix.length || websiteNote ? (
                 <ul>
-                  {websiteNote ? <li><strong>Website:</strong> {websiteNote}</li> : null}
-                  {toFix.map((r) => <li key={r.rule.id}><strong>{r.rule.label}:</strong> {r.value} <StatusChip status={r.status} /></li>)}
+                  {websiteNote ? <li><strong>Website:</strong> {websiteNote} <OfferTag offer={offerFor('website', false)} /></li> : null}
+                  {toFix.map((r) => <li key={r.rule.id}><strong>{r.rule.label}:</strong> {r.value} <StatusChip status={r.status} /> <OfferTag offer={offerFor(r.rule.id, !noRealWebsite)} /></li>)}
                 </ul>
               ) : <p>Nothing to fix in the checks we could run.</p>}
             </div>
@@ -478,9 +514,9 @@ export function ResultView({ check, ticket, headingRef, whatsappHref, onCompare,
           <PdfButton business={business} />
         </>
 
+      {allDone ? <ClosingBlock realWebsite={!noRealWebsite} id="ic-closing-end" /> : null}
+
       <div className="ic-cta">
-        <a className="ic-soft-link" href={wa(`Hi Emmanuel, I ran the visibility check for ${business}. Could you do these fixes for me?`)} target="_blank" rel="noreferrer">Want me to do this for you?</a>
-        <a className="button button-growth" href={whatsappHref} target="_blank" rel="noreferrer">Want me to walk you through these fixes? Message me on WhatsApp <Arrow /></a>
         <button className="vc-back" type="button" onClick={onNewCheck}>Start a new check</button>
       </div>
     </div>

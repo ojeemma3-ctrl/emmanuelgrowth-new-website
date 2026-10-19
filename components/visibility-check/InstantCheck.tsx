@@ -7,7 +7,6 @@ import type { PageSpeedReport } from '../../lib/visibility/pagespeed';
 import type { WebsiteReport } from '../../lib/visibility/website';
 import { REQUIRE_CONTACT_BEFORE_REPORT } from '../../lib/check-config';
 import { formatCount } from '../../lib/check-standard';
-import { whatsappNumber } from '../home/content';
 import { Arrow } from '../home/shared';
 import { BusinessSearch } from './BusinessSearch';
 import { checkContact, CONTACT_FIELD_IDS, ContactFields, initialContact, withBusinessCountry, type Contact, type ContactState } from './ContactFields';
@@ -39,7 +38,7 @@ const errorText: Record<string, string> = {
   invalid: 'Please check the form and try again.',
   keyword: 'For “What do you do?”, please use a few words with letters and numbers only, for example plumber or hair salon.',
   expired: 'This check has expired. Please start again.',
-  consent: 'Please tick the box so we can send you your report.',
+  consent: 'Please tick the box so we can contact you about your check.',
   email: 'That email address doesn’t look right. Please check it.',
   whatsapp: 'That WhatsApp number doesn’t look right. Please check it and the country.',
   upstream: 'Google didn’t respond just now. Please try again in a minute.',
@@ -282,13 +281,12 @@ export function InstantCheck() {
   };
 
   if (stage === 'running' && check) {
-    const whatsappHref = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Hi Emmanuel, I ran the visibility check for ${check.businessName}. Could you walk me through the fixes?`)}`;
     const onCompare = async (keyword: string) => {
       if (!ticket) return;
       const d = await post<{ competitors?: Competitor[]; query?: string }>('competitors', { ticket, keyword });
       setCheck((c) => (c ? { ...c, competitors: d.skipped ? { state: 'skipped', reason: d.skipped } : d.error ? { state: 'failed', reason: d.error } : { state: 'done', data: { rows: d.competitors ?? [], query: d.query } } } : c));
     };
-    return <ResultView check={check} ticket={ticket} headingRef={resultsRef} whatsappHref={whatsappHref} onCompare={onCompare} restored={restored} onNewCheck={startNewCheck} contact={contact} />;
+    return <ResultView check={check} ticket={ticket} headingRef={resultsRef} onCompare={onCompare} restored={restored} onNewCheck={startNewCheck} contact={contact} />;
   }
 
   return (
@@ -298,7 +296,7 @@ export function InstantCheck() {
       <header className="ic-hero">
         <p className="ic-hero-label">Step 1 of 3 · Your business</p>
         <h1>See how your business shows up online.</h1>
-        <p>Find your business{REQUIRE_CONTACT_BEFORE_REPORT ? ', tell us where to send your report,' : ''} and we’ll run automated checks of your public Google profile and website, then show you the top fixes in plain words.</p>
+        <p>Find your business and we’ll run automated checks of your public Google profile and website, then show you the top fixes in plain words. Your report appears on this page, and you can save it as a PDF.</p>
         {check && isFinished(check) ? (
           <div className="ic-resume">
             <button className="button button-dark" type="button" onClick={showResults}>Back to your results for {check.businessName} <Arrow /></button>

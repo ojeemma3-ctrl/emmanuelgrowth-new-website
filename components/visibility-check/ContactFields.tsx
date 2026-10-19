@@ -1,6 +1,6 @@
 'use client';
 
-// "Send my report to": WhatsApp or email (one only), consent and the optional tips box.
+// "Best way to reach you": WhatsApp or email (one only), consent and the optional tips box.
 // The values live in memory only (React state) and are never saved in the browser.
 import Link from 'next/link';
 import { parsePhoneNumberWithError, validatePhoneNumberLength } from 'libphonenumber-js/min';
@@ -71,14 +71,14 @@ export function checkContact(state: ContactState): ContactCheck {
   if (state.channel === 'whatsapp') {
     const result = checkPhone(state.phone, state.country);
     if ('error' in result) return { ok: false, field: 'whatsapp', error: result.error };
-    if (!state.consent) return { ok: false, field: 'consent', error: 'Please tick the box so we can send you your report.' };
+    if (!state.consent) return { ok: false, field: 'consent', error: 'Please tick the box so we can contact you about your check.' };
     return { ok: true, contact: { channel: 'whatsapp', whatsapp: result.e164, tips: state.tips }, country: result.country };
   }
   const value = state.email.trim();
   if (!value || !EMAIL.test(value)) {
     return { ok: false, field: 'email', error: value ? 'That email address doesn’t look right. Check it, for example you@yourbusiness.com.' : 'Please enter your email address.' };
   }
-  if (!state.consent) return { ok: false, field: 'consent', error: 'Please tick the box so we can send you your report.' };
+  if (!state.consent) return { ok: false, field: 'consent', error: 'Please tick the box so we can contact you about your check.' };
   return { ok: true, contact: { channel: 'email', email: value, tips: state.tips } };
 }
 
@@ -95,7 +95,7 @@ export function ContactFields({ value, onChange, error }: {
   return (
     <div className="ic-contact">
       <fieldset className="ic-channel">
-        <legend>Send my report to</legend>
+        <legend>Best way to reach you</legend>
         <div className="ic-channel-options">
           <label className={value.channel === 'whatsapp' ? 'is-on' : undefined}>
             <input type="radio" name="channel" value="whatsapp" checked={value.channel === 'whatsapp'} onChange={() => set({ channel: 'whatsapp', channelTouched: true })} />
@@ -120,7 +120,7 @@ export function ContactFields({ value, onChange, error }: {
             invalid={fieldError?.field === 'whatsapp'}
             describedBy={fieldError?.field === 'whatsapp' ? errorId : 'ic-contact-phone-hint'}
           />
-          <p className="ic-hint" id="ic-contact-phone-hint">Choose your country, then type your number. We save it in international format, for example {value.country.dial} …</p>
+          <p className="ic-hint" id="ic-contact-phone-hint">We’ll use this only to contact you about your visibility check. Include your country code.</p>
         </div>
       ) : (
         <div>
@@ -137,9 +137,10 @@ export function ContactFields({ value, onChange, error }: {
               value={value.email}
               onChange={(e) => set({ email: e.target.value })}
               aria-invalid={fieldError?.field === 'email' || undefined}
-              aria-describedby={fieldError?.field === 'email' ? errorId : undefined}
+              aria-describedby={fieldError?.field === 'email' ? errorId : 'ic-contact-email-hint'}
             />
           </div>
+          <p className="ic-hint" id="ic-contact-email-hint">We’ll use this only to contact you about your visibility check.</p>
         </div>
       )}
       {fieldError ? <p className="ic-field-error" id={errorId} role="alert"><Icon name="alert" size={16} />{fieldError.message}</p> : null}
