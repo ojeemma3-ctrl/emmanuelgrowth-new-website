@@ -5,7 +5,7 @@ import { SourceChip, type Source } from './shared';
 
 // Step n shows cards whose `at` <= n. Step 1 adds "Found on Google" to the first card.
 const cards: { at: number; source: Source; title: string; detail?: string; detailAt?: number; badge?: string; stars?: boolean }[] = [
-  { at: 0, source: 'google', title: 'Someone searched “plumber near me”', detail: 'Found on Google', detailAt: 1, badge: 'Found' },
+  { at: 0, source: 'google', title: 'Someone searched “restaurant near me”', detail: 'Found on Google', detailAt: 1, badge: 'Found' },
   { at: 2, source: 'whatsapp', title: 'Customer asks', detail: '“Do you have space on Friday?”', badge: 'New' },
   { at: 3, source: 'whatsapp', title: 'Reply sent in seconds', detail: 'Friday has free slots. Tap a time to book.', badge: 'Replied' },
   { at: 4, source: 'whatsapp', title: 'Booking confirmed', detail: 'Friday 14:00', badge: 'Booked' },
@@ -73,7 +73,7 @@ export function HeroStory() {
         <div
           className="hero-panel-body"
           role="img"
-          aria-label="Example: someone searches for a plumber and finds the business on Google, asks on WhatsApp about Friday, gets a reply in seconds, books Friday at 14:00, and is then asked for a five-star review."
+          aria-label="Example: someone searches for a restaurant and finds the business on Google, asks on WhatsApp about Friday, gets a reply in seconds, books Friday at 14:00, and is then asked for a five-star review."
         >
           {cards.map((card, index) => {
             const shown = visible >= card.at;

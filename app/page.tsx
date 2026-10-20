@@ -47,7 +47,7 @@ export default function Home() {
       <Pricing />
       <FAQ />
       <About />
-      <FinalCTA />
+      <FinalCTA heading="See where your business can win more customers." />
     </SiteShell>
   );
 }

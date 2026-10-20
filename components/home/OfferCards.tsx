@@ -51,14 +51,14 @@ function Vineyard() {
 
 export function FoundCard() {
   return (
-    <CardShell description="Example: a Google search for a winery near Bordeaux shows the winery’s listing with its rating and Call, Directions and Book a tasting buttons.">
+    <CardShell description="Example: a Google search for a winery nearby shows the winery’s listing with its rating and Call, Directions and Book a tasting buttons.">
       <div className="pc-found">
-        <div className="pc-search"><span className="pc-search-chip">Google</span><span>winery near Bordeaux</span></div>
+        <div className="pc-search"><span className="pc-search-chip">Google</span><span>winery near me</span></div>
         <div className="pc-result">
           <Vineyard />
           <div className="pc-result-body">
             <strong className="pc-result-name">Château Lumière</strong>
-            <span className="pc-muted">Winery · Open now · Saint-Émilion</span>
+            <span className="pc-muted">Winery · Open now</span>
             <span className="pc-rating"><b>4.8</b><Stars /><span className="pc-muted">(312)</span></span>
             <div className="pc-actions"><span className="is-dark">Call</span><span>Directions</span><span>Book a tasting</span></div>
           </div>

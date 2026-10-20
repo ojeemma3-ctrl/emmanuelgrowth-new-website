@@ -144,7 +144,7 @@ export function OfferSections() {
     <>
       <section className="offers-intro" id="services">
         <div className="container">
-          <h2>Three places businesses <em>lose</em> customers.</h2>
+          <h2>Three places to win more customers.</h2>
         </div>
       </section>
       {offers.map((offer, index) => (

@@ -1271,3 +1271,29 @@ h1 em, h2 em { display: inline-block; font-style: normal; color: inherit; text-d
   .icp-listings { margin-top: 6pt !important; color: var(--muted-light); font-size: 8.5pt; }
   .icp-foot { margin-top: 12pt !important; padding-top: 6pt; border-top: 1px solid var(--line); color: var(--muted-light); font-size: 8pt; }
 }
+
+/* Home page tidy-up. Scoped to the home page (main with the hero) so the service pages, which reuse
+   How it works, Pricing, FAQ and the final CTA, stay as they are.
+   Rhythm: hero dark, problem band light grey (intro + three sections), How it works white, pricing dark,
+   FAQ white, About light grey, final CTA white with its dark card. Every band 96px top and bottom (64px on phones). */
+main:has(> .hero) .hero { padding-top: 96px; }
+main:has(> .hero) .offers-intro { padding-block: 96px 24px; background: var(--grey); }
+main:has(> .hero) #get-more-reviews { padding-bottom: 96px; }
+main:has(> .hero) :is(.how-section, .pricing-section, .faq-section, .about-section, .final-cta) { padding-block: 96px; }
+/* Lime underline only in the hero and the pricing heading. */
+main:has(> .hero) :is(.how-heading, .faq-heading, .about-panel) h2 em { text-decoration: none; }
+/* How it works: slightly larger step cards with 16px body text. */
+main:has(> .hero) .how-steps { gap: 28px; }
+main:has(> .hero) .how-steps li { padding: 44px 36px 48px; }
+main:has(> .hero) .how-steps h3 { font-size: 26px; line-height: 32px; }
+main:has(> .hero) .how-steps p { max-width: 34ch; font-size: 16px; line-height: 26px; }
+main:has(> .hero) .how-steps::before { top: 67px; }
+/* Hero card: small text at least 12px. */
+.hero-panel-label { font-size: 12px; }
+@media (max-width: 767px) {
+  main:has(> .hero) .hero { padding-top: 64px; }
+  main:has(> .hero) .offers-intro { padding-block: 64px 16px; }
+  main:has(> .hero) #get-more-reviews { padding-bottom: 64px; }
+  main:has(> .hero) :is(.how-section, .pricing-section, .faq-section, .about-section, .final-cta) { padding-block: 64px; }
+  main:has(> .hero) .how-steps li { padding: 36px 24px 40px; }
+}
