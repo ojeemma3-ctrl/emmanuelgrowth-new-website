@@ -550,7 +550,7 @@ export function ResultView({ check, ticket, headingRef, onCompare, restored = fa
           ) : <p className="ic-address">Entered by you, not selected from Google.</p>}
           <div className="ic-hero-actions">
             {profile?.mapsUrl ? <a className="ic-maps-link" href={profile.mapsUrl} target="_blank" rel="noreferrer">View on Maps <Icon name="external" size={14} /></a> : null}
-            <button className="button button-ghost ic-pdf-button" type="button" onClick={() => printReport(business)} title="Opens your browser’s print window. Choose “Save as PDF” as the printer."><Icon name="download" size={18} />Download PDF</button>
+            <button className="button button-growth ic-pdf-button" type="button" onClick={() => printReport(business)} title="Opens your browser’s print window. Choose “Save as PDF” as the printer."><Icon name="download" size={18} />Download PDF</button>
           </div>
         </div>
         <div className="ic-result-score">
