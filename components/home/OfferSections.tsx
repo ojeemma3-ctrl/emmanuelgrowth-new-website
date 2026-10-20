@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { ContactTrigger } from './InteractionTriggers';
+import { ConvertCard, FoundCard, ReviewsCard } from './OfferCards';
 import { ConvertVisual, FoundVisual, ReviewsVisual } from './OfferVisuals';
 import { Arrow } from './shared';
 
@@ -13,6 +14,8 @@ export type Offer = {
   bullets: string[];
   details: { title: string; text: string }[];
   visual: ReactNode;
+  // Home page problem sections only (the service pages keep fix, bullets and visual above).
+  home: { fix: string; bullets: string[]; card: ReactNode };
 };
 
 export const offers: Offer[] = [
@@ -35,6 +38,15 @@ export const offers: Offer[] = [
       { title: 'Booking and tracking', text: 'Lead capture, booking and basic tracking so you see what works.' },
     ],
     visual: <FoundVisual />,
+    home: {
+      fix: 'Local customers search, find you and contact you in one tap. Whether you run a winery, a hotel or a restaurant.',
+      bullets: [
+        'A simple website that shows who you are and what you offer',
+        'Your Google profile set up clearly, with photos and opening times',
+        'Call, directions and booking buttons on every page',
+      ],
+      card: <FoundCard />,
+    },
   },
   {
     id: 'convert-enquiries',
@@ -55,6 +67,15 @@ export const offers: Offer[] = [
       { title: 'Booking and handover', text: 'Move enquiries to a booking, or hand over to a person.' },
     ],
     visual: <ConvertVisual />,
+    home: {
+      fix: 'Every message from every channel lands in one inbox, gets a quick first reply and a follow-up until it becomes a booking.',
+      bullets: [
+        'WhatsApp, Instagram, Facebook, email and SMS in one place',
+        'A quick first reply, so nobody waits hours',
+        'Simple follow-up until they book',
+      ],
+      card: <ConvertCard />,
+    },
   },
   {
     id: 'get-more-reviews',
@@ -75,26 +96,45 @@ export const offers: Offer[] = [
       { title: 'Repeat campaigns', text: 'Simple campaigns across the channels your customers use.' },
     ],
     visual: <ReviewsVisual />,
+    home: {
+      fix: 'After each stay, visit or tasting, guests get a friendly message with one tap to review you.',
+      bullets: [
+        'A review request after every visit, by text, WhatsApp or email',
+        'One tap straight to your Google page',
+        'See new reviews and your rating in one place',
+      ],
+      card: <ReviewsCard />,
+    },
   },
 ];
 
-export function OfferPanel({ offer, flipped = false, headingLevel = 'h3' }: { offer: Offer; flipped?: boolean; headingLevel?: 'h2' | 'h3' }) {
+const CheckIcon = () => (
+  <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m3.5 8.5 3 3 6-7" /></svg>
+);
+
+// variant 'home': the home page problem sections (new copy and code-built example card); 'service': the service pages.
+export function OfferPanel({ offer, flipped = false, headingLevel = 'h3', variant = 'service' }: { offer: Offer; flipped?: boolean; headingLevel?: 'h2' | 'h3'; variant?: 'home' | 'service' }) {
   const Heading = headingLevel;
+  const home = variant === 'home';
+  const fix = home ? offer.home.fix : offer.fix;
+  const bullets = home ? offer.home.bullets : offer.bullets;
   return (
-    <div className={`container offer-panel${flipped ? ' is-flipped' : ''}`}>
+    <div className={`container offer-panel${flipped ? ' is-flipped' : ''}${home ? ' is-home' : ''}`}>
       <div className="offer-text">
         <p className="offer-number"><span>{offer.number}</span>{offer.name}</p>
         <Heading id={`${offer.id}-title`}>&ldquo;{offer.problem}&rdquo;</Heading>
-        <p className="offer-fix">{offer.fix}</p>
+        <p className="offer-fix">{fix}</p>
         <ul className="offer-bullets">
-          {offer.bullets.map((item) => <li key={item}><span aria-hidden="true">✓</span>{item}</li>)}
+          {bullets.map((item) => <li key={item}><span aria-hidden="true">{home ? <CheckIcon /> : '✓'}</span>{item}</li>)}
         </ul>
         <ContactTrigger className="button button-dark">Fix this problem <Arrow /></ContactTrigger>
       </div>
-      <div className="offer-media">
-        <span className="offer-media-label">Example</span>
-        {offer.visual}
-      </div>
+      {home ? offer.home.card : (
+        <div className="offer-media">
+          <span className="offer-media-label">Example</span>
+          {offer.visual}
+        </div>
+      )}
     </div>
   );
 }
@@ -108,8 +148,8 @@ export function OfferSections() {
         </div>
       </section>
       {offers.map((offer, index) => (
-        <section className={`offer-block${index % 2 === 0 ? ' is-grey' : ''}`} id={offer.id} key={offer.id} aria-labelledby={`${offer.id}-title`}>
-          <OfferPanel offer={offer} flipped={index % 2 === 1} />
+        <section className="offer-block is-problem" id={offer.id} key={offer.id} aria-labelledby={`${offer.id}-title`}>
+          <OfferPanel offer={offer} flipped={index % 2 === 1} variant="home" />
         </section>
       ))}
     </>
