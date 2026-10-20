@@ -27,4 +27,5 @@ export const OWNER = {
   email: 'emmanuel@emmanuelgrowth.com',
   whatsapp: '447575416197', // international digits, no plus sign
   whatsappDisplay: '+44 7575 416197',
+  website: 'emmanuelgrowth.com', // shown on the PDF cover
 };

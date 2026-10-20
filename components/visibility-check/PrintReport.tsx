@@ -3,12 +3,13 @@
 // contact / consistency / AI readiness, next steps. No toggles, buttons or free fix steps.
 import Image from 'next/image';
 import type { ReactNode } from 'react';
+import { OWNER } from '../../lib/check-config';
 import { offerFor } from '../../lib/check-offers';
 import { LISTINGS_LINE } from '../../lib/listings-by-country';
 import { formatCount, isMeasured, ruleById } from '../../lib/check-standard';
 import { domainOf, notChecked, type RuleResult, type Status } from './findings';
 import type { Card, Fix } from './ResultView';
-import { Ring, StatusChip } from './ui';
+import { Icon, Ring, StatusChip } from './ui';
 
 const severity: Record<Status, number> = { Problem: 3, 'Needs attention': 2, Good: 1, 'Couldn’t check': 0, 'Couldn’t compare fairly': 0, 'Not checked automatically': 0 };
 const longDate = (iso?: string) => (iso ? new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : undefined);
@@ -121,26 +122,53 @@ export function PrintReport({ business, address, today, cards, fixes, passed, to
     reviews.rows.length ? ruleById['reviews-recent'].measured : null,
   ].filter((x): x is string => Boolean(x));
 
+  // Cover "in short" line from the real area statuses; parts with no areas are left out.
+  const areasWith = (status: Status) => cards.filter((c) => c.status === status).map((c) => c.title).join(', ');
+  const inShort = ([
+    ['Good', areasWith('Good')],
+    ['Problem', areasWith('Problem')],
+    ['Needs attention', areasWith('Needs attention')],
+    ['Start with', fixes[0]?.text ?? ''],
+  ] as const).filter(([, text]) => text);
+
   return (
     <div className="icp" aria-hidden="true">
       {/* 1. Cover */}
       <section className="icp-page icp-cover">
-        <div className="icp-brand">
-          <Image src={logo} alt="" width={44} height={44} />
-          <span>EMMANUEL <b>GROWTH</b></span>
-        </div>
+        <header className="icp-band">
+          <div className="icp-band-top">
+            <div className="icp-brand">
+              <Image src={logo} alt="" width={56} height={56} />
+              <span>EMMANUEL <b>GROWTH</b></span>
+            </div>
+            <span className="icp-site">{OWNER.website}</span>
+          </div>
+          <p className="icp-tagline">Practical marketing systems for real businesses</p>
+          <p className="icp-band-label">Questions about this report?</p>
+          <div className="icp-band-buttons">
+            <a className="icp-btn icp-btn-mail" href={`mailto:${OWNER.email}`}><span className="icp-btn-icon"><Icon name="mail" size={16} /></span><span>{OWNER.email}</span></a>
+            <a className="icp-btn icp-btn-wa" href={`https://wa.me/${OWNER.whatsapp}`}><span className="icp-btn-icon"><Icon name="chat" size={16} /></span><span>WhatsApp {OWNER.whatsappDisplay}</span></a>
+          </div>
+        </header>
         <div className="icp-cover-main">
-          <p className="icp-kicker">Visibility check report</p>
+          <p className="icp-kicker"><span aria-hidden="true" />Visibility check report</p>
           <h1>{business}</h1>
-          {address ? <p>{address}</p> : null}
-          <p>{today}</p>
+          {address ? <p className="icp-cover-meta">{address}</p> : null}
+          <p className="icp-cover-meta">{today}</p>
           <p className="icp-cover-note">Automated checks of public information</p>
+          <div className="icp-cover-summary">
+            <Ring passed={passed} total={total} />
+            <div>
+              <p className="icp-cover-score">{passed} of {total} checks passed</p>
+              <p className="icp-cover-counts">Counts only the checks we could run automatically.</p>
+              {inShort.length ? <p className="icp-cover-short">{inShort.map(([label, text]) => <span key={label}><strong>{label}:</strong> {text}. </span>)}</p> : null}
+            </div>
+          </div>
         </div>
-        <div className="icp-cover-contact">
-          <p><strong>Emmanuel Growth</strong></p>
-          <p>Email: {contactEmail}</p>
-          <p>WhatsApp: {whatsapp}</p>
-        </div>
+        <footer className="icp-cover-foot">
+          <span>Prepared by {OWNER.business}</span>
+          <span>Based on public information on {today}. A starting point, not a guarantee.</span>
+        </footer>
       </section>
 
       {/* 2. Summary */}
