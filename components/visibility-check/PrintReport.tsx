@@ -4,6 +4,7 @@
 import Image from 'next/image';
 import type { ReactNode } from 'react';
 import { offerFor } from '../../lib/check-offers';
+import { LISTINGS_LINE } from '../../lib/listings-by-country';
 import { formatCount, isMeasured, ruleById } from '../../lib/check-standard';
 import { domainOf, notChecked, type RuleResult, type Status } from './findings';
 import type { Card, Fix } from './ResultView';
@@ -215,7 +216,9 @@ export function PrintReport({ business, address, today, cards, fixes, passed, to
       <section className="icp-page">
         <PageHead title="Contact, consistency and AI readiness" business={business} />
         <Block title="Contact" status={contact.status} statusLabel={contact.statusLabel} line={contact.line} rows={contact.rows} details={contact.details} text={contact.text} />
-        <Block title="Consistency" status={consistency.status} statusLabel={consistency.statusLabel} line={consistency.line} rows={consistency.rows} details={consistency.details} text={consistency.text} />
+        <Block title="Consistency" status={consistency.status} statusLabel={consistency.statusLabel} line={consistency.line} rows={consistency.rows} details={consistency.details} text={consistency.text}>
+          <p className="icp-listings">{LISTINGS_LINE}</p>
+        </Block>
         <Block title="AI readiness" status={aiRows.length ? worst(aiRows) : ai.status} statusLabel={aiRows.length ? undefined : ai.statusLabel} line={aiRows.length ? undefined : ai.line} rows={aiRows} text={ai.text} />
       </section>
 

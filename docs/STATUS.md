@@ -5,6 +5,7 @@ Last updated: 20 October 2026 (visibility check redesign, steps 1 to 3). Update 
 ## Done
 - Home page redesign: hero with animated panel, three offer sections, How it works, pricing, FAQ, About, final CTA,
   footer; dark/lime design tokens; contact box (WhatsApp, email, quick message to Brevo list 7).
+- Listings guide: /guides/listings (lib/listings-by-country.ts: core listings + GB, NG, US; FR is a TODO). In the sitemap.
 - Service pages: /get-found, /build-trust (Get More Reviews), /convert-enquiries. Legal pages: privacy, cookies, terms.
 - Pricing section from lib/pricing-config.ts: four plans (EUR), early-access tags, plan-prefilled contact box,
   anchors #pricing, #get-found-plan, #get-more-reviews-plan, #convert-enquiries-plan, #complete-system-plan.
@@ -20,6 +21,8 @@ Last updated: 20 October 2026 (visibility check redesign, steps 1 to 3). Update 
     Plain names per rule (displayName / technicalName in lib/check-standard.ts); no full web addresses inline.
   - Save as PDF: dedicated A4 print layout (components/visibility-check/PrintReport.tsx), 6 fixed pages: cover,
     summary, Google and reviews, website, contact / consistency / AI readiness, next steps. Page numbers in Chrome.
+  - Consistency area: one line about other listings with a "See where to check" link to /guides/listings?country=XX
+    (country from the Google profile; type=hospitality adds Tripadvisor). The PDF has the line only.
   - Results survive Back and refresh for 2 hours (sessionStorage, no contact details stored).
   - Limits per IP and per day (in memory), signed tickets, honeypot, Turnstile support (keys not set).
   - Brevo contact sync and owner email on completion; free personal review dialog (code done, see Blocked).

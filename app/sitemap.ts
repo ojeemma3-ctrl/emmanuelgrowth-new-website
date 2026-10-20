@@ -7,6 +7,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ['get-found', 0.8],
     ['convert-enquiries', 0.8],
     ['build-trust', 0.8],
+    ['guides/listings', 0.5],
     ['privacy-policy', 0.4],
     ['cookie-policy', 0.4],
     ['terms-of-use', 0.4],

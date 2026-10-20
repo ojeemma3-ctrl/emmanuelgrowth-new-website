@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useId, useRef, useState, type MouseEvent, type ReactNode, type RefObject } from 'react';
 import { HELP_LINK, PLAN_LINKS } from '../../lib/check-config';
 import { offerFor, type Offer } from '../../lib/check-offers';
+import { LISTINGS_LINE, listingsGuideHref } from '../../lib/listings-by-country';
 import { BASELINE_LABEL, displayPriority, fixSteps, formatCount, isMeasured } from '../../lib/check-standard';
 import { useHomeInteractions } from '../home/HomeInteractions';
 import { contactEmail, whatsappNumber } from '../home/content';
@@ -432,6 +433,12 @@ export function ResultView({ check, ticket, headingRef, onCompare, restored = fa
     return { id, title, icon, ...fromArea(area) };
   };
 
+  // Consistency: after the Google-versus-website comparison, one line about other listings and the guide link.
+  const withListings = (card: Card): Card => (card.waiting ? card : {
+    ...card,
+    extra: <p className="ic-listings">{LISTINGS_LINE} <a href={listingsGuideHref(profile?.countryCode, profile?.categoryType)}>See where to check <Arrow /></a></p>,
+  });
+
   const cards: Card[] = [
     profile
       ? { id: 'profile', title: 'Google profile', icon: 'pin', ...fromArea(byId.profile as Area), text: [] }
@@ -445,7 +452,7 @@ export function ResultView({ check, ticket, headingRef, onCompare, restored = fa
     siteCard('contact', 'Contact', 'phone', byId.contact, 'There’s no website to check for contact buttons.', 'We couldn’t read your website for contact links.'),
     !profile
       ? unavailable('consistency', 'Consistency', 'building', 'There’s no Google profile to compare your details with.', 'No profile')
-      : siteCard('consistency', 'Consistency', 'building', byId.consistency, 'There’s no website to compare with your Google profile.', 'We couldn’t read your website to compare your details.'),
+      : withListings(siteCard('consistency', 'Consistency', 'building', byId.consistency, 'There’s no website to compare with your Google profile.', 'We couldn’t read your website to compare your details.')),
     siteCard('ai', 'AI readiness', 'spark', byId.search, 'AI assistants have no website of yours to read.', 'We couldn’t read your website for these signals.'),
   ];
 
