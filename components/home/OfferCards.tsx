@@ -70,7 +70,21 @@ export function FoundCard() {
   );
 }
 
-const conversations = [
+// Small app badges so each conversation's platform is clear. Simple drawn marks, not official logo files.
+type Channel = 'instagram' | 'whatsapp' | 'facebook' | 'email' | 'google';
+const channelMarks: Record<Channel, ReactNode> = {
+  instagram: <><rect x="5" y="5" width="14" height="14" rx="4.5" fill="none" stroke="#FFF" strokeWidth="2" /><circle cx="12" cy="12" r="3.2" fill="none" stroke="#FFF" strokeWidth="2" /><circle cx="16.3" cy="7.7" r="1.1" fill="#FFF" /></>,
+  whatsapp: <><path d="M12 4.5a7.5 7.5 0 0 0-6.4 11.4L4.6 19.4l3.6-.9A7.5 7.5 0 1 0 12 4.5Z" fill="none" stroke="#FFF" strokeWidth="1.8" strokeLinejoin="round" /><path d="M9.6 8.8c.2-.4.5-.4.7-.4h.4c.2 0 .4.1.5.4l.5 1.2c.1.2 0 .4-.1.6l-.4.5c.4.8 1.1 1.5 1.9 1.9l.5-.4c.2-.1.4-.2.6-.1l1.2.5c.3.1.4.3.4.5v.4c0 .3-.1.5-.4.7-.5.3-1.2.4-1.9.1-1.8-.7-3.1-2-3.8-3.8-.3-.7-.2-1.4.1-1.9Z" fill="#FFF" /></>,
+  facebook: <path d="M13.2 20v-6.6h2.3l.4-2.7h-2.7V9c0-.8.3-1.3 1.4-1.3H16V5.3c-.3 0-1.1-.1-2-.1-2.1 0-3.4 1.2-3.4 3.5v2h-2.3v2.7h2.3V20Z" fill="#FFF" />,
+  email: <><rect x="5" y="7" width="14" height="10" rx="1.8" fill="none" stroke="#FFF" strokeWidth="1.8" /><path d="m5.6 8 6.4 4.6L18.4 8" fill="none" stroke="#FFF" strokeWidth="1.8" strokeLinejoin="round" /></>,
+  google: <><path d="M18.6 12.2c0-.5 0-.9-.1-1.3H12v2.5h3.7a3.2 3.2 0 0 1-1.4 2.1v1.7h2.2c1.3-1.2 2.1-3 2.1-5Z" fill="#4285F4" /><path d="M12 19c1.9 0 3.4-.6 4.5-1.7l-2.2-1.7c-.6.4-1.4.7-2.3.7a4 4 0 0 1-3.8-2.8H5.9v1.8A6.9 6.9 0 0 0 12 19Z" fill="#34A853" /><path d="M8.2 13.5a4 4 0 0 1 0-2.7V9H5.9a6.9 6.9 0 0 0 0 6.3Z" fill="#FBBC05" /><path d="M12 7.8c1 0 2 .4 2.7 1l2-2A6.9 6.9 0 0 0 5.9 9l2.3 1.8A4 4 0 0 1 12 7.8Z" fill="#EA4335" /></>,
+};
+
+function ChannelLogo({ channel, className = 'pc-logo' }: { channel: Channel; className?: string }) {
+  return <svg className={`${className} is-${channel}`} viewBox="0 0 24 24" aria-hidden="true">{channelMarks[channel]}</svg>;
+}
+
+const conversations: { initials: string; name: string; preview: string; channel: Channel; active?: boolean }[] = [
   { initials: 'SM', name: 'Sophie Martin', preview: 'Table for 4 on Sat?', channel: 'instagram', active: true },
   { initials: 'JB', name: 'Julien Bernard', preview: 'Change my date?', channel: 'whatsapp' },
   { initials: 'LC', name: 'Léa Chevalier', preview: 'Do you ship wine?', channel: 'facebook' },
@@ -88,14 +102,14 @@ export function ConvertCard() {
           <ul>
             {conversations.map((c) => (
               <li key={c.initials} className={c.active ? 'is-active' : undefined}>
-                <span className="pc-avatar">{c.initials}<i className={`pc-dot is-${c.channel}`} /></span>
+                <span className="pc-avatar">{c.initials}<ChannelLogo channel={c.channel} /></span>
                 <span className="pc-conv"><strong>{c.name}</strong><span>{c.preview}</span></span>
               </li>
             ))}
           </ul>
         </div>
         <div className="pc-thread">
-          <div className="pc-thread-head"><strong>Sophie Martin</strong><span className="pc-tag">Instagram</span></div>
+          <div className="pc-thread-head"><strong>Sophie Martin</strong><span className="pc-tag"><ChannelLogo channel="instagram" className="pc-tag-logo" />Instagram</span></div>
           <div className="pc-messages">
             <p className="pc-msg is-in">Hi! Do you have a table for 4 on Saturday?</p>
             <p className="pc-msg is-out">Yes! Here are the free times. Tap one to book.</p>
