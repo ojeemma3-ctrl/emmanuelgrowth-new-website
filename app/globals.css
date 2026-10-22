@@ -1748,3 +1748,33 @@ main:has(> .hero) .is-featured .ph-name { border-color: #26282B; background: #1C
   .ph-card, .ph-button, .ph-details { transition: none; }
   .ph-card:hover { transform: none; }
 }
+
+/* Home About with the founder photo: one panel on white; photo in a 340x400 frame with a lime block offset
+   behind it and a small name label; the existing copy, bullets and one button on the right. */
+main:has(> .hero) > section.about-section { background: #FFFFFF; }
+main:has(> .hero) .about-section .about-panel { display: grid; grid-template-columns: 400px minmax(0, 1fr); align-items: center; gap: 72px; min-height: 500px; padding: 50px 64px 50px 72px; border: 1px solid #EAEAE6; border-radius: 30px; background: #F5F5F2; box-shadow: none; }
+.about-photo { position: relative; width: 340px; height: 400px; margin-left: 18px; }
+.about-photo-block { position: absolute; inset: 0; border-radius: 26px; background: #C6F135; transform: translate(-18px, 18px); }
+.about-photo-frame { position: relative; height: 100%; overflow: hidden; border-radius: 26px; background: #E3E3DF; box-shadow: 0 24px 40px -24px rgba(11, 12, 14, .4); }
+.about-photo-frame img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 18%; }
+.about-photo-label { position: absolute; left: 16px; bottom: 16px; display: grid; gap: 2px; margin: 0; padding: 10px 14px; border-radius: 12px; background: #FFFFFF; box-shadow: 0 8px 20px -10px rgba(11, 12, 14, .35); line-height: 1.3; }
+.about-photo-label strong { color: #0B0C0E; font-size: 15px; }
+.about-photo-label span { color: #5F636A; font-size: 12.5px; }
+main:has(> .hero) .about-copy .kicker { margin-bottom: 12px; color: #4A4E55; }
+main:has(> .hero) .about-section .about-copy h2 { margin: 0 0 18px; color: #0B0C0E; -webkit-text-fill-color: #0B0C0E; font-size: clamp(2rem, 3.6vw, 2.75rem); }
+main:has(> .hero) .about-copy > p:not(.kicker) { margin: 0 0 22px; color: #3A3D42; font-size: 17px; line-height: 1.6; }
+main:has(> .hero) .about-copy .about-principles { margin-bottom: 28px; border-top-color: #E3E3DF; }
+main:has(> .hero) .about-copy .about-principles li { border-bottom-color: #E3E3DF; color: #0B0C0E; }
+.about-principles li > span svg { display: block; }
+.about-cta { display: inline-flex; }
+
+@media (max-width: 1099px) {
+  main:has(> .hero) .about-section .about-panel { grid-template-columns: 360px minmax(0, 1fr); gap: 48px; padding: 44px 40px 44px 52px; }
+  .about-photo { width: 320px; height: 380px; }
+}
+@media (max-width: 899px) {
+  main:has(> .hero) .about-section .about-panel { grid-template-columns: minmax(0, 1fr); justify-items: center; gap: 44px; min-height: 0; padding: 36px 24px 32px; border-radius: 24px; }
+  .about-photo { width: min(300px, calc(100% - 18px)); height: auto; aspect-ratio: 340 / 400; margin: 0 0 0 18px; }
+  .about-copy { width: 100%; }
+  .about-cta { display: flex; width: 100%; }
+}
