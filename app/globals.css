@@ -1300,72 +1300,105 @@ main:has(> .hero) .how-steps::before { top: 67px; }
   main:has(> .hero) .how-steps li { padding: 36px 24px 40px; }
 }
 
-/* Home page colour and surface pass. Palette scoped to the home page (main with the hero); the existing
-   tokens are pointed at it, so every home section uses only these values. Other routes are unchanged. */
+/* Home page light system (matches the visibility check page). Scoped to the home page (main with the hero);
+   the existing tokens point at this palette. The nav bar and footer stay the site's black bar. Other routes unchanged.
+   Light: every section #F5F5F2, white only for cards and app windows, 1px #E3E3DF dividers between sections.
+   Dark elements: hero card, problem cards, pricing section, final CTA card (#0B0C0E, raised rows #14161A / #1C1E21). */
 main:has(> .hero) {
-  --ink: #0B0C0E;          /* hero, pricing, final CTA card */
-  --panel: #14161A;        /* cards on dark, problem cards */
+  --ink: #0B0C0E;
+  --raised: #14161A;
+  --raised-2: #1C1E21;
   --panel-line: rgba(255, 255, 255, .08);
-  --light: #F5F5F2;        /* every light section */
-  --light-line: rgba(11, 12, 14, .08);
-  --lime: #C6F135;         /* accent only; text on lime is ink */
-  --text-strong: #0B0C0E; --text-soft: #4A4E55;   /* on light */
-  --on-dark: #FFFFFF; --on-dark-soft: #A3A7AE;    /* on dark */
-  --star: #F5A524;         /* stars only */
-  --black: var(--ink); --surface: var(--panel); --border-dark: var(--panel-line); --grey: var(--light);
+  --light: #F5F5F2;
+  --divider: #E3E3DF;
+  --lime: #C6F135;          /* buttons, chips, checks, badges, active states; text on lime is ink; never lime text on light */
+  --heading: #0B0C0E; --body: #3A3D42; --muted: #6B6F76;           /* on light */
+  --on-dark: #F2F3F4; --on-dark-body: #A1A3A5;                     /* on dark */
+  --star: #F5A524;
+  --soft-shadow: 0 12px 32px -16px rgba(11, 12, 14, .18);
+  --black: var(--ink); --surface: var(--raised); --border-dark: var(--panel-line); --grey: var(--light);
   --green: var(--lime); --green-edge: color-mix(in srgb, var(--lime) 55%, var(--ink));
-  --text: var(--text-strong); --muted-light: var(--text-soft); --muted-dark: var(--on-dark-soft);
-  --amber: var(--star); --border-light: var(--light-line);
+  --text: var(--heading); --muted-light: var(--muted); --muted-dark: var(--on-dark-body);
+  --amber: var(--star); --border-light: var(--divider);
 }
 
-/* Bands: dark hero, light problem band, light How it works, dark pricing, light FAQ and About, light band
-   under the final CTA card. 1px divider where two light sections meet. */
-main:has(> .hero) :is(.how-section, .faq-section, .about-section, .final-cta) { background: var(--light); }
-main:has(> .hero) :is(.how-section, .about-section, .final-cta) { border-top: 1px solid var(--light-line); }
-main:has(> .hero) .offer-block.is-problem + .offer-block.is-problem { border-top-color: var(--light-line); }
+/* Sections: one light background, 1px dividers; pricing is the dark section. */
+main:has(> .hero) > section { border-top: 1px solid var(--divider); background: var(--light); }
+main:has(> .hero) > .hero { border-top: 0; }
+main:has(> .hero) > .offers-intro + .offer-block.is-problem { border-top: 0; }
+main:has(> .hero) .offer-block.is-problem + .offer-block.is-problem { border-top-color: var(--divider); }
+main:has(> .hero) > .pricing-section { background: var(--ink); }
 
-/* Hero: flat ink, one faint white top-light, no grid or glow; headline pure white with "reviews." in lime. */
-main:has(> .hero) .hero { background: var(--ink); }
-main:has(> .hero) .hero::before { display: none; }
-main:has(> .hero) .hero::after { background: linear-gradient(180deg, rgba(255, 255, 255, .04), transparent 45%); }
-main:has(> .hero) :is(.hero-copy h1, .pricing-heading h2, .final-cta-panel h2) { background: none; color: var(--on-dark); -webkit-text-fill-color: var(--on-dark); }
-main:has(> .hero) :is(.hero-copy h1 em, .pricing-heading h2 em) { background: none; color: var(--lime); -webkit-text-fill-color: var(--lime); animation: none; }
+/* Headings are solid: ink on light, #F2F3F4 on dark. No gradients. */
+main:has(> .hero) :is(.hero-copy h1, .offers-intro h2, .offer-text h3, .how-heading h2, .faq-heading h2, .about-panel h2) { background: none; color: var(--heading); -webkit-text-fill-color: var(--heading); }
+main:has(> .hero) :is(.pricing-heading h2, .final-cta-panel h2) { background: none; color: var(--on-dark); -webkit-text-fill-color: var(--on-dark); }
+main:has(> .hero) .pricing-heading h2 em { background: none; color: var(--lime); -webkit-text-fill-color: var(--lime); }
+main:has(> .hero) :is(.offer-fix, .how-steps p, .faq-heading > p:not(.kicker), .faq-list details p, .about-panel > div > p) { color: var(--body); }
+main:has(> .hero) :is(.offer-bullets li, .about-principles li, .how-steps h3, .faq-list summary) { color: var(--heading); }
+main:has(> .hero) .offer-number span { background: var(--lime); color: var(--ink); }
 
-/* Hero card: a white app window with light rows; the active step has a lime left bar and bold text. */
-main:has(> .hero) .hero-panel { border: 0; border-radius: 20px; background: #FFFFFF; color: var(--text-strong); box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .6); }
-main:has(> .hero) .hero-panel-bar { height: 48px; border-bottom: 1px solid var(--light-line); background: #FFFFFF; color: var(--text-soft); font-size: 13px; }
-main:has(> .hero) .hero-panel-dots i { background: #DCDCD7; }
-main:has(> .hero) .hero-panel-label { border-color: var(--light-line); color: var(--text-soft); font-size: 13px; }
-main:has(> .hero) .story-progress i { background: #E4E4DF; }
+/* Hero: light, flat. "reviews." on a lime highlight block with black text. */
+main:has(> .hero) .hero { background: var(--light); color: var(--heading); }
+main:has(> .hero) .hero::before, main:has(> .hero) .hero::after { display: none; }
+main:has(> .hero) .hero-copy h1 em { padding: 0 .1em; border-radius: 4px; background: var(--lime); color: var(--ink); -webkit-text-fill-color: var(--ink); text-decoration: none; animation: none; }
+main:has(> .hero) .hero-copy > p:not(.hero-badge) { color: var(--body); }
+main:has(> .hero) .hero-badge { border-color: var(--divider); background: #FFFFFF; color: var(--body); }
+main:has(> .hero) .hero-badge span { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 0 1px rgba(11, 12, 14, .25); color: transparent; font-size: 0; }
+main:has(> .hero) .hero-cta-note { color: var(--muted); }
+main:has(> .hero) .hero .button-ghost { border-color: var(--divider); background: #FFFFFF; color: var(--heading); }
+main:has(> .hero) .hero .button-ghost:hover { border-color: var(--heading); }
+main:has(> .hero) .hero-outcomes { border-top-color: var(--divider); }
+main:has(> .hero) .hero-outcomes > a + a { border-left-color: var(--divider); }
+main:has(> .hero) .hero-outcomes strong { color: var(--heading); }
+main:has(> .hero) .hero-outcomes span { color: var(--muted); }
+main:has(> .hero) .hero-outcomes > a:hover strong { color: var(--heading); text-decoration: underline; text-decoration-color: var(--lime); text-decoration-thickness: 3px; text-underline-offset: 4px; }
+
+/* Hero card: dark app window; rows #14161A; the active step has a lime left bar and bold text. */
+main:has(> .hero) .hero-panel { border: 1px solid var(--panel-line); border-radius: 20px; background: var(--ink); color: var(--on-dark); box-shadow: var(--soft-shadow); }
+main:has(> .hero) .hero-panel-bar { height: 48px; border-bottom: 1px solid var(--panel-line); background: var(--ink); color: var(--on-dark-body); font-size: 13px; }
+main:has(> .hero) .hero-panel-dots i { background: rgba(255, 255, 255, .14); }
+main:has(> .hero) .hero-panel-label { border-color: var(--panel-line); color: var(--on-dark-body); font-size: 13px; }
+main:has(> .hero) .story-progress i { background: var(--raised-2); }
 main:has(> .hero) .story-progress i.is-done { background: var(--lime); }
-main:has(> .hero) .hero-panel-body { background: #FFFFFF; }
-main:has(> .hero) .story-card { border: 0; background: var(--light); box-shadow: inset 4px 0 0 transparent; transition: opacity .45s ease, transform .45s ease, filter .45s ease, box-shadow .3s ease; }
+main:has(> .hero) .hero-panel-body { background: var(--ink); }
+main:has(> .hero) .story-card { border: 1px solid var(--panel-line); background: var(--raised); box-shadow: inset 4px 0 0 transparent; transition: opacity .45s ease, transform .45s ease, filter .45s ease, box-shadow .3s ease; }
 main:has(> .hero) .story-card.is-latest { box-shadow: inset 4px 0 0 var(--lime); }
-main:has(> .hero) .story-text strong { color: var(--text-strong); font-weight: 500; }
+main:has(> .hero) .story-text strong { color: var(--on-dark); font-weight: 500; }
 main:has(> .hero) .story-card.is-latest .story-text strong { font-weight: 700; }
-main:has(> .hero) .story-text small { color: var(--text-soft); font-size: 14px; }
-main:has(> .hero) .story-card em { background: #E4E4DF; color: var(--text-strong); font-size: 13px; }
+main:has(> .hero) .story-text small { color: var(--on-dark-body); font-size: 14px; }
+main:has(> .hero) .story-card em { background: var(--raised-2); color: var(--on-dark); font-size: 13px; }
 main:has(> .hero) .story-card.is-latest em { background: var(--lime); color: var(--ink); }
-main:has(> .hero) .story-card .source-chip { border: 1px solid var(--light-line); background: #FFFFFF; color: var(--ink); font-size: 13px; }
-main:has(> .hero) .story-stars i { color: #D6D6D0; }
-main:has(> .hero) .story-stars.is-filling i { animation-name: star-fill-light; }
-@keyframes star-fill-light { from { color: #D6D6D0; transform: scale(.7); } to { color: #F5A524; transform: scale(1); } }
-/* Step tabs under the card: at least 12px, the active one in lime. */
-main:has(> .hero) .stage-tag { border-color: var(--panel-line); background: var(--panel); color: var(--on-dark-soft); font-size: 13px; }
+main:has(> .hero) .story-card .source-chip { border: 1px solid var(--panel-line); background: var(--raised-2); color: var(--on-dark); font-size: 13px; }
+main:has(> .hero) .story-stars i { color: var(--raised-2); }
+main:has(> .hero) .story-stars.is-filling i { animation-name: star-fill-dark; }
+@keyframes star-fill-dark { from { color: #1C1E21; transform: scale(.7); } to { color: #F5A524; transform: scale(1); } }
+/* Step tabs under the card (on the light hero): white, the active one in lime. */
+main:has(> .hero) .stage-tag { border-color: var(--divider); background: #FFFFFF; color: var(--body); font-size: 13px; animation: none; box-shadow: var(--soft-shadow); }
+main:has(> .hero) .stage-dot { background: #CFCFCA; }
 main:has(> .hero) .stage-tag.is-active { border-color: var(--lime); background: var(--lime); color: var(--ink); }
 main:has(> .hero) .stage-tag.is-active .stage-dot { background: var(--ink); }
 main:has(> .hero) .stage-tag.is-active .stage-dot::after { border-color: var(--ink); }
 
-/* How it works: white step cards with a 1px border on the light band. */
-main:has(> .hero) .how-steps li { border: 1px solid var(--light-line); background: #FFFFFF; }
+/* White cards on the light sections. */
+main:has(> .hero) :is(.how-steps li, .faq-list details, .about-panel) { border: 1px solid var(--divider); background: #FFFFFF; box-shadow: var(--soft-shadow); }
+main:has(> .hero) .faq-list details[open] { border-color: var(--heading); }
+main:has(> .hero) .faq-list summary span { background: var(--light); }
 
-/* Problem cards: flat Panel, 1px line, 3% grid, no glow; stars in amber. */
-main:has(> .hero) .pc-card { border: 1px solid var(--panel-line); background: var(--panel); }
+/* Problem cards: flat dark shell with the white inner windows; 3% grid, no glow; stars in amber. */
+main:has(> .hero) .pc-card { border: 1px solid var(--panel-line); background: var(--ink); box-shadow: var(--soft-shadow); }
 main:has(> .hero) .pc-card::before { background-image: linear-gradient(rgba(255, 255, 255, .03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .03) 1px, transparent 1px); }
 main:has(> .hero) .pc-stars { color: var(--star); }
 
-/* Final CTA: the ink card on the light band. */
-main:has(> .hero) .final-cta-panel { border-color: var(--panel-line); background: var(--ink); }
-/* Step tabs sit just under the white card instead of overlapping its edge. */
+/* Pricing: dark section, cards on #14161A. */
+main:has(> .hero) .price-card { border-color: var(--panel-line); background: var(--raised); color: var(--on-dark); }
+main:has(> .hero) .price-card.is-highlighted { border-color: var(--lime); }
+main:has(> .hero) .price-card .button-dark { border-color: var(--panel-line); background: var(--ink); color: var(--on-dark); }
+main:has(> .hero) :is(.price-amount span, .price-for, .price-fine p, .pricing-heading > p:not(.kicker), .pricing-note) { color: var(--on-dark-body); }
+
+/* Final CTA: the dark card on the light section. */
+main:has(> .hero) .final-cta-panel { border-color: var(--panel-line); background: var(--ink); box-shadow: var(--soft-shadow); }
+main:has(> .hero) .final-cta-panel > p:not(.kicker) { color: var(--on-dark-body); }
+main:has(> .hero) .final-cta-panel .button-ghost { border-color: var(--panel-line); background: var(--raised); color: var(--on-dark); }
+/* Step tabs sit just under the hero card instead of overlapping its edge. */
 main:has(> .hero) .hero-stage { display: flex; flex-direction: column; }
 main:has(> .hero) .stage-tags { order: 2; position: static; margin: 18px 0 0; }
