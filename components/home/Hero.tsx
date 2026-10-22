@@ -1,12 +1,12 @@
-import { HeroReport } from './HeroReport';
 import Link from 'next/link';
-import { Arrow } from './shared';
+import { HeroDashboard } from './HeroDashboard';
 
-const outcomes = [
-  { title: 'Get Found', text: 'Show up when local customers search.', href: '#get-found' },
-  { title: 'Convert Enquiries', text: 'Every enquiry gets a quick first answer.', href: '#convert-enquiries' },
-  { title: 'Get More Reviews', text: 'Happy customers leave proof for you.', href: '#get-more-reviews' },
-  { title: 'One simple system', text: 'Set up for you, easy to run day to day.', href: '#how-it-works' },
+// Four boxes overlapping the bottom of the hero; each links to its part of the page.
+const boxes = [
+  { title: 'Get Found', line: 'Show up in local search', href: '#get-found' },
+  { title: 'Convert Enquiries', line: 'Answer every enquiry', href: '#convert-enquiries' },
+  { title: 'Get More Reviews', line: 'Ask after every job', href: '#get-more-reviews' },
+  { title: 'One Simple System', line: 'Set up for you', href: '#how-it-works' },
 ];
 
 export function Hero() {
@@ -18,18 +18,21 @@ export function Hero() {
           <h1>Get found.<br />Convert more enquiries.<br />Get more <em>reviews.</em></h1>
           <p>All the simple tools you need to turn searches into enquiries, enquiries into bookings, and customers into reviews.</p>
           <div className="button-row">
-            <Link className="button button-growth" href="/visibility-check">Get a free visibility check <Arrow /></Link>
-            <a className="button button-ghost" href="#services">See Our Services</a>
+            <Link className="button button-growth hero-cta" href="/visibility-check">
+              Get a free visibility check
+              <span className="hero-cta-icon" aria-hidden="true">
+                <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3.5 8h9M8.5 4l4 4-4 4" /></svg>
+              </span>
+            </Link>
           </div>
-          <p className="hero-cta-note">Takes about 60 seconds</p>
         </div>
-        <HeroReport />
       </div>
-      <div className="container hero-outcomes">
-        {outcomes.map((item) => (
-          <a key={item.title} href={item.href}>
-            <strong>{item.title}</strong>
-            <span>{item.text}</span>
+      <HeroDashboard />
+      <div className="container hero-boxes">
+        {boxes.map((box) => (
+          <a key={box.title} href={box.href}>
+            <strong>{box.title}</strong>
+            <span>{box.line}</span>
           </a>
         ))}
       </div>

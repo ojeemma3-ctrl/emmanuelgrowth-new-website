@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { ContactTrigger } from './InteractionTriggers';
 import { ConvertCard, FoundCard, ReviewsCard } from './OfferCards';
+import { OfferTabs, type OfferTab } from './OfferTabs';
 import { ConvertVisual, FoundVisual, ReviewsVisual } from './OfferVisuals';
 import { Arrow } from './shared';
 
@@ -139,19 +140,18 @@ export function OfferPanel({ offer, flipped = false, headingLevel = 'h3', varian
   );
 }
 
+// Home page: one section with a heading, three tabs and one panel (OfferTabs). The service pages use OfferPanel.
 export function OfferSections() {
+  const items: OfferTab[] = offers.map((offer) => ({ id: offer.id, number: offer.number, name: offer.name, problem: offer.problem, fix: offer.home.fix, bullets: offer.home.bullets, phone: offer.home.card }));
   return (
-    <>
-      <section className="offers-intro" id="services">
-        <div className="container">
-          <h2>Three places to win more customers.</h2>
+    <section className="offer-tabs-section" id="services" aria-labelledby="services-title">
+      <div className="container">
+        <div className="ot-heading">
+          <h2 id="services-title">Three places to win more customers.</h2>
+          <p>Pick one to see how it works.</p>
         </div>
-      </section>
-      {offers.map((offer, index) => (
-        <section className="offer-block is-problem" id={offer.id} key={offer.id} aria-labelledby={`${offer.id}-title`}>
-          <OfferPanel offer={offer} flipped={index % 2 === 1} variant="home" />
-        </section>
-      ))}
-    </>
+        <OfferTabs items={items} />
+      </div>
+    </section>
   );
 }
