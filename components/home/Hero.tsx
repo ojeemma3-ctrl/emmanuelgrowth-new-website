@@ -1,4 +1,4 @@
-import { HeroStory } from './HeroStory';
+import { HeroReport } from './HeroReport';
 import Link from 'next/link';
 import { Arrow } from './shared';
 
@@ -23,7 +23,7 @@ export function Hero() {
           </div>
           <p className="hero-cta-note">Takes about 60 seconds</p>
         </div>
-        <HeroStory />
+        <HeroReport />
       </div>
       <div className="container hero-outcomes">
         {outcomes.map((item) => (

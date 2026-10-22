@@ -1402,3 +1402,75 @@ main:has(> .hero) .final-cta-panel .button-ghost { border-color: var(--panel-lin
 /* Step tabs sit just under the hero card instead of overlapping its edge. */
 main:has(> .hero) .hero-stage { display: flex; flex-direction: column; }
 main:has(> .hero) .stage-tags { order: 2; position: static; margin: 18px 0 0; }
+
+/* Calm example cards: the hero report preview and the three problem-section cards (HeroReport.tsx, OfferCards.tsx).
+   One white card each, sized to its content; text 15px or more (tags 13px); at most one lime element per card. */
+.calm-figure { width: 100%; max-width: 540px; margin: 0; }
+.calm-card { padding: 30px; border: 1px solid #E3E3DF; border-radius: 24px; background: #FFFFFF; color: #0B0C0E; font-family: var(--font-inter), Arial, sans-serif; font-size: 16px; line-height: 1.45; box-shadow: 0 24px 48px -28px rgba(11, 12, 14, .28); }
+.calm-card p { margin: 0; }
+.calm-caption { margin-top: 12px; color: #6B6F76; font-size: 13px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+.calm-muted { color: #6B6F76; font-size: 15px; }
+.calm-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px; font-size: 18px; }
+.calm-tag { flex: 0 0 auto; padding: 4px 11px; border-radius: 999px; background: #F0F0EC; color: #3A3D42; font-size: 13px; font-weight: 600; white-space: nowrap; }
+.calm-stars { color: #F5A524; letter-spacing: 1px; }
+
+/* Hero report */
+.calm-hero { justify-self: end; transition: opacity .6s ease, transform .6s cubic-bezier(.16, 1, .3, 1); }
+.calm-hero.is-hidden { opacity: 0; transform: translateY(16px); }
+.calm-score { display: flex; align-items: center; gap: 26px; padding-bottom: 22px; }
+.calm-ring { position: relative; flex: 0 0 auto; width: 116px; height: 116px; }
+.calm-ring svg { display: block; }
+.calm-ring > span { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; line-height: 1; }
+.calm-ring b { font-size: 36px; letter-spacing: -.02em; }
+.calm-ring small { margin-top: 4px; color: #6B6F76; font-size: 15px; }
+.calm-score-title { margin-bottom: 6px !important; font-size: 22px; font-weight: 700; line-height: 1.2; letter-spacing: -.01em; }
+.calm-rows { margin: 0; padding: 0; list-style: none; }
+.calm-rows li { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 57px; border-top: 1px solid #E3E3DF; font-size: 17px; font-weight: 500; }
+.calm-pill { flex: 0 0 auto; padding: 4px 11px; border-radius: 999px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+.calm-pill.is-good { background: #E7F5D0; color: #3B5A0B; }
+.calm-pill.is-attention { background: #FDF0D5; color: #7A4F00; }
+
+/* 01 Get Found */
+.calm-search { margin-bottom: 26px; padding: 13px 20px; border-radius: 999px; background: #F0F0EC; color: #3A3D42; font-size: 16px; }
+.calm-name { margin-bottom: 4px !important; font-size: 22px; font-weight: 700; line-height: 1.2; letter-spacing: -.01em; }
+.calm-rating { margin-top: 6px !important; font-size: 15px; }
+.calm-buttons { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 22px; }
+.calm-buttons span { display: grid; place-items: center; height: 46px; border: 1px solid #D6D6D1; border-radius: 999px; font-size: 16px; font-weight: 600; white-space: nowrap; }
+.calm-buttons .is-dark { border-color: #0B0C0E; background: #0B0C0E; color: #FFFFFF; }
+
+/* 02 Convert Enquiries */
+.calm-chat { display: flex; flex-direction: column; gap: 12px; }
+.calm-chat p { max-width: 82%; padding: 12px 17px; border-radius: 18px; font-size: 16px; line-height: 1.4; }
+.calm-chat .is-in { align-self: flex-start; background: #F0F0EC; color: #0B0C0E; }
+.calm-chat .is-out { align-self: flex-end; background: #0B0C0E; color: #FFFFFF; }
+
+/* 03 Get More Reviews */
+.calm-rating-big { display: flex; align-items: center; gap: 18px; }
+.calm-rating-big > b { font-size: 64px; line-height: 1; letter-spacing: -.03em; }
+.calm-rating-big > span { display: grid; gap: 4px; font-size: 22px; line-height: 1.1; }
+.calm-rating-big .calm-muted { font-size: 16px; }
+.calm-divider { margin: 24px 0; border: 0; border-top: 1px solid #E3E3DF; }
+.calm-quote { margin-bottom: 8px !important; font-size: 18px; line-height: 1.5; }
+.calm-chip { display: inline-flex; margin-top: 18px; padding: 8px 16px; border-radius: 10px; background: #C6F135; color: #0B0C0E; font-size: 15px; font-weight: 700; }
+
+@media (max-width: 899px) {
+  .calm-hero { justify-self: start; margin-top: 8px; }
+}
+@media (max-width: 767px) {
+  .calm-hero { margin-top: 40px; }
+}
+@media (max-width: 479px) {
+  .calm-card { padding: 24px; }
+  .calm-score { gap: 18px; }
+  .calm-ring, .calm-ring svg { width: 96px; height: 96px; }
+  .calm-ring b { font-size: 30px; }
+  .calm-score-title { font-size: 19px; }
+  .calm-buttons { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .calm-buttons .is-dark { grid-column: 1 / -1; }
+  .calm-rating-big > b { font-size: 56px; }
+  .calm-chat p { max-width: 90%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .calm-hero { transition: none; }
+  .calm-hero.is-hidden { opacity: 1; transform: none; }
+}
