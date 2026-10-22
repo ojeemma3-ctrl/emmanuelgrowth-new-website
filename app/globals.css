@@ -1778,3 +1778,52 @@ main:has(> .hero) .about-copy .about-principles li { border-bottom-color: #E3E3D
   .about-copy { width: 100%; }
   .about-cta { display: flex; width: 100%; }
 }
+
+/* Home hero fix: seamless nav, flat buttons, taller hero whose colour starts below the button, a tinted
+   dashboard under the nav that supports the headline, and boxes on the pale end of the gradient. */
+html:has(main > .hero) .site-header { border-bottom: 1px solid rgba(255, 255, 255, .06); background: #0B0C0E; backdrop-filter: none; }
+html:has(main > .hero) :is(.button-growth, .site-header .nav-button) { box-shadow: none; }
+html:has(main > .hero) :is(.button-growth, .site-header .nav-button):hover { background: #D7F26A; box-shadow: none; transform: none; }
+html:has(main > .hero) :is(.button-growth, .site-header .nav-button):active { box-shadow: none; transform: translateY(1px); }
+html:has(main > .hero) .button:hover { transform: none; }
+
+main:has(> .hero) > section.hero { display: flex; min-height: 1000px; flex-direction: column; padding: 64px 0 48px; background: linear-gradient(180deg, #0B0C0E 0%, #0B0C0E 52%, #123A18 60%, #4E9A22 67%, #A9DB4A 73%, #DDF3A1 80%, #F6FBE4 90%, #FFFFFF 100%); }
+main:has(> .hero) > section.hero .hero-grid { min-height: 0; }
+main:has(> .hero) > section.hero .hero-copy h1 { line-height: 1.1; letter-spacing: -.02em; }
+main:has(> .hero) > section.hero .hero-copy h1 em { display: inline-block; padding: 0 .15em; line-height: 1.1; margin-top: .16em; }
+main:has(> .hero) > section.hero .hero-copy > p:not(.hero-badge) { color: #E8EEE2; }
+
+/* Dashboard: from the top of the hero (under the nav), off the right edge, tinted, faded at the bottom and far left. */
+.hd-wrap { top: 0; right: 0; width: auto; }
+.hd-window { height: 620px; border-radius: 0; background: #DFE4DA; -webkit-mask-image: linear-gradient(180deg, #000 45%, transparent 92%), linear-gradient(90deg, transparent 0, #000 9%); -webkit-mask-composite: source-in; mask-image: linear-gradient(180deg, #000 45%, transparent 92%), linear-gradient(90deg, transparent 0, #000 9%); mask-composite: intersect; }
+.hd-side { border-left: 1px solid rgba(255, 255, 255, .08); background: #1B1F22; }
+.hd-main { padding-right: 20px; }
+.hd-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.hd-head .hd-title { margin: 0; }
+.hd-pill { padding: 2px 9px; border: 1px solid rgba(11, 12, 14, .18); border-radius: 999px; color: #4A4E55; font-size: 11px; font-weight: 600; letter-spacing: .04em; }
+.hd-tiles > div, .hd-card { border-color: rgba(11, 12, 14, .06); background: rgba(255, 255, 255, .7); }
+
+/* Boxes: pushed to the bottom of the hero, on the pale part of the gradient. */
+main:has(> .hero) > section.hero .hero-boxes { gap: 24px; margin-top: auto; padding-top: 140px; }
+main:has(> .hero) .hero-boxes a { gap: 10px; min-height: 132px; align-content: center; padding: 34px 20px; border: 1px solid rgba(11, 12, 14, .06); border-radius: 20px; background: rgba(255, 255, 255, .8); box-shadow: 0 0 0 5px rgba(255, 255, 255, .35), 0 30px 50px -34px rgba(11, 12, 14, .28); }
+main:has(> .hero) .hero-boxes a:hover { border-color: rgba(11, 12, 14, .3); }
+main:has(> .hero) .hero-boxes strong { font-size: 23px; letter-spacing: -.02em; }
+main:has(> .hero) .hero-boxes span { font-size: 11.5px; letter-spacing: .06em; }
+
+@media (max-width: 1199px) {
+  main:has(> .hero) .hero-boxes strong { font-size: 20px; }
+}
+@media (max-width: 1099px) {
+  main:has(> .hero) > section.hero { min-height: 0; background-color: #FFFFFF; background-repeat: no-repeat; background-size: 100% 1150px; }
+  .hd-wrap { width: auto; margin: 48px 0 0 calc((100% - min(100% - 64px, 1200px)) / 2); }
+  .hd-window { height: 320px; -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent 98%); mask-image: linear-gradient(180deg, #000 55%, transparent 98%); }
+  main:has(> .hero) > section.hero .hero-boxes { padding-top: 64px; }
+}
+@media (max-width: 767px) {
+  main:has(> .hero) > section.hero { padding: 48px 0 40px; background-size: 100% 1000px; }
+  .hd-wrap { width: auto; margin: 40px 0 0 20px; }
+  .hd-window { grid-template-columns: 150px minmax(0, 1fr); }
+  main:has(> .hero) > section.hero .hero-boxes { gap: 16px; padding-top: 64px; }
+  main:has(> .hero) .hero-boxes a { min-height: 112px; padding: 22px 12px; }
+  main:has(> .hero) .hero-boxes strong { font-size: 18px; }
+}

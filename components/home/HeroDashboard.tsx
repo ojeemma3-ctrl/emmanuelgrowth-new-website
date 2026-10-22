@@ -23,7 +23,7 @@ export function HeroDashboard() {
           <ul>{nav.map((item, i) => <li key={item} className={i === 0 ? 'is-active' : undefined}>{item}</li>)}</ul>
         </aside>
         <div className="hd-main">
-          <p className="hd-title">Today</p>
+          <div className="hd-head"><p className="hd-title">Today</p><span className="hd-pill">Example</span></div>
           <div className="hd-tiles">
             {tiles.map((t) => <div key={t.label}><span>{t.label}</span><b>{t.value}</b></div>)}
           </div>
@@ -48,7 +48,6 @@ export function HeroDashboard() {
           </div>
         </div>
       </div>
-      <p className="hd-caption">Example</p>
     </div>
   );
 }
