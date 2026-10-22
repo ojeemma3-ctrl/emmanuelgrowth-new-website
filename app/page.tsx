@@ -44,7 +44,7 @@ export default function Home() {
       <Hero />
       <OfferSections />
       <HowItWorks />
-      <Pricing />
+      <Pricing variant="home" />
       <FAQ />
       <About />
       <FinalCTA heading="See where your business can win more customers." />

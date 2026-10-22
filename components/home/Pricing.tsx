@@ -1,11 +1,16 @@
 import Link from 'next/link';
-import { plans, pricingCopy, showEarlyClientNote } from '../../lib/pricing-config';
+import { nigeriaNote, plans, pricingCopy, setupFeeText, showEarlyClientNote } from '../../lib/pricing-config';
 import { ContactTrigger } from './InteractionTriggers';
 import { Arrow } from './shared';
 
 // Prices, terms, labels and links all come from lib/pricing-config.ts.
 // Anchors: /#pricing for the section, /#<plan id>-plan for each card.
-export function Pricing() {
+// variant 'home': centred cards on white with one note under them; the service pages use the default layout.
+export function Pricing({ variant = 'default' }: { variant?: 'default' | 'home' }) {
+  return variant === 'home' ? <HomePricing /> : <DefaultPricing />;
+}
+
+function DefaultPricing() {
   const { heading, headingHighlight, intro, earlyClientNote, footNote } = pricingCopy;
   return (
     <section className="pricing-section" id="pricing">
@@ -37,6 +42,57 @@ export function Pricing() {
           ))}
         </div>
         <p className="pricing-note">{footNote}</p>
+      </div>
+    </section>
+  );
+}
+
+// Home layout. Same plans, prices, text and links; the fine print moves into one note under the cards.
+const ROWS = 4; // feature rows per card; shorter lists get blank rows so the cards line up
+const priceNumber = (price: string) => price.replace(/^From\s+/i, '');
+const periodText = (period: string) => period.replace(/^\//, 'per ');
+const minimumTerm = (lines: string[]) => {
+  const text = lines.join(' ');
+  return /3-month minimum/i.test(text) ? '3-month minimum' : /month to month/i.test(text) ? 'Month to month' : null;
+};
+const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
+
+function HomePricing() {
+  const { heading, intro, earlyClientNote } = pricingCopy;
+  const usagePlans = plans.filter((p) => p.status === 'early-access').map((p) => p.name).join(' and ');
+  return (
+    <section className="pricing-section pricing-home" id="pricing">
+      <div className="container">
+        <div className="pricing-heading">
+          <p className="kicker">Pricing</p>
+          <h2>{heading}</h2>
+          <p>{intro}{showEarlyClientNote ? ` ${earlyClientNote}` : ''}</p>
+        </div>
+        <div className="ph-grid">
+          {plans.map((plan) => {
+            const label = plan.status === 'early-access' ? 'From · early access' : plan.billingNote;
+            const minimum = minimumTerm(plan.finePrint);
+            return (
+              <article className={`ph-card${plan.highlighted ? ' is-featured' : ''}`} id={`${plan.id}-plan`} key={plan.id} aria-labelledby={`${plan.id}-plan-title`}>
+                {plan.highlighted ? <span className="ph-ribbon">Everything included</span> : null}
+                <h3 className="ph-name" id={`${plan.id}-plan-title`}>{plan.name}</h3>
+                {label ? <p className="ph-label">{label}</p> : null}
+                <p className="ph-price">{priceNumber(plan.price)}</p>
+                <p className="ph-period">{periodText(plan.period)}</p>
+                <p className="ph-for">{plan.forWho}</p>
+                <ul className="ph-features">
+                  {Array.from({ length: Math.max(ROWS, plan.features.length) }, (_, i) => plan.features[i]).map((item, i) => (
+                    <li key={item ?? `blank-${i}`} aria-hidden={item ? undefined : true}>{item ?? ''}</li>
+                  ))}
+                </ul>
+                {minimum ? <p className="ph-minimum">{minimum}</p> : null}
+                <ContactTrigger className="ph-button" topic={plan.contactTopic}>{plan.primaryLabel} <Arrow /></ContactTrigger>
+                <Link className="ph-details" href={plan.detailsHref}>{plan.detailsLabel}<span className="sr-only"> for {plan.name}</span></Link>
+              </article>
+            );
+          })}
+        </div>
+        <p className="ph-note">{usagePlans}: {lowerFirst(setupFeeText)}. AI and messaging usage is billed separately, based on how many messages you receive. Prices are in euros. {nigeriaNote}</p>
       </div>
     </section>
   );
