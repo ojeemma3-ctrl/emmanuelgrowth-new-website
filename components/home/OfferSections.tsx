@@ -142,7 +142,7 @@ export function OfferPanel({ offer, flipped = false, headingLevel = 'h3', varian
 
 // Home page: one section with a heading, three tabs and one panel (OfferTabs). The service pages use OfferPanel.
 export function OfferSections() {
-  const items: OfferTab[] = offers.map((offer) => ({ id: offer.id, number: offer.number, name: offer.name, problem: offer.problem, fix: offer.home.fix, bullets: offer.home.bullets, phone: offer.home.card }));
+  const items: OfferTab[] = offers.map((offer) => ({ id: offer.id, number: offer.number, name: offer.name, problem: offer.problem, fix: offer.home.fix, bullets: offer.home.bullets, graphic: offer.home.card }));
   return (
     <section className="offer-tabs-section" id="services" aria-labelledby="services-title">
       <div className="container">
