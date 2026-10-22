@@ -118,23 +118,36 @@ export function OfferPanel({ offer, flipped = false, headingLevel = 'h3', varian
   const home = variant === 'home';
   const fix = home ? offer.home.fix : offer.fix;
   const bullets = home ? offer.home.bullets : offer.bullets;
-  return (
-    <div className={`container offer-panel${flipped ? ' is-flipped' : ''}${home ? ' is-home' : ''}`}>
-      <div className="offer-text">
-        <p className="offer-number"><span>{offer.number}</span>{offer.name}</p>
-        <Heading id={`${offer.id}-title`}>&ldquo;{offer.problem}&rdquo;</Heading>
-        <p className="offer-fix">{fix}</p>
-        <ul className="offer-bullets">
-          {bullets.map((item) => <li key={item}><span aria-hidden="true">{home ? <CheckIcon /> : '✓'}</span>{item}</li>)}
-        </ul>
-        <ContactTrigger className="button button-dark">Fix this problem <Arrow /></ContactTrigger>
-      </div>
-      {home ? offer.home.card : (
-        <div className="offer-media">
-          <span className="offer-media-label">Example</span>
-          {offer.visual}
+  const text = (
+    <div className="offer-text">
+      <p className="offer-number"><span>{offer.number}</span>{offer.name}</p>
+      <Heading id={`${offer.id}-title`}>&ldquo;{offer.problem}&rdquo;</Heading>
+      <p className="offer-fix">{fix}</p>
+      <ul className="offer-bullets">
+        {bullets.map((item) => <li key={item}><span aria-hidden="true">{home ? <CheckIcon /> : '✓'}</span>{item}</li>)}
+      </ul>
+      <ContactTrigger className="button button-dark">Fix this problem <Arrow /></ContactTrigger>
+    </div>
+  );
+  // Home: one large rounded panel with the text and a tilted phone, "Example" caption under the panel.
+  if (home) {
+    return (
+      <div className="container">
+        <div className={`offer-panel is-home phone-panel${flipped ? ' is-flipped' : ''}`}>
+          {text}
+          {offer.home.card}
         </div>
-      )}
+        <p className="phone-caption">Example</p>
+      </div>
+    );
+  }
+  return (
+    <div className={`container offer-panel${flipped ? ' is-flipped' : ''}`}>
+      {text}
+      <div className="offer-media">
+        <span className="offer-media-label">Example</span>
+        {offer.visual}
+      </div>
     </div>
   );
 }
