@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { HeroDashboard } from './HeroDashboard';
+import { HeroVisualFrame } from './HeroVisualFrame';
 
 // Four boxes overlapping the bottom of the hero; each links to its part of the page.
 const boxes = [
@@ -27,7 +27,7 @@ export function Hero() {
           </div>
         </div>
       </div>
-      <HeroDashboard />
+      <HeroVisualFrame />
       <div className="container hero-boxes">
         {boxes.map((box) => (
           <a key={box.title} href={box.href}>

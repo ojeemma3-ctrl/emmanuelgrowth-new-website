@@ -1827,3 +1827,49 @@ main:has(> .hero) .hero-boxes span { font-size: 11.5px; letter-spacing: .06em; }
   main:has(> .hero) .hero-boxes a { min-height: 112px; padding: 22px 12px; }
   main:has(> .hero) .hero-boxes strong { font-size: 18px; }
 }
+
+/* Home hero, calmer: shorter gradient, and the visual frame (HeroVisualFrame.tsx) owns position, crop,
+   dimming and all fades, so the picture inside (HeroVisual.tsx) can be swapped for an image or video. */
+main:has(> .hero) > section.hero { min-height: 980px; background-image: linear-gradient(180deg, #0B0C0E 0%, #0B0C0E 54%, #10331A 61%, #2E7D2B 67%, #7DBB3A 72%, #C9EB86 78%, #EEF8CE 86%, #FFFFFF 94%); }
+main:has(> .hero) > section.hero .hero-boxes { padding-top: 120px; }
+.hv-frame { position: absolute; z-index: 1; top: 0; right: 0; left: calc(50% + 150px); height: 600px; overflow: hidden; filter: brightness(.92); -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 7%, #000 35%, transparent 90%), linear-gradient(90deg, transparent 0, #000 14%); -webkit-mask-composite: source-in; mask-image: linear-gradient(180deg, transparent 0, #000 7%, #000 35%, transparent 90%), linear-gradient(90deg, transparent 0, #000 14%); mask-composite: intersect; }
+.hv-frame-inner { width: 900px; height: 100%; }
+.hv-frame-inner > * { width: 100%; height: 100%; }
+.hv-frame-inner :is(img, video) { display: block; object-fit: cover; object-position: left top; }
+.hv-frame .hd-window { height: 100%; -webkit-mask-image: none; mask-image: none; background: #CFD6CA; }
+.hv-frame :is(.hd-tiles > div, .hd-card) { background: rgba(255, 255, 255, .65); }
+@media (max-width: 1099px) {
+  main:has(> .hero) > section.hero { min-height: 0; background-size: 100% 1050px; }
+  .hv-frame { position: relative; left: auto; width: auto; height: 320px; margin: 48px 0 0 calc((100% - min(100% - 64px, 1200px)) / 2); -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent 98%); mask-image: linear-gradient(180deg, #000 55%, transparent 98%); }
+  .hv-frame-inner { width: 1100px; }
+  main:has(> .hero) > section.hero .hero-boxes { padding-top: 64px; }
+}
+@media (max-width: 767px) {
+  main:has(> .hero) > section.hero { background-size: 100% 960px; }
+  .hv-frame { margin: 40px 0 0 20px; }
+  .hv-frame-inner { width: 760px; }
+}
+
+/* Problem tabs: progress bar under the active tab, a Next pill, and a gentle directional slide. */
+.ot-tabbar { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 0 0 28px; }
+.ot-tabbar .ot-tabs { margin: 0; padding: 6px 6px 14px; }
+.ot-tab { position: relative; }
+.ot-progress { position: absolute; left: 6px; right: 6px; bottom: -9px; height: 3px; border-radius: 999px; background: #C6F135; transform: scaleX(0); transform-origin: left; animation-name: ot-progress; animation-timing-function: linear; animation-fill-mode: forwards; }
+.ot-progress.is-paused { animation-play-state: paused; }
+@keyframes ot-progress { to { transform: scaleX(1); } }
+.ot-next { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 6px; min-height: 40px; margin-bottom: 8px; padding: 0 16px; border: 1px solid #E3E3DF; border-radius: 999px; background: #FFFFFF; color: #0B0C0E; font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; transition: border-color .15s ease; }
+.ot-next:hover { border-color: #0B0C0E; }
+.ot-next:focus-visible { outline: 3px solid #0B0C0E; outline-offset: 3px; }
+.ot-fade { animation: ot-slide-next .25s ease both; }
+.ot-fade.is-prev { animation-name: ot-slide-prev; }
+@keyframes ot-slide-next { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: none; } }
+@keyframes ot-slide-prev { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: none; } }
+@media (max-width: 767px) {
+  .ot-tabbar { flex-direction: column; gap: 6px; }
+  .ot-tabbar .ot-tabs { align-self: stretch; }
+  .ot-next { margin-bottom: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ot-fade, .ot-fade.is-prev { animation: none; }
+  .ot-progress { display: none; }
+}
