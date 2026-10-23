@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { CookieSettingsButton } from '../analytics/CookieSettingsButton';
 import { getGaMeasurementId } from '../../lib/analytics';
+import { WhatsAppFloat, whatsappReviewHref } from './WhatsAppFloat';
 
 export function Footer() {
   const analyticsEnabled = Boolean(getGaMeasurementId());
@@ -28,6 +29,7 @@ export function Footer() {
           <Link href="/#pricing">Pricing</Link>
           <Link href="/#faq">FAQ</Link>
           <Link href="/#about">About</Link>
+          {whatsappReviewHref ? <a href={whatsappReviewHref} target="_blank" rel="noreferrer">WhatsApp</a> : null}
         </nav>
         <nav className="footer-col footer-legal" aria-label="Legal information">
           <p className="footer-title">Legal</p>
@@ -41,6 +43,7 @@ export function Footer() {
         <small>© {new Date().getFullYear()} Emmanuel Growth</small>
         <small>WhatsApp, Google and Trustpilot are trademarks of their respective owners. Emmanuel Growth is not affiliated with them.</small>
       </div>
+      <WhatsAppFloat />
     </footer>
   );
 }

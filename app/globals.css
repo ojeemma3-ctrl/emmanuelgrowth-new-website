@@ -1939,3 +1939,10 @@ main:has(> .hero) .svc-together-list h3 { margin: 0; color: #0B0C0E; font-size: 
 
 /* Home hero: the short line under the button (muted, readable on the dark part). */
 main:has(> .hero) > section.hero .hero-cta-note { margin: 16px 0 0; color: #A1A3A5; font-size: 14px; line-height: 1.5; }
+
+/* Floating WhatsApp button (WhatsAppFloat.tsx): phones only, bottom right; hidden whenever it could cover
+   something (cookie banner, mobile menu, contact box) and on the visibility check form step. */
+.wa-float { position: fixed; z-index: 80; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); display: none; place-items: center; width: 52px; height: 52px; border-radius: 50%; background: #0B0C0E; box-shadow: 0 10px 24px -10px rgba(11, 12, 14, .6); }
+.wa-float:focus-visible { outline: 3px solid #C6F135; outline-offset: 3px; }
+@media (max-width: 767px) { .wa-float { display: grid; } }
+body:has(.cookie-banner) .wa-float, body:has(.site-header nav.is-open) .wa-float, body:has(.contact-overlay) .wa-float, body:has(.ic-form) .wa-float { display: none; }
