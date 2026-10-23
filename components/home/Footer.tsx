@@ -20,7 +20,7 @@ export function Footer() {
           <p className="footer-title">Services</p>
           <Link href="/get-found">Get Found</Link>
           <Link href="/convert-enquiries">Convert Enquiries</Link>
-          <Link href="/build-trust">Get More Reviews</Link>
+          <Link href="/get-more-reviews">Get More Reviews</Link>
         </nav>
         <nav className="footer-col" aria-label="Company">
           <p className="footer-title">Company</p>

@@ -47,7 +47,7 @@ export const offers: Offer[] = [
   },
   {
     id: 'get-more-reviews',
-    href: '/build-trust',
+    href: '/get-more-reviews',
     number: '03',
     name: 'Get More Reviews',
     problem: 'Happy customers don’t leave reviews.',

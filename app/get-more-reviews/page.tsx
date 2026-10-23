@@ -7,7 +7,7 @@ import { plans } from '../../lib/pricing-config';
 export const metadata: Metadata = {
   title: 'Get More Reviews | Emmanuel Growth',
   description: 'Get more reviews from happy customers, with simple follow-up that builds trust and repeat business.',
-  alternates: { canonical: '/build-trust' },
+  alternates: { canonical: '/get-more-reviews' },
 };
 
 const offer = offers.find((o) => o.id === 'get-more-reviews')!;

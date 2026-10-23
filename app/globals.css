@@ -1920,3 +1920,19 @@ main:has(> .hero) .svc-included h2 { text-align: left; }
   .svc-visual *, .svc-visual *::before, .svc-visual *::after { animation: none !important; }
   .svc-visual .mg-typing { display: none; }
 }
+
+/* Complete system page: the three example graphics side by side, small. */
+main:has(> .hero) > section.svc-together { background: #F5F5F2; }
+.svc-together-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin: 0; padding: 0; list-style: none; }
+.svc-together-list > li { display: grid; align-content: start; gap: 6px; }
+.svc-together-visual { display: grid; place-items: center; min-height: 360px; margin: 0 0 14px; padding: 20px 16px; border: 1px solid #E3E3DF; border-radius: 20px; background: #FFFFFF; }
+.svc-together-visual .mg { font-size: 13px; }
+.svc-together-step { margin: 0; color: #4A4E55; font-size: 13px; font-weight: 700; letter-spacing: .12em; }
+main:has(> .hero) .svc-together-list h3 { margin: 0; color: #0B0C0E; font-size: 24px; }
+.svc-together-list > li > p:last-child { margin: 0; color: #3A3D42; font-size: 16px; }
+.svc-together-caption { margin: 28px 0 0; text-align: center; color: #4A4E55; font-size: 13px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+@media (max-width: 1099px) { .svc-together-list { grid-template-columns: minmax(0, 1fr); max-width: 520px; margin-inline: auto; } }
+@media (prefers-reduced-motion: reduce) {
+  .svc-together *, .svc-together *::before, .svc-together *::after { animation: none !important; }
+  .svc-together .mg-typing { display: none; }
+}

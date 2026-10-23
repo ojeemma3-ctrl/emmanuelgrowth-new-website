@@ -10,7 +10,7 @@ export const HELP_LINK = '/#pricing';
 // Plan pages used by the report's tags and closing block (real routes; pricing cards are /#<plan>-plan).
 export const PLAN_LINKS = {
   getFound: '/get-found',
-  getMoreReviews: '/build-trust',
+  getMoreReviews: '/get-more-reviews',
   convertEnquiries: '/convert-enquiries', // early access: the page and pricing card offer the waitlist
 };
 

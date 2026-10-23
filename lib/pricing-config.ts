@@ -84,7 +84,7 @@ export const plans: Plan[] = [
     primaryLabel: 'Get started',
     contactTopic: 'Get More Reviews',
     detailsLabel: 'See what’s included',
-    detailsHref: '/build-trust',
+    detailsHref: '/get-more-reviews',
   },
   {
     id: 'convert-enquiries',
@@ -120,7 +120,7 @@ export const plans: Plan[] = [
     primaryLabel: 'Join the waitlist',
     contactTopic: 'Waitlist: Complete system',
     detailsLabel: 'See what’s included',
-    detailsHref: '/#services', // no separate page; the services overview covers all three
+    detailsHref: '/complete-system',
     highlighted: true,
   },
 ];
