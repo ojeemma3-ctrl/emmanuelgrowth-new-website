@@ -1,5 +1,6 @@
-// Edit questions and answers here.
-const faqs = [
+// Edit the home page questions and answers here. Service pages pass their own with the items prop.
+export type FaqItem = { question: string; answer: string };
+const faqs: FaqItem[] = [
   {
     question: 'What is the free visibility check?',
     answer: 'We look at how customers find you online, how they get in touch and what happens after. You get a short, plain-English list of what to fix first. There is no cost for the check.',
@@ -22,17 +23,17 @@ const faqs = [
   },
 ];
 
-export function FAQ() {
+export function FAQ({ items = faqs, intro = 'Something else on your mind? Ask during your free visibility check.' }: { items?: FaqItem[]; intro?: string }) {
   return (
     <section className="faq-section" id="faq">
       <div className="container faq-grid">
         <div className="faq-heading">
           <p className="kicker">FAQ</p>
           <h2>Questions, <em>answered.</em></h2>
-          <p>Something else on your mind? Ask during your free visibility check.</p>
+          <p>{intro}</p>
         </div>
         <div className="faq-list">
-          {faqs.map((item) => (
+          {items.map((item) => (
             <details key={item.question}>
               <summary>{item.question}<span aria-hidden="true" /></summary>
               <p>{item.answer}</p>

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { nigeriaNote, plans, pricingCopy, setupFeeText, showEarlyClientNote } from '../../lib/pricing-config';
+import { nigeriaNote, plans, type Plan, pricingCopy, setupFeeText, showEarlyClientNote } from '../../lib/pricing-config';
 import { ContactTrigger } from './InteractionTriggers';
 import { Arrow } from './shared';
 
@@ -69,31 +69,35 @@ function HomePricing() {
           <p>{intro}{showEarlyClientNote ? ` ${earlyClientNote}` : ''}</p>
         </div>
         <div className="ph-grid">
-          {plans.map((plan) => {
-            const label = plan.status === 'early-access' ? 'From · early access' : plan.billingNote;
-            const minimum = minimumTerm(plan.finePrint);
-            return (
-              <article className={`ph-card${plan.highlighted ? ' is-featured' : ''}`} id={`${plan.id}-plan`} key={plan.id} aria-labelledby={`${plan.id}-plan-title`}>
-                {plan.highlighted ? <span className="ph-ribbon">Everything included</span> : null}
-                <h3 className="ph-name" id={`${plan.id}-plan-title`}>{plan.name}</h3>
-                {label ? <p className="ph-label">{label}</p> : null}
-                <p className="ph-price">{priceNumber(plan.price)}</p>
-                <p className="ph-period">{periodText(plan.period)}</p>
-                <p className="ph-for">{plan.forWho}</p>
-                <ul className="ph-features">
-                  {Array.from({ length: Math.max(ROWS, plan.features.length) }, (_, i) => plan.features[i]).map((item, i) => (
-                    <li key={item ?? `blank-${i}`} aria-hidden={item ? undefined : true}>{item ?? ''}</li>
-                  ))}
-                </ul>
-                {minimum ? <p className="ph-minimum">{minimum}</p> : null}
-                <ContactTrigger className="ph-button" topic={plan.contactTopic}>{plan.primaryLabel} <Arrow /></ContactTrigger>
-                <Link className="ph-details" href={plan.detailsHref}>{plan.detailsLabel}<span className="sr-only"> for {plan.name}</span></Link>
-              </article>
-            );
-          })}
+          {plans.map((plan) => <PlanCard plan={plan} key={plan.id} />)}
         </div>
         <p className="ph-note">{usagePlans}: {lowerFirst(setupFeeText)}. AI and messaging usage is billed separately, based on how many messages you receive. Prices are in euros. {nigeriaNote}</p>
       </div>
     </section>
+  );
+}
+
+// One plan card in the home style; also used on the service pages. Text, prices and links from pricing-config.
+// On a plan's own page, pass showDetails={false} so the card doesn't link to the page it is on.
+export function PlanCard({ plan, anchor = true, showDetails = true }: { plan: Plan; anchor?: boolean; showDetails?: boolean }) {
+  const label = plan.status === 'early-access' ? 'From · early access' : plan.billingNote;
+  const minimum = minimumTerm(plan.finePrint);
+  return (
+    <article className={`ph-card${plan.highlighted ? ' is-featured' : ''}`} id={anchor ? `${plan.id}-plan` : undefined} aria-labelledby={`${plan.id}-plan-title`}>
+      {plan.highlighted ? <span className="ph-ribbon">Everything included</span> : null}
+      <h3 className="ph-name" id={`${plan.id}-plan-title`}>{plan.name}</h3>
+      {label ? <p className="ph-label">{label}</p> : null}
+      <p className="ph-price">{priceNumber(plan.price)}</p>
+      <p className="ph-period">{periodText(plan.period)}</p>
+      <p className="ph-for">{plan.forWho}</p>
+      <ul className="ph-features">
+        {Array.from({ length: Math.max(ROWS, plan.features.length) }, (_, i) => plan.features[i]).map((item, i) => (
+          <li key={item ?? `blank-${i}`} aria-hidden={item ? undefined : true}>{item ?? ''}</li>
+        ))}
+      </ul>
+      {minimum ? <p className="ph-minimum">{minimum}</p> : null}
+      <ContactTrigger className="ph-button" topic={plan.contactTopic}>{plan.primaryLabel} <Arrow /></ContactTrigger>
+      {showDetails ? <Link className="ph-details" href={plan.detailsHref}>{plan.detailsLabel}<span className="sr-only"> for {plan.name}</span></Link> : null}
+    </article>
   );
 }

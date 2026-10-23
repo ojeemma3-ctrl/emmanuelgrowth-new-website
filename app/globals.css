@@ -1873,3 +1873,50 @@ main:has(> .hero) > section.hero .hero-boxes { padding-top: 120px; }
   .ot-fade, .ot-fade.is-prev { animation: none; }
   .ot-progress { display: none; }
 }
+
+/* Service pages (ServicePage.tsx) in the home page design: a shorter dark hero with one small example,
+   "What it does", How it works, "What's included" (checklist and the plan card), FAQ and the closing CTA. */
+main:has(> .hero) > section.hero.svc-hero { display: block; min-height: 0; padding: 72px 0 150px; background-image: linear-gradient(180deg, #0B0C0E 0%, #0B0C0E calc(100% - 120px), #10331A calc(100% - 100px), #2E7D2B calc(100% - 82px), #7DBB3A calc(100% - 64px), #C9EB86 calc(100% - 44px), #EEF8CE calc(100% - 22px), #FFFFFF 100%); background-size: auto; }
+.svc-hero-grid { position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 1fr) 460px; align-items: center; gap: 64px; }
+main:has(> .hero) > section.svc-hero .hero-copy { max-width: 620px; }
+main:has(> .hero) > section.svc-hero .hero-copy h1 { font-size: clamp(2.75rem, 5vw, 4.25rem); }
+main:has(> .hero) .svc-hero .button-row { flex-wrap: wrap; gap: 12px; }
+main:has(> .hero) .svc-secondary { border: 1px solid rgba(255, 255, 255, .35); background: transparent; color: #FFFFFF; }
+main:has(> .hero) .svc-secondary:hover { border-color: #FFFFFF; }
+.svc-visual { margin: 0; }
+.svc-visual-card { padding: 28px 24px; border: 1px solid rgba(255, 255, 255, .08); border-radius: 20px; background: #F5F5F2; }
+.svc-visual-card .mg { max-width: none; }
+.svc-visual figcaption { margin-top: 10px; color: #A1A3A5; font-size: 13px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+main:has(> .hero) > section.svc-section { padding: 96px 0; background: #FFFFFF; }
+main:has(> .hero) .svc-section h2 { margin: 0 0 32px; color: #0B0C0E; -webkit-text-fill-color: #0B0C0E; font-size: clamp(2rem, 3.6vw, 2.75rem); text-align: center; }
+.svc-points { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin: 0; padding: 0; list-style: none; }
+.svc-points li { display: grid; justify-items: center; gap: 14px; padding: 28px 24px; border: 1px solid #E3E3DF; border-radius: 20px; background: #F5F5F2; color: #0B0C0E; font-size: 16px; line-height: 1.5; text-align: center; }
+.svc-points li > span, .svc-checklist li > span { display: grid; place-items: center; flex: 0 0 auto; width: 26px; height: 26px; border-radius: 50%; background: #C6F135; color: #0B0C0E; }
+.svc-points svg, .svc-checklist svg { display: block; }
+main:has(> .hero) > section.svc-included { background: #F5F5F2; }
+.svc-included-grid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; align-items: start; gap: 56px; }
+main:has(> .hero) .svc-included h2 { text-align: left; }
+.svc-checklist { margin: 0; padding: 0; list-style: none; border-top: 1px solid #E3E3DF; }
+.svc-checklist li { display: flex; align-items: center; gap: 14px; padding: 16px 0; border-bottom: 1px solid #E3E3DF; color: #0B0C0E; font-size: 16px; }
+.svc-fine { margin-top: 18px; }
+.svc-fine p { margin: 0 0 6px; color: #4A4E55; font-size: 14px; }
+@media (max-width: 1099px) {
+  .svc-hero-grid { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+  .svc-visual { max-width: 520px; }
+  .svc-included-grid { grid-template-columns: minmax(0, 1fr); }
+  .svc-included-grid .ph-card { max-width: 420px; }
+}
+@media (max-width: 767px) {
+  main:has(> .hero) > section.hero.svc-hero { padding: 48px 0 110px; }
+  main:has(> .hero) > section.svc-hero .hero-copy h1 { font-size: clamp(2.25rem, 10vw, 3rem); }
+  main:has(> .hero) .svc-hero .button-row { display: grid; }
+  main:has(> .hero) .svc-hero .button-row > * { width: 100%; justify-content: center; }
+  main:has(> .hero) > section.svc-hero .hero-copy { display: block; width: 100%; }
+  .svc-visual-card { padding: 20px 14px; }
+  main:has(> .hero) > section.svc-section { padding: 64px 0; }
+  .svc-points { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .svc-visual *, .svc-visual *::before, .svc-visual *::after { animation: none !important; }
+  .svc-visual .mg-typing { display: none; }
+}
