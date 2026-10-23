@@ -1,3 +1,15 @@
+import { plans } from '../../lib/pricing-config';
+
+// Minimum terms, read from the pricing config so this answer never disagrees with the plans.
+const termOf = (name: string, lines: string[]) => {
+  const text = lines.join(' ');
+  if (/3-month minimum/i.test(text)) return `${name} has a 3-month minimum`;
+  if (/month to month/i.test(text)) return `${name} is month to month`;
+  return `${name}: see its plan`;
+};
+const cancelAnswer = `Yes. ${plans.map((p) => termOf(p.name, p.finePrint)).join('. ')}.`;
+// TODO(owner): confirm how cancelling works after the minimum term (any notice period), then add it here.
+
 // Edit the home page questions and answers here. Service pages pass their own with the items prop.
 export type FaqItem = { question: string; answer: string };
 const faqs: FaqItem[] = [
@@ -7,7 +19,7 @@ const faqs: FaqItem[] = [
   },
   {
     question: 'Do I need all three services?',
-    answer: 'No. Most businesses start with the one problem that costs them the most customers, then add the others later. If you want all three working together, choose the complete system.',
+    answer: 'No. Most businesses start with the one area they most want to improve, then add the others later. If you want all three working together, choose the complete system.',
   },
   {
     question: 'Do I need to be good with technology?',
@@ -20,6 +32,22 @@ const faqs: FaqItem[] = [
   {
     question: 'How long does setup take?',
     answer: 'It depends on what you need. After the visibility check we give you a clear plan and timeline before anything starts.',
+  },
+  {
+    question: 'What happens after the free check?',
+    answer: 'You get your report on screen and can save it as a PDF. If you want, ask for a free personal review and we will talk it through. There is no obligation.',
+  },
+  {
+    question: 'Can I cancel?',
+    answer: cancelAnswer,
+  },
+  {
+    question: 'Do you work with businesses outside the UK?',
+    answer: 'Yes, for example in Europe, Nigeria and the US. WhatsApp is welcome.',
+  },
+  {
+    question: 'Who will I be working with?',
+    answer: 'Emmanuel, personally.',
   },
 ];
 

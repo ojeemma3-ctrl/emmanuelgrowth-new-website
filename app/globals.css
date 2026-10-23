@@ -1936,3 +1936,6 @@ main:has(> .hero) .svc-together-list h3 { margin: 0; color: #0B0C0E; font-size: 
   .svc-together *, .svc-together *::before, .svc-together *::after { animation: none !important; }
   .svc-together .mg-typing { display: none; }
 }
+
+/* Home hero: the short line under the button (muted, readable on the dark part). */
+main:has(> .hero) > section.hero .hero-cta-note { margin: 16px 0 0; color: #A1A3A5; font-size: 14px; line-height: 1.5; }

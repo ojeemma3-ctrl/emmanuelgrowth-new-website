@@ -25,6 +25,7 @@ export function Hero() {
               </span>
             </Link>
           </div>
+          <p className="hero-cta-note">See your Google profile, reviews and website checks in one report. Free, no card.</p>
         </div>
       </div>
       <HeroVisualFrame />

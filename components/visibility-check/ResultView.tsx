@@ -69,10 +69,10 @@ function ClosingBlock({ realWebsite, onPersonalReview }: { realWebsite: boolean;
         <p className="ic-closing-text"><strong id="ic-closing-title">A simple website is the first step,</strong> then reviews and quick replies.</p>
       )}
       <div className="ic-closing-actions">
+        <button className="button button-growth" type="button" aria-haspopup="dialog" onClick={onPersonalReview}>Get a free personal review <Arrow /></button>
         {realWebsite
-          ? <a className="button button-growth" href={HELP_LINK}>See how I can help <Arrow /></a>
-          : <a className="button button-growth" href={PLAN_LINKS.getFound}>See how I build it <Arrow /></a>}
-        <button className="button button-outline" type="button" aria-haspopup="dialog" onClick={onPersonalReview}>Get a free personal review</button>
+          ? <a className="button button-outline" href={HELP_LINK}>See how I can help</a>
+          : <a className="button button-outline" href={PLAN_LINKS.getFound}>See how I build it</a>}
         <button className="button button-outline" type="button" aria-haspopup="dialog" onClick={() => openContact()}>Talk to me directly</button>
       </div>
     </section>

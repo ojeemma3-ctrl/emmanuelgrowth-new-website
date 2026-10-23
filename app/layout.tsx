@@ -33,21 +33,22 @@ export const metadata: Metadata = {
     title: 'Get Found. Convert More Enquiries. Get More Reviews.',
     description:
       'Practical marketing systems that help businesses get found online, respond to enquiries faster and stay connected with their customers.',
+    // public/og.png is 1672x941 (not 1200x630); the real size is stated so previews crop correctly.
     images: [
       {
-        url: '/emmanuel-growth-logo-800.png',
-        width: 800,
-        height: 800,
+        url: '/og.png',
+        width: 1672,
+        height: 941,
         alt: 'Emmanuel Growth',
       },
     ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: 'Get Found. Convert More Enquiries. Get More Reviews.',
     description:
       'Practical marketing systems that help businesses get found online, respond to enquiries faster and stay connected with their customers.',
-    images: ['/emmanuel-growth-logo-800.png'],
+    images: ['/og.png'],
   },
   icons: {
     icon: [{ url: '/favicon.svg', type: 'image/svg+xml' }],
