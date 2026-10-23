@@ -19,7 +19,8 @@ export function About() {
         <div className="about-photo">
           <span className="about-photo-block" aria-hidden="true" />
           <div className="about-photo-frame">
-            <Image src="/images/emmanuel-founder.webp" alt="Emmanuel, founder of Emmanuel Growth" width={399} height={711} sizes="(max-width: 767px) 300px, 340px" loading="lazy" />
+            {/* TODO(owner): replace with a larger original (at least 1200px wide); the current file is 399x711. */}
+            <Image src="/images/emmanuel-founder.webp" alt="Emmanuel, founder of Emmanuel Growth" width={399} height={711} sizes="(max-width: 767px) 300px, 340px" loading="eager" />
             <p className="about-photo-label"><strong>Emmanuel</strong><span>Founder, Emmanuel Growth</span></p>
           </div>
         </div>

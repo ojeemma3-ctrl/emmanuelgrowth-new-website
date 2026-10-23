@@ -23,7 +23,7 @@ export default async function ListingsGuidePage({ searchParams }: { searchParams
     const s = q.toString();
     return `/guides/listings${s ? `?${s}` : ''}`;
   };
-  const codes = Object.keys(LISTINGS_BY_COUNTRY) as CountryCode[];
+  const codes = (Object.keys(LISTINGS_BY_COUNTRY) as CountryCode[]).filter((code) => LISTINGS_BY_COUNTRY[code].entries.length > 0);
 
   return (
     <LegalPage

@@ -56,6 +56,10 @@ export const LISTINGS_BY_COUNTRY: Record<'GB' | 'NG' | 'US' | 'FR', CountryListi
 
 export type CountryCode = keyof typeof LISTINGS_BY_COUNTRY;
 export const isListedCountry = (code?: string | null): code is CountryCode => Boolean(code && code.toUpperCase() in LISTINGS_BY_COUNTRY);
+// A country is only offered (guide buttons, report links) once it has its own entries. France has none yet,
+// so French visitors get the main listings without a France option.
+// TODO(owner): add checked French directories to LISTINGS_BY_COUNTRY.FR.entries to show France again.
+export const hasCountryEntries = (code?: string | null): code is CountryCode => isListedCountry(code) && LISTINGS_BY_COUNTRY[code.toUpperCase() as CountryCode].entries.length > 0;
 
 // Google place types for food, drink and places to stay.
 const HOSPITALITY_TYPES = new Set(['restaurant', 'cafe', 'coffee_shop', 'bar', 'pub', 'wine_bar', 'bakery', 'meal_takeaway', 'meal_delivery', 'hotel', 'lodging', 'motel', 'hostel', 'guest_house', 'bed_and_breakfast', 'resort_hotel', 'inn', 'night_club']);
@@ -65,7 +69,7 @@ export const isHospitality = (type?: string | null) => Boolean(type && (HOSPITAL
 // Unknown or missing countries get the core list only.
 export function listingsFor(country?: string | null, hospitality = false) {
   const code = country?.toUpperCase();
-  const local = isListedCountry(code) ? LISTINGS_BY_COUNTRY[code] : null;
+  const local = hasCountryEntries(code) ? LISTINGS_BY_COUNTRY[code] : null;
   return {
     code: local ? (code as CountryCode) : null,
     label: local?.label ?? null,
@@ -77,7 +81,7 @@ export function listingsFor(country?: string | null, hospitality = false) {
 // Link from the report: the country from the Google profile, plus the hospitality flag.
 export function listingsGuideHref(country?: string | null, categoryType?: string | null) {
   const params = new URLSearchParams();
-  if (isListedCountry(country)) params.set('country', country.toUpperCase());
+  if (hasCountryEntries(country)) params.set('country', country.toUpperCase());
   if (isHospitality(categoryType)) params.set('type', 'hospitality');
   const query = params.toString();
   return `/guides/listings${query ? `?${query}` : ''}`;
