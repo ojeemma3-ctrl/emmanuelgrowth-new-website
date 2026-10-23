@@ -36,9 +36,20 @@
 - Brevo: the contact form uses its own list (ID 7); the check uses the list "Visibility check"
   (BREVO_VISIBILITY_LIST_ID). WhatsApp-only contacts use the SMS attribute and are SMS-blacklisted (no SMS marketing).
 
+## Site structure (24 Oct 2026)
+- Get More Reviews lives at /get-more-reviews; /build-trust is a permanent redirect (next.config.ts). Use
+  /get-more-reviews everywhere.
+- The Complete system has its own page, /complete-system; its status (early access, waitlist) comes from
+  lib/pricing-config.ts. No launch date is promised.
+- Service pages: primary action is the free visibility check, secondary is a free personal review (contact box).
+- Example visuals use one invented hotel, Harbour Hotel, always labelled Example. No real brands.
+- The home hero visual sits in HeroVisualFrame (position, crop, fades); replace HeroVisual with an image or video
+  without touching the frame.
+- WhatsApp number: one setting, OWNER.whatsapp in lib/check-config.ts.
+
 ## Button logic
 - Offer tags (lib/check-offers.ts) map to plan pages:
-  - reviews and rating → Get More Reviews (/build-trust)
+  - reviews and rating → Get More Reviews (/get-more-reviews)
   - no one-tap contact → Convert Enquiries (/convert-enquiries, early access)
   - no website or only a social link → A simple website (/get-found)
   - speed and page settings on an existing site → "Ask me about this" opens the contact box prefilled

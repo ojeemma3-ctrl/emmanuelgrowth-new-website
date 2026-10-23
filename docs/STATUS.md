@@ -1,12 +1,20 @@
 # Status
 
-Last updated: 20 October 2026 (visibility check redesign, steps 1 to 3). Update this file at the end of each work item.
+Last updated: 24 October 2026 (home page redesign, service pages, /get-more-reviews, Complete system page). Update this file at the end of each work item.
 
 ## Done
-- Home page redesign: hero with animated panel, three offer sections, How it works, pricing, FAQ, About, final CTA,
-  footer; dark/lime design tokens; contact box (WhatsApp, email, quick message to Brevo list 7).
-- Listings guide: /guides/listings (lib/listings-by-country.ts: core listings + GB, NG, US; FR is a TODO). In the sitemap.
-- Service pages: /get-found, /build-trust (Get More Reviews), /convert-enquiries. Legal pages: privacy, cookies, terms.
+- Home page: dark-to-lime hero with an example dashboard (HeroVisualFrame owns position and fades; HeroVisual is
+  the swappable picture), four boxes, a tabbed problem section with looping example graphics (auto-advance,
+  Next button), How it works, pricing cards on white, FAQ (now with after-the-check, cancelling, outside the
+  UK, who you work with), About with the founder photo, final CTA (visibility check + free personal review).
+  All example visuals use one invented hotel (Harbour Hotel), labelled Example.
+- WhatsApp shortcut: floating button on phones and a footer link, number from OWNER.whatsapp in lib/check-config.ts.
+- Sharing image: public/og.png (1672x941) for Open Graph and Twitter on every page.
+- Listings guide: /guides/listings (lib/listings-by-country.ts: core listings + GB, NG, US). France is hidden until it
+  has entries (TODO in the same file). In the sitemap.
+- Service pages in the home design (components/home/ServicePage.tsx): /get-found, /get-more-reviews,
+  /convert-enquiries and /complete-system. /build-trust permanently redirects (308) to /get-more-reviews
+  (next.config.ts). Legal pages: privacy, cookies, terms.
 - Pricing section from lib/pricing-config.ts: four plans (EUR), early-access tags, plan-prefilled contact box,
   anchors #pricing, #get-found-plan, #get-more-reviews-plan, #convert-enquiries-plan, #complete-system-plan.
 - Visibility check (/visibility-check):
