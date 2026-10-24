@@ -15,6 +15,15 @@ const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === 'seatbelt';
 const localBindingConfig = {
   main: 'vinext/server/app-router-entry',
   compatibility_flags: ['nodejs_compat'],
+  // Non-secret runtime settings, written into the deployed Worker config (dist/server/wrangler.json).
+  // Secrets (BREVO_API_KEY, Google and Turnstile keys, the signing secret) and VISIBILITY_NOTIFY_EMAIL
+  // stay in the Cloudflare dashboard only.
+  vars: {
+    BREVO_SENDER_EMAIL: 'emmanuel@emmanuelgrowth.com',
+    BREVO_VISIBILITY_LIST_ID: '8',
+    CHECK_DAILY_CAP: '30',
+    CHECK_LIMIT_PER_IP_PER_DAY: '3',
+  },
   d1_databases: d1
     ? [
         {
