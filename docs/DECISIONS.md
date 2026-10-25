@@ -54,6 +54,16 @@
   without touching the frame.
 - WhatsApp number: one setting, OWNER.whatsapp in lib/check-config.ts.
 
+## Colour system (26 Oct 2026)
+- Black #0B0C0E, white, lime #C6F135, deep green #10331A, pale green band #EEF4E4. No other hues.
+  Supporting tints: band border #DCE6CC, box tint #F5F8EF, tint border #E3EBD6. Tokens: --green-deep, --band,
+  --band-border, --tint, --tint-border (light-system block in app/globals.css).
+- Lime is never text on a light background. It is used only for buttons and as the glyph inside a deep green chip.
+- Service pages: sections after the hero alternate pale band / white. Boxes on a band are white with a band border;
+  boxes on white are tinted with a tint border. Round chips (numbers, ticks, crosses, steps) are deep green with a
+  lime glyph; small labels are deep green. Hero, plan card and closing CTA are unchanged.
+- The home page has not been changed yet (it shares How it works and the FAQ). Owner to decide.
+
 ## Service pages (26 Oct 2026)
 - One template (components/home/ServicePage.tsx) for all four pages, sections in a fixed order: hero, Why it
   matters, What you get, How it works, Who it's for / What this is not, plan card, FAQ, closing CTA.

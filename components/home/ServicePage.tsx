@@ -121,8 +121,9 @@ export function ServicePage({ planId, kicker, title, description, visual, wide =
           <p className="svc-kicker">Why it matters</p>
           <h2 id="svc-why-title">Why it matters for a local business</h2>
           <ul className={`svc-why-grid is-${why.length}`}>
-            {why.map((item) => (
+            {why.map((item, i) => (
               <li key={item.title}>
+                <span className="svc-num" aria-hidden="true">{i + 1}</span>
                 <h3>{item.title}</h3>
                 <p>{item.text}</p>
               </li>

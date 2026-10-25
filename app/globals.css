@@ -989,6 +989,12 @@ main:has(> .hero) {
   --green: var(--lime); --green-edge: color-mix(in srgb, var(--lime) 55%, var(--ink));
   --text: var(--heading); --muted-light: var(--muted); --muted-dark: var(--on-dark-body);
   --amber: var(--star); --border-light: var(--divider);
+  /* Deep green and pale green bands (service pages). No other hues. */
+  --green-deep: #10331A;    /* chips (with a lime glyph), small labels, icons on light */
+  --band: #EEF4E4;          /* pale green section band */
+  --band-border: #DCE6CC;   /* 1px border of white boxes on a band */
+  --tint: #F5F8EF;          /* box fill on a white section */
+  --tint-border: #E3EBD6;   /* 1px border of tinted boxes */
 }
 
 /* Sections: one light background, 1px dividers; pricing is the dark section. */
@@ -1510,7 +1516,6 @@ main:has(> .hero) > section.svc-hero .svc-jump { padding-top: 96px; }
 
 /* Sections. */
 main:has(> .hero) > section.svc-section { padding: 104px 0; border-top: 0; background: #FFFFFF; }
-main:has(> .hero) > section.svc-section:is(.svc-included, .svc-plan) { background: #F5F5F2; }
 .svc-kicker { margin: 0 0 12px; color: #4A4E55; font-size: 13px; font-weight: 700; letter-spacing: .12em; text-align: center; text-transform: uppercase; }
 main:has(> .hero) .svc-section h2 { max-width: 760px; margin: 0 auto 48px; background: none; color: #0B0C0E; -webkit-text-fill-color: #0B0C0E; font-size: clamp(2rem, 3.6vw, 2.75rem); line-height: 1.1; text-align: center; }
 main:has(> .hero) .svc-section h3:not(.ph-name) { margin: 0; background: none; color: #0B0C0E; -webkit-text-fill-color: #0B0C0E; }
@@ -1585,6 +1590,30 @@ main:has(> .hero) .svc-plan h2 { margin: 0 0 20px; text-align: left; }
   .svc-visual *, .svc-visual *::before, .svc-visual *::after { animation: none !important; }
   .svc-visual .mg-typing { display: none; }
 }
+
+/* Service page colours (tokens in the light-system block above). Sections after the hero alternate: pale green
+   band, white, band, white... (Why it matters, What you get, How it works, Who it's for, Price, FAQ). Boxes on a band
+   are white with a --band-border; boxes on white are --tint with a --tint-border. Round chips are deep green with a
+   lime glyph. Small labels are deep green. The hero, the plan card and the closing CTA are unchanged.
+   Scoped to main:has(> .svc-hero), so the home page (same How it works and FAQ components) is untouched. */
+main:has(> .svc-hero) > section:is(.svc-why, .how-section, .svc-plan) { border-top: 0; background: var(--band); }
+main:has(> .svc-hero) > section:is(.svc-included, .svc-fit, .faq-section) { border-top: 0; background: #FFFFFF; }
+/* Boxes on a band: white. */
+main:has(> .svc-hero) :is(.svc-why-grid > li, .how-steps li) { border: 1px solid var(--band-border); background: #FFFFFF; }
+/* Boxes on white: tint. */
+main:has(> .svc-hero) :is(.svc-group, .svc-fit-col, .svc-fit-col.is-not, .faq-list details) { border: 1px solid var(--tint-border); background: var(--tint); }
+main:has(> .svc-hero) .faq-list details[open] { border-color: var(--green-deep); }
+/* Chips: deep green, lime glyph. */
+main:has(> .svc-hero) :is(.svc-tick, .svc-cross, .svc-num, .how-step-number) { background: var(--green-deep); color: var(--lime); }
+.svc-num { display: grid; place-items: center; justify-self: start; width: 36px; height: 36px; border-radius: 50%; font-family: var(--font-oswald), sans-serif; font-size: 17px; font-weight: 700; line-height: 1; }
+main:has(> .svc-hero) .svc-why-grid > li::before { display: none; }
+/* Small labels. */
+main:has(> .svc-hero) :is(.svc-kicker, .how-heading .kicker, .faq-heading .kicker) { color: var(--green-deep); }
+main:has(> .svc-hero) .svc-section .svc-group h3 { color: var(--green-deep); -webkit-text-fill-color: var(--green-deep); }
+/* FAQ: deep green plus/minus on a white circle (the rows are tinted). */
+main:has(> .svc-hero) .faq-list summary span, main:has(> .svc-hero) .faq-list details[open] summary span { border: 1px solid var(--tint-border); background: #FFFFFF; }
+main:has(> .svc-hero) .faq-list summary span::before, main:has(> .svc-hero) .faq-list summary span::after { background: var(--green-deep); }
+main:has(> .svc-hero) .faq-list summary span::before, main:has(> .svc-hero) .faq-list summary span::after { top: 12px; left: 7px; }
 
 /* Home hero: the short line under the button (muted, readable on the dark part). */
 main:has(> .hero) > section.hero .hero-cta-note { margin: 16px 0 0; color: #A1A3A5; font-size: 14px; line-height: 1.5; }
