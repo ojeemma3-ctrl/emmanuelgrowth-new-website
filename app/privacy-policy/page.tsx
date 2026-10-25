@@ -15,7 +15,7 @@ export default function PrivacyPolicyPage() {
       title="Privacy Policy"
       intro="This policy explains what information may be collected through this website, why it is used and the choices available to you."
     >
-      <p className="legal-updated">Last updated: 18 September 2026</p>
+      <p className="legal-updated">Last updated: 26 October 2026</p>
 
       <section>
         <h2>1. Who is responsible for your information</h2>
