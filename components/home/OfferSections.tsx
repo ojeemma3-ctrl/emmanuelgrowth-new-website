@@ -22,7 +22,7 @@ export const offers: Offer[] = [
     home: {
       fix: 'Local customers search, find you and contact you in one tap. Whether you run a winery, a hotel or a restaurant.',
       bullets: [
-        'A simple website that shows who you are and what you offer',
+        'A simple one-page landing page that shows who you are and what you offer',
         'Your Google profile set up clearly, with photos and opening times',
         'Call, directions and booking buttons on every page',
       ],

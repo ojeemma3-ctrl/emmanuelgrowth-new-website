@@ -55,9 +55,10 @@ export const plans: Plan[] = [
     billingNote: earlyClient,
     forWho: 'For businesses local customers can’t find online yet.',
     features: [
-      'A simple website or landing page',
-      'Google Business Profile set up and checked each month',
+      'A simple one-page landing page (not a full website)',
+      'Google Business Profile set up, improved and checked each month',
       'Call, WhatsApp and booking buttons',
+      // TODO(owner): what do these updates cover (for example text, photos, opening hours, prices)?
       'Up to 3 update requests a month, done within 2 working days',
     ],
     finePrint: ['3-month minimum.'],
@@ -92,7 +93,7 @@ export const plans: Plan[] = [
     status: 'early-access',
     price: 'From €197',
     period: '/month + usage',
-    forWho: 'For businesses that get enquiries but lose too many.',
+    forWho: 'For businesses that get enquiries but struggle to answer them all.',
     features: [
       'One inbox for WhatsApp, Instagram, Facebook and website chat',
       'An AI first reply and follow-up',

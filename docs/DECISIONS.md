@@ -14,8 +14,12 @@
 - Review recency isn't reliable: Places returns at most 5 reviews, chosen by relevance.
 
 ## Offers (EUR, early-client prices for the first 5 businesses)
-- Get Found: €97/month, 3-month minimum. Simple website, Google profile set up and checked monthly,
-  call and WhatsApp buttons, up to 3 update requests a month.
+- Get Found: €97/month, 3-month minimum. A simple one-page landing page only (not a full website), Google
+  profile set up, improved and checked monthly, call and WhatsApp buttons, up to 3 update requests a month.
+- Custom websites (5 to 10 pages) are quoted separately on request ("Tell me what you need" under the home
+  pricing cards opens the contact box with "Website improvements"). No website price is shown yet.
+- Still undecided: what happens to the landing page if a client cancels Get Found, and what the 3 monthly
+  update requests cover (TODO(owner) in app/get-found/page.tsx and lib/pricing-config.ts).
 - Get More Reviews: €97/month. Review requests, one tap to Google or Trustpilot, reply help, monthly summary.
 - Convert Enquiries (early access): from €197/month plus usage. One inbox for WhatsApp, Instagram, Facebook and
   website chat on GoHighLevel; AI first reply and follow-up. Setup fee quoted on request. Don't promise TikTok.
@@ -68,7 +72,7 @@
 - Offer tags (lib/check-offers.ts) map to plan pages:
   - reviews and rating → Get More Reviews (/get-more-reviews)
   - no one-tap contact → Convert Enquiries (/convert-enquiries, early access)
-  - no website or only a social link → A simple website (/get-found)
+  - no website or only a social link → A simple landing page (/get-found)
   - speed and page settings on an existing site → "Ask me about this" opens the contact box prefilled
     with "Website improvements"
   - category, photos, hours, name/address/phone consistency → no tag (free fix only)

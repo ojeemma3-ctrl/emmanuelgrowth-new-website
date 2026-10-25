@@ -1336,6 +1336,10 @@ main:has(> .hero) .is-featured .ph-name { border-color: #26282B; background: #1C
 .is-featured .ph-details:hover { color: #FFFFFF; }
 .ph-card.is-featured :is(.ph-button, .ph-details):focus-visible { outline-color: #C6F135; }
 .ph-note { max-width: 760px; margin: 40px auto 0; color: #5F636A; font-size: 13px; line-height: 1.6; text-align: center; }
+.ph-note.ph-note-website { margin-top: 8px; }
+.ph-note-link { padding: 0; border: 0; background: none; color: #0B0C0E; font: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.ph-note-link:hover { text-decoration-thickness: 2px; }
+.ph-note-link:focus-visible { outline: 2px solid #0B0C0E; outline-offset: 2px; border-radius: 2px; }
 
 @media (max-width: 1199px) {
   .ph-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 36px; }
