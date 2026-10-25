@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter, Oswald } from 'next/font/google';
 import { AnalyticsConsent } from '../components/analytics/AnalyticsConsent';
+import { RouteTransition } from '../components/RouteTransition';
 import { getGaMeasurementId, getGoogleSiteVerification } from '../lib/analytics';
 import './globals.css';
 
@@ -75,6 +76,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} ${oswald.variable} antialiased`}>
         {children}
+        <RouteTransition />
         {gaMeasurementId ? <AnalyticsConsent measurementId={gaMeasurementId} /> : null}
       </body>
     </html>

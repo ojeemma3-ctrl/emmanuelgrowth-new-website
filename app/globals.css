@@ -26,6 +26,11 @@
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
+/* Page changes (RouteTransition.tsx): no smooth scroll while the route changes, then a short fade in. */
+html.is-routing { scroll-behavior: auto; }
+@keyframes route-enter { from { opacity: 0; } to { opacity: 1; } }
+html.route-enter main { animation: route-enter .2s ease-out; }
+@media (prefers-reduced-motion: reduce) { html.route-enter main { animation: none !important; } }
 body { margin: 0; background: var(--white); color: var(--text); font-family: var(--font-inter), Arial, sans-serif; font-size: 16px; line-height: 1.625; }
 button, input { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }

@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useCallback, useEffect, useId, useRef, useState, type MouseEvent, type ReactNode, type RefObject } from 'react';
 import { HELP_LINK, PLAN_LINKS } from '../../lib/check-config';
 import { offerFor, type Offer } from '../../lib/check-offers';
@@ -34,7 +35,7 @@ function OfferTag({ offer }: { offer: Offer | null }) {
   return (
     <span className="ic-offer">
       {offer.kind === 'link'
-        ? <a className="ic-offer-tag" href={offer.href}>{offer.label}</a>
+        ? <Link className="ic-offer-tag" href={offer.href}>{offer.label}</Link>
         : <button className="ic-offer-tag" type="button" aria-haspopup="dialog" onClick={() => openContact(offer.topic)}>{offer.label}</button>}
     </span>
   );
@@ -71,8 +72,8 @@ function ClosingBlock({ realWebsite, onPersonalReview }: { realWebsite: boolean;
       <div className="ic-closing-actions">
         <button className="button button-growth" type="button" aria-haspopup="dialog" onClick={onPersonalReview}>Get a free personal review <Arrow /></button>
         {realWebsite
-          ? <a className="button button-outline" href={HELP_LINK}>See how I can help</a>
-          : <a className="button button-outline" href={PLAN_LINKS.getFound}>See how I build it</a>}
+          ? <Link className="button button-outline" href={HELP_LINK}>See how I can help</Link>
+          : <Link className="button button-outline" href={PLAN_LINKS.getFound}>See how I build it</Link>}
         <button className="button button-outline" type="button" aria-haspopup="dialog" onClick={() => openContact()}>Talk to me directly</button>
       </div>
     </section>
