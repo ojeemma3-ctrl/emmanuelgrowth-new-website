@@ -27,7 +27,10 @@
 - Does Get Found include Google profile work?
 - Are reviews and enquiry handling sold without a website?
 - Setup fee amount for the concierge (conciergeSetupFee in lib/pricing-config.ts, currently null).
-- Privacy retention period.
+
+## Privacy (26 Oct 2026)
+- Retention: contact form and visibility check details are kept for 24 months after our last contact, then
+  deleted; anyone can ask for deletion sooner. Set by the owner.
 
 ## Infrastructure
 - Google Cloud project "Emmanuel Growth" on a free trial (about 90 days from 18 Oct 2026).
@@ -46,6 +49,20 @@
 - The home hero visual sits in HeroVisualFrame (position, crop, fades); replace HeroVisual with an image or video
   without touching the frame.
 - WhatsApp number: one setting, OWNER.whatsapp in lib/check-config.ts.
+
+## Service pages (26 Oct 2026)
+- One template (components/home/ServicePage.tsx) for all four pages, sections in a fixed order: hero, Why it
+  matters, What you get, How it works, Who it's for / What this is not, plan card, FAQ, closing CTA.
+- Service pages are real pages, never pop-ups. A new page opens at the top instantly with a 200ms fade
+  (components/RouteTransition.tsx); smooth scrolling is kept for in-page anchors; no fade with reduced motion.
+- "What you get" lists only the plan's features from lib/pricing-config.ts. The build fails if a feature is
+  missing, extra, or has no plain-English line in lib/included-lines.ts. New features need the owner's approval.
+- "Why it matters" uses plain reasoning only: no statistics without a cited, current public source.
+- "What this is not" states only what the project confirms (for example: no guaranteed rankings; we never
+  write, buy or fake reviews; AI handles first steps and people stay in control; TikTok isn't included).
+- Early access and the waitlist come from the plan's status in the config. No start date is shown.
+- FAQ answers come from the config, docs and CLAUDE.md; unknown facts stay general with a TODO(owner).
+  FAQPage structured data is built from the same text as the page.
 
 ## Button logic
 - Offer tags (lib/check-offers.ts) map to plan pages:

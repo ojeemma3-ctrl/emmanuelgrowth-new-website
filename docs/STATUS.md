@@ -1,6 +1,6 @@
 # Status
 
-Last updated: 24 October 2026 (home page redesign, service pages, /get-more-reviews, Complete system page). Update this file at the end of each work item.
+Last updated: 26 October 2026 (privacy retention, page transitions, service pages rebuilt on one template). Update this file at the end of each work item.
 
 ## Done
 - Home page: dark-to-lime hero with an example dashboard (HeroVisualFrame owns position and fades; HeroVisual is
@@ -12,9 +12,15 @@ Last updated: 24 October 2026 (home page redesign, service pages, /get-more-revi
 - Sharing image: public/og.png (1672x941) for Open Graph and Twitter on every page.
 - Listings guide: /guides/listings (lib/listings-by-country.ts: core listings + GB, NG, US). France is hidden until it
   has entries (TODO in the same file). In the sitemap.
-- Service pages in the home design (components/home/ServicePage.tsx): /get-found, /get-more-reviews,
-  /convert-enquiries and /complete-system. /build-trust permanently redirects (308) to /get-more-reviews
-  (next.config.ts). Legal pages: privacy, cookies, terms.
+- Service pages on one template (components/home/ServicePage.tsx): /get-found, /get-more-reviews,
+  /convert-enquiries and /complete-system. Sections: hero (880px, matching example graphic, jump boxes), Why it
+  matters, What you get (from lib/pricing-config.ts, one line each in lib/included-lines.ts, checked at build
+  time), How it works, Who it's for / What this is not, plan card, FAQ (+ FAQPage data), closing CTA. Unique
+  metadata via lib/service-metadata.ts. Screenshots: screenshots/service-pages/ (git-ignored).
+  /build-trust permanently redirects (308) to /get-more-reviews (next.config.ts). Legal pages: privacy, cookies, terms.
+- Page changes open at the top instantly and fade in (components/RouteTransition.tsx); smooth scrolling stays
+  for in-page anchors; no fade with reduced motion.
+- Privacy policy: retention is 24 months after the last contact, with deletion sooner on request.
 - Pricing section from lib/pricing-config.ts: four plans (EUR), early-access tags, plan-prefilled contact box,
   anchors #pricing, #get-found-plan, #get-more-reviews-plan, #convert-enquiries-plan, #complete-system-plan.
 - Visibility check (/visibility-check):
@@ -44,17 +50,18 @@ Last updated: 24 October 2026 (home page redesign, service pages, /get-more-revi
    Not created as of 19 Oct 2026: confirm with the owner before testing. Then set env vars and test a fake lead.
 2. Prompt 4: new checks (docs/NEXT_PROMPTS.md, item 1).
 3. Wording polish across the report (the A4 PDF layout is done).
-4. Plan detail pages (the Complete system has no page; its link goes to /#services).
 5. Going live: Google and Brevo env secrets in Cloudflare, domain, limits, a quota cap on Places API.
-6. Privacy retention period: owner decides (placeholder "[RETENTION PERIOD - owner to decide]" in the policy).
-7. Animate the pricing section (later).
-8. Maybe social checks with Scrape Creators (later).
-9. GoHighLevel setup for Convert Enquiries (later).
+6. Service page facts for the owner (TODOs in app/<page>/page.tsx and components/home/FAQ.tsx): notice period
+   after the minimum term; how customers are added for review requests and which channels are used; what the
+   owner does day to day; Convert Enquiries alerts, setup needs and start date; what a Get Found client provides.
+7. Privacy policy "Last updated" date: still 18 September 2026; the owner decides whether to change it.
+8. Animate the pricing section (later).
+9. Maybe social checks with Scrape Creators (later).
+10. GoHighLevel setup for Convert Enquiries (later).
 
 ## Blocked
-- Brevo delivery: BREVO_API_KEY is not in .env.local (the contact form reads it from Cloudflare);
-  BREVO_VISIBILITY_LIST_ID and BREVO_SENDER_EMAIL not set; list and attributes not created. Until then the check
-  logs `brevo_list_missing` / `brevo_key_missing` and no lead emails are sent.
+- Brevo delivery: local settings are in .env.local (test key, list 8, sender, notify address, Cloudflare Turnstile
+  test keys) as of 25 Oct 2026; the owner's end-to-end lead test has not been reported yet.
 
 ## Known issues
 - Daily limits are in memory per server instance (reset on restart, not shared). Rely on a Google Cloud quota cap.
@@ -64,5 +71,5 @@ Last updated: 24 October 2026 (home page redesign, service pages, /get-more-revi
 - Recent reviews can't be checked automatically (Places returns at most 5 reviews).
 - Home hero note "Takes about 60 seconds" and the FAQ / How it works wording predate the current check flow.
 - Cookie policy doesn't mention the Turnstile script (only loads if Turnstile keys are set).
-- VISIBILITY_SIGNING_SECRET is empty locally (a secret is derived from the Google keys); set a real one before launch.
+- VISIBILITY_SIGNING_SECRET is set locally; set a real one in Cloudflare before launch.
 - Pre-existing TypeScript errors in InstantCheck.tsx and app/api/contact/route.ts (build still passes).
