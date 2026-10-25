@@ -1475,67 +1475,111 @@ main:has(> .hero) > section.hero .hero-boxes { padding-top: 120px; }
   .ot-progress { display: none; }
 }
 
-/* Service pages (ServicePage.tsx) in the home page design: a shorter dark hero with one small example,
-   "What it does", How it works, "What's included" (checklist and the plan card), FAQ and the closing CTA. */
-main:has(> .hero) > section.hero.svc-hero { display: block; min-height: 0; padding: 72px 0 150px; background-image: linear-gradient(180deg, #0B0C0E 0%, #0B0C0E calc(100% - 120px), #10331A calc(100% - 100px), #2E7D2B calc(100% - 82px), #7DBB3A calc(100% - 64px), #C9EB86 calc(100% - 44px), #EEF8CE calc(100% - 22px), #FFFFFF 100%); background-size: auto; }
-.svc-hero-grid { position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 1fr) 460px; align-items: center; gap: 64px; }
-main:has(> .hero) > section.svc-hero .hero-copy { max-width: 620px; }
-main:has(> .hero) > section.svc-hero .hero-copy h1 { font-size: clamp(2.75rem, 5vw, 4.25rem); }
-main:has(> .hero) .svc-hero .button-row { flex-wrap: wrap; gap: 12px; }
+/* Service pages (ServicePage.tsx), in the home page design. Hero: the home's calmer dark-to-white gradient,
+   100px shorter than the home hero (880px on desktop), copy on the left, the matching home tab graphic on the
+   right ("Example"), and four jump boxes on the pale end of the gradient (so there is no empty green band).
+   Then: Why it matters, What you get, How it works, Who it's for / What this is not, the plan card, FAQ, CTA.
+   Headings are solid colours. Lime is only a background (buttons, ticks, blocks), never text on light. */
+main:has(> .hero) > section.hero.svc-hero { display: flex; flex-direction: column; min-height: 880px; padding: 72px 0 48px; background-image: linear-gradient(180deg, #0B0C0E 0%, #0B0C0E 54%, #10331A 61%, #2E7D2B 67%, #7DBB3A 72%, #C9EB86 78%, #EEF8CE 86%, #FFFFFF 94%); background-size: auto; }
+.svc-hero-grid { position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 1fr) 480px; align-items: center; gap: 64px; }
+.svc-hero.is-wide .svc-hero-grid { grid-template-columns: minmax(0, 1fr) 600px; gap: 48px; }
+main:has(> .hero) > section.svc-hero .hero-copy { max-width: 600px; }
+main:has(> .hero) > section.svc-hero .hero-copy h1 { margin-bottom: 20px; background: none; color: #FFFFFF; -webkit-text-fill-color: #FFFFFF; font-size: clamp(2.6rem, 4.6vw, 4rem); line-height: 1.05; }
+main:has(> .hero) > section.svc-hero .hero-copy > p:not(.hero-badge) { max-width: 540px; color: #D9DADC; font-size: 18px; line-height: 1.6; }
+main:has(> .hero) > section.svc-hero .hero-badge { border-color: rgba(255, 255, 255, .16); background: rgba(255, 255, 255, .06); color: #E3E5E7; }
+main:has(> .hero) .svc-hero .button-row { flex-wrap: wrap; gap: 12px; margin-top: 28px; }
 main:has(> .hero) .svc-secondary { border: 1px solid rgba(255, 255, 255, .35); background: transparent; color: #FFFFFF; }
 main:has(> .hero) .svc-secondary:hover { border-color: #FFFFFF; }
+main:has(> .hero) > section.svc-hero .svc-jump { padding-top: 96px; }
 .svc-visual { margin: 0; }
-.svc-visual-card { padding: 28px 24px; border: 1px solid rgba(255, 255, 255, .08); border-radius: 20px; background: #F5F5F2; }
-.svc-visual-card .mg { max-width: none; }
-.svc-visual figcaption { margin-top: 10px; color: #A1A3A5; font-size: 13px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
-main:has(> .hero) > section.svc-section { padding: 96px 0; background: #FFFFFF; }
-main:has(> .hero) .svc-section h2 { margin: 0 0 32px; color: #0B0C0E; -webkit-text-fill-color: #0B0C0E; font-size: clamp(2rem, 3.6vw, 2.75rem); text-align: center; }
-.svc-points { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin: 0; padding: 0; list-style: none; }
-.svc-points li { display: grid; justify-items: center; gap: 14px; padding: 28px 24px; border: 1px solid #E3E3DF; border-radius: 20px; background: #F5F5F2; color: #0B0C0E; font-size: 16px; line-height: 1.5; text-align: center; }
-.svc-points li > span, .svc-checklist li > span { display: grid; place-items: center; flex: 0 0 auto; width: 26px; height: 26px; border-radius: 50%; background: #C6F135; color: #0B0C0E; }
-.svc-points svg, .svc-checklist svg { display: block; }
-main:has(> .hero) > section.svc-included { background: #F5F5F2; }
-.svc-included-grid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; align-items: start; gap: 56px; }
-main:has(> .hero) .svc-included h2 { text-align: left; }
-.svc-checklist { margin: 0; padding: 0; list-style: none; border-top: 1px solid #E3E3DF; }
-.svc-checklist li { display: flex; align-items: center; gap: 14px; padding: 16px 0; border-bottom: 1px solid #E3E3DF; color: #0B0C0E; font-size: 16px; }
-.svc-fine { margin-top: 18px; }
-.svc-fine p { margin: 0 0 6px; color: #4A4E55; font-size: 14px; }
+.svc-visual-card { position: relative; display: grid; place-items: center; min-height: 380px; padding: 32px 28px; overflow: hidden; border: 1px solid rgba(255, 255, 255, .1); border-radius: 24px; background: #F5F5F2; box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .6); }
+.svc-visual-card::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(180deg, rgba(11, 12, 14, .03) 0, rgba(11, 12, 14, .03) 1px, transparent 1px, transparent 7px); -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, #000 40%, transparent 100%); mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, #000 40%, transparent 100%); pointer-events: none; }
+.svc-visual-card .mg { max-width: 420px; }
+.svc-visual figcaption { margin-top: 12px; color: #A1A3A5; font-size: 13px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+/* Complete system: the three graphics together, small. */
+.svc-hero.is-wide .svc-visual-card { padding: 20px; }
+.svc-trio { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; width: 100%; }
+.svc-trio-item { display: grid; align-content: start; gap: 10px; padding: 14px 14px 16px; border: 1px solid #E3E3DF; border-radius: 16px; background: #FFFFFF; }
+.svc-trio-item:nth-child(3) { grid-column: 2; grid-row: 1 / span 2; }
+.svc-trio-item > span { color: #3A3D42; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.svc-trio-item .mg { zoom: .62; max-width: 420px; }
+
+/* Sections. */
+main:has(> .hero) > section.svc-section { padding: 104px 0; border-top: 0; background: #FFFFFF; }
+main:has(> .hero) > section.svc-section:is(.svc-included, .svc-plan) { background: #F5F5F2; }
+.svc-kicker { margin: 0 0 12px; color: #4A4E55; font-size: 13px; font-weight: 700; letter-spacing: .12em; text-align: center; text-transform: uppercase; }
+main:has(> .hero) .svc-section h2 { max-width: 760px; margin: 0 auto 48px; background: none; color: #0B0C0E; -webkit-text-fill-color: #0B0C0E; font-size: clamp(2rem, 3.6vw, 2.75rem); line-height: 1.1; text-align: center; }
+main:has(> .hero) .svc-section h3:not(.ph-name) { margin: 0; background: none; color: #0B0C0E; -webkit-text-fill-color: #0B0C0E; }
+.svc-tick, .svc-cross { display: grid; place-items: center; flex: 0 0 auto; width: 26px; height: 26px; border-radius: 50%; background: #C6F135; color: #0B0C0E; }
+.svc-cross { background: #E9E9E5; color: #3A3D42; }
+.svc-tick svg, .svc-cross svg { display: block; }
+
+/* Why it matters: 3 or 4 blocks. */
+.svc-why-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; margin: 0; padding: 0; list-style: none; }
+.svc-why-grid.is-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.svc-why-grid > li { display: grid; align-content: start; gap: 12px; padding: 28px 24px; border: 1px solid #E3E3DF; border-radius: 20px; background: #F5F5F2; }
+.svc-why-grid > li::before { content: ''; width: 32px; height: 6px; border-radius: 3px; background: #C6F135; }
+main:has(> .hero) .svc-why-grid h3 { font-family: var(--font-inter), Arial, sans-serif; font-size: 19px; font-weight: 700; line-height: 1.3; letter-spacing: -.01em; }
+.svc-why-grid p { margin: 0; color: #3A3D42; font-size: 16px; line-height: 1.6; }
+
+/* What you get: groups of items, each with one plain line. */
+.svc-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+.svc-group { padding: 28px 26px 12px; border: 1px solid #E3E3DF; border-radius: 20px; background: #FFFFFF; }
+main:has(> .hero) .svc-group h3 { margin-bottom: 8px; color: #4A4E55; -webkit-text-fill-color: #4A4E55; font-family: var(--font-inter), Arial, sans-serif; font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.svc-group ul { margin: 0; padding: 0; list-style: none; }
+.svc-group li { display: flex; align-items: flex-start; gap: 14px; padding: 16px 0; border-top: 1px solid #E9E9E5; }
+.svc-group li:first-child { border-top: 0; }
+.svc-group strong { display: block; color: #0B0C0E; font-size: 16px; line-height: 1.4; }
+.svc-group p { margin: 4px 0 0; color: #3A3D42; font-size: 15px; line-height: 1.55; }
+
+/* Who it's for / What this is not. */
+.svc-fit-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.svc-fit-col { padding: 32px 30px; border: 1px solid #E3E3DF; border-radius: 20px; background: #F5F5F2; }
+.svc-fit-col.is-not { background: #FFFFFF; }
+main:has(> .hero) .svc-fit-col h3 { margin-bottom: 18px; font-size: 26px; }
+.svc-fit-col ul { margin: 0; padding: 0; list-style: none; }
+.svc-fit-col li { display: flex; align-items: flex-start; gap: 14px; padding: 12px 0; color: #0B0C0E; font-size: 16px; line-height: 1.5; }
+.svc-fit-col li > span { margin-top: -1px; }
+
+/* Plan: the home pricing card, with the plan's terms beside it. */
+.svc-plan-grid { display: grid; grid-template-columns: minmax(0, 1fr) 360px; align-items: center; gap: 64px; max-width: 980px; margin-inline: auto; }
+.svc-plan-copy .svc-kicker { text-align: left; }
+main:has(> .hero) .svc-plan h2 { margin: 0 0 20px; text-align: left; }
+.svc-fine p { margin: 0 0 8px; color: #3A3D42; font-size: 16px; line-height: 1.6; }
+
 @media (max-width: 1099px) {
-  .svc-hero-grid { grid-template-columns: minmax(0, 1fr); gap: 40px; }
-  .svc-visual { max-width: 520px; }
-  .svc-included-grid { grid-template-columns: minmax(0, 1fr); }
-  .svc-included-grid .ph-card { max-width: 420px; }
+  main:has(> .hero) > section.hero.svc-hero { min-height: 0; }
+  .svc-hero-grid, .svc-hero.is-wide .svc-hero-grid { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+  .svc-visual { max-width: 560px; }
+  .svc-hero.is-wide .svc-visual { max-width: 640px; }
+  main:has(> .hero) > section.svc-hero .svc-jump { padding-top: 72px; }
+  .svc-why-grid, .svc-why-grid.is-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .svc-plan-grid { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+  .svc-plan-grid .ph-card { width: 100%; max-width: 420px; }
 }
 @media (max-width: 767px) {
-  main:has(> .hero) > section.hero.svc-hero { padding: 48px 0 110px; }
-  main:has(> .hero) > section.svc-hero .hero-copy h1 { font-size: clamp(2.25rem, 10vw, 3rem); }
-  main:has(> .hero) .svc-hero .button-row { display: grid; }
-  main:has(> .hero) .svc-hero .button-row > * { width: 100%; justify-content: center; }
+  main:has(> .hero) > section.hero.svc-hero { padding: 48px 0 40px; }
+  main:has(> .svc-hero) > section .container { width: calc(100% - 32px); }
   main:has(> .hero) > section.svc-hero .hero-copy { display: block; width: 100%; }
-  .svc-visual-card { padding: 20px 14px; }
+  main:has(> .hero) > section.svc-hero .hero-copy h1 { font-size: clamp(2.25rem, 10vw, 2.75rem); }
+  main:has(> .hero) > section.svc-hero .hero-copy > p:not(.hero-badge) { font-size: 17px; }
+  main:has(> .hero) .svc-hero .button-row { display: grid; grid-template-columns: minmax(0, 1fr); }
+  main:has(> .hero) .svc-hero .button-row > * { width: 100%; justify-content: center; }
+  main:has(> .svc-hero) .how-cta .button, main:has(> .svc-hero) .final-cta .button-row > * { width: 100%; justify-content: center; }
+  main:has(> .svc-hero) .final-cta .button-row { display: grid; grid-template-columns: minmax(0, 1fr); width: 100%; }
+  .svc-visual-card { min-height: 0; padding: 22px 14px; }
+  .svc-trio { grid-template-columns: minmax(0, 1fr); }
+  .svc-trio-item:nth-child(3) { grid-column: auto; grid-row: auto; }
+  main:has(> .hero) > section.svc-hero .svc-jump { padding-top: 56px; }
   main:has(> .hero) > section.svc-section { padding: 64px 0; }
-  .svc-points { grid-template-columns: minmax(0, 1fr); }
+  main:has(> .hero) .svc-section h2 { margin-bottom: 32px; }
+  .svc-why-grid, .svc-why-grid.is-3, .svc-fit-grid { grid-template-columns: minmax(0, 1fr); }
+  .svc-group { padding: 24px 20px 8px; }
+  .svc-fit-col { padding: 26px 20px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .svc-visual *, .svc-visual *::before, .svc-visual *::after { animation: none !important; }
   .svc-visual .mg-typing { display: none; }
-}
-
-/* Complete system page: the three example graphics side by side, small. */
-main:has(> .hero) > section.svc-together { background: #F5F5F2; }
-.svc-together-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin: 0; padding: 0; list-style: none; }
-.svc-together-list > li { display: grid; align-content: start; gap: 6px; }
-.svc-together-visual { display: grid; place-items: center; min-height: 360px; margin: 0 0 14px; padding: 20px 16px; border: 1px solid #E3E3DF; border-radius: 20px; background: #FFFFFF; }
-.svc-together-visual .mg { font-size: 13px; }
-.svc-together-step { margin: 0; color: #4A4E55; font-size: 13px; font-weight: 700; letter-spacing: .12em; }
-main:has(> .hero) .svc-together-list h3 { margin: 0; color: #0B0C0E; font-size: 24px; }
-.svc-together-list > li > p:last-child { margin: 0; color: #3A3D42; font-size: 16px; }
-.svc-together-caption { margin: 28px 0 0; text-align: center; color: #4A4E55; font-size: 13px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
-@media (max-width: 1099px) { .svc-together-list { grid-template-columns: minmax(0, 1fr); max-width: 520px; margin-inline: auto; } }
-@media (prefers-reduced-motion: reduce) {
-  .svc-together *, .svc-together *::before, .svc-together *::after { animation: none !important; }
-  .svc-together .mg-typing { display: none; }
 }
 
 /* Home hero: the short line under the button (muted, readable on the dark part). */

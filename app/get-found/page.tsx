@@ -1,31 +1,56 @@
 import type { Metadata } from 'next';
 import { FoundCard } from '../../components/home/OfferCards';
-import { offers } from '../../components/home/OfferSections';
 import { ServicePage } from '../../components/home/ServicePage';
 import { plans } from '../../lib/pricing-config';
+import { serviceMetadata } from '../../lib/service-metadata';
 
-export const metadata: Metadata = {
-  title: 'Get Found | Emmanuel Growth',
-  description: 'Make it easier for local customers to find your business and take the next step.',
-  alternates: { canonical: '/get-found' },
-};
-
-const offer = offers.find((o) => o.id === 'get-found')!;
 const plan = plans.find((p) => p.id === 'get-found')!;
+
+export const metadata: Metadata = serviceMetadata(
+  '/get-found',
+  'Get Found: A Simple Website and Google Profile | Emmanuel Growth',
+  'A simple website, a clear Google Business Profile and one-tap call, WhatsApp and booking buttons, set up for you and checked every month.',
+);
 
 export default function GetFoundPage() {
   return (
     <ServicePage
       planId="get-found"
       kicker="Service 01 · Get Found"
-      title="Get Found"
-      description="Help the right customers find your business and make it simple to call, message or book."
+      title="Help local customers find you."
+      description="A simple website, a clear Google profile and one-tap buttons to call, message or book. Set up for you, then checked every month."
       visual={<FoundCard />}
-      points={offer.home.bullets}
+      why={[
+        { title: 'Customers look before they call', text: 'Many people check a business online before they get in touch. If they can’t find you, or your details look out of date, they may choose someone they can find.' },
+        { title: 'Your Google profile is a first impression', text: 'When someone searches nearby for what you offer, your Google profile may be the first thing they see. Clear photos, opening times and contact details help them trust it’s the right place.' },
+        { title: 'A website answers more questions', text: 'A simple website explains what you offer, where you work and how to book. It gives customers one place to check that you’re real and up to date.' },
+        { title: 'One tap makes it easy to act', text: 'When calling, messaging or booking takes one tap, fewer people give up halfway. A small step like this can be the difference between a new customer and a missed one.' },
+      ]}
+      included={[
+        { title: 'Set up for you', features: ['A simple website or landing page', 'Call, WhatsApp and booking buttons'] },
+        { title: 'Every month', features: ['Google Business Profile set up and checked each month', 'Up to 3 update requests a month, done within 2 working days'] },
+      ]}
+      forWho={[
+        plan.forWho,
+        'Businesses with no website, or only a social media page.',
+        'Owners who want it set up for them, without learning new software.',
+      ]}
+      notThis={[
+        'Not a promise of a top Google ranking. Nobody can guarantee one.',
+        'Not paid advertising. Ads aren’t part of this plan.',
+        'Not a large custom website. It’s a simple website or landing page.',
+        'Not unlimited changes. Up to 3 update requests a month.',
+      ]}
       faqs={[
-        { question: 'Do I need a new website?', answer: 'Not always. During the free visibility check we look at what you already have and tell you whether to improve it or start fresh.' },
-        { question: 'What does the monthly price cover?', answer: 'Everything listed under What’s included on this page. If something you need isn’t on the list, ask during your free personal review.' },
-        { question: 'Is there a minimum term?', answer: plan.finePrint.join(' ') },
+        { question: 'What do you actually change?', answer: 'We set up a simple website or landing page, set up your Google Business Profile clearly and check it each month, and add call, WhatsApp and booking buttons. You can also send up to 3 update requests a month, done within 2 working days.' },
+        { question: 'Do you guarantee a top Google ranking?', answer: 'No. Nobody can guarantee a ranking on Google. We make your details clear, correct and easy to act on, which helps the customers who do find you.' },
+        { question: 'How long before I notice a difference?', answer: 'It varies. It depends on your area, the businesses near you and how people search. We check your Google profile every month to keep it correct.' },
+        // TODO(owner): confirm the exact list of what you need from a new Get Found client.
+        { question: 'What do you need from me?', answer: 'Basic details about your business, such as what you offer, your opening times and a few photos, and access to your Google Business Profile so we can set it up.' },
+        { question: 'Do I need a website already?', answer: 'No. Get Found includes a simple website or landing page. If you already have one, the free visibility check shows whether to improve it or start fresh.' },
+        // TODO(owner): confirm any notice period after the minimum term.
+        { question: 'Is there a contract or minimum term?', answer: `Yes. ${plan.finePrint.join(' ')} After that you can cancel.` },
+        { question: 'What happens after the free check?', answer: 'You get your report on screen and can save it as a PDF. If you want, ask for a free personal review and we will talk it through. There is no obligation.' },
       ]}
       closingHeading="Make it easy for local customers to find you."
     />
