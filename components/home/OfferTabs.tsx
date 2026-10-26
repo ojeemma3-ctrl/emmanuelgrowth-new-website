@@ -159,8 +159,8 @@ export function OfferTabs({ items }: { items: OfferTab[] }) {
           </div>
           <div className={`ot-graphic${paused ? ' is-paused' : ''}`} key={playKey}>{item.graphic}</div>
         </div>
+        <p className="ot-caption">Example</p>
       </div>
-      <p className="ot-caption">Example</p>
     </>
   );
 }

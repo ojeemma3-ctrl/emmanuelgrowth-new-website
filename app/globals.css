@@ -22,6 +22,15 @@
   --border-light: color-mix(in srgb, var(--text) 12%, var(--white));
   --shadow: color-mix(in srgb, var(--black) 18%, transparent);
   --container: 1200px;
+  /* Site colour system (home, service pages, visibility check): black, white, lime, deep green, pale green band.
+     Lime is never text on a light background: buttons, and the glyph inside a deep green chip, only. */
+  --ink: #0B0C0E;
+  --lime: #C6F135;
+  --green-deep: #10331A;    /* chips (with a lime glyph), small labels, icons on light */
+  --band: #EEF4E4;          /* pale green section band */
+  --band-border: #DCE6CC;   /* 1px border of white boxes on a band */
+  --tint: #F5F8EF;          /* box fill on a white section */
+  --tint-border: #E3EBD6;   /* 1px border of tinted boxes */
 }
 
 * { box-sizing: border-box; }
@@ -77,9 +86,10 @@ h1 em, h2 em { display: inline-block; font-style: normal; color: inherit; text-d
 .button-outline { border-color: var(--text); background: transparent; color: var(--text); }
 .button-outline:hover { background: var(--grey); }
 .nav-button { min-height: 44px; padding-block: 11px; }
-.button-growth, .site-header .nav-button, .cookie-banner .button-dark { background: var(--green); color: var(--black); box-shadow: 0 4px 0 var(--green-edge); transition: transform .12s ease, box-shadow .12s ease, background .18s ease; }
-.button-growth:hover, .site-header .nav-button:hover, .cookie-banner .button-dark:hover { background: var(--green); transform: translateY(2px); box-shadow: 0 2px 0 var(--green-edge); }
-.button-growth:active, .site-header .nav-button:active, .cookie-banner .button-dark:active { transform: translateY(4px); box-shadow: 0 0 0 var(--green-edge); }
+/* Flat buttons: solid fill, no raised edge or press-down movement. */
+.button-growth, .site-header .nav-button, .cookie-banner .button-dark { background: var(--green); color: var(--black); box-shadow: none; transition: background .18s ease; }
+.button-growth:hover, .site-header .nav-button:hover, .cookie-banner .button-dark:hover { background: color-mix(in srgb, var(--green) 88%, var(--white)); }
+.button-growth:active, .site-header .nav-button:active, .cookie-banner .button-dark:active { background: color-mix(in srgb, var(--green) 92%, var(--black)); }
 .button-ghost { border-color: var(--border-dark); background: var(--surface); color: var(--white); }
 .button-ghost:hover { border-color: var(--muted-dark); }
 .button-row { display: flex; gap: 12px; flex-wrap: wrap; }
@@ -196,7 +206,7 @@ h1 em, h2 em { display: inline-block; font-style: normal; color: inherit; text-d
 .footer-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 32px; margin-top: 56px; padding-block: 24px; border-top: 1px solid var(--border-dark); }
 .footer-bottom small { color: var(--muted-dark); font-size: 13px; }
 
-.vc-section { min-height: calc(100svh - 76px); padding-block: 72px 112px; background: var(--grey); }
+.vc-section { min-height: calc(100svh - 76px); padding-block: 72px 112px; background: var(--band); }
 .vc-container { max-width: 1120px; }
 .vc-note { margin: 16px 0 0; font-size: 16px; line-height: 24px; color: var(--muted-light); }
 .vc-back { margin-top: 24px; padding: 8px 0; border: 0; background: transparent; color: var(--text); font-size: 16px; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
@@ -274,9 +284,9 @@ h1 em, h2 em { display: inline-block; font-style: normal; color: inherit; text-d
 .ic-step > a, .ic-step > span { display: flex; align-items: center; gap: 10px; height: 100%; min-height: 52px; padding: 10px 12px; border: 1px solid var(--border-light); border-radius: 14px; background: var(--white); color: var(--muted-light); font-size: 16px; line-height: 20px; font-weight: 600; }
 .ic-step-num { width: 28px; height: 28px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 8px; background: var(--grey); color: var(--text); font-size: 15px; font-weight: 700; }
 .ic-step.is-done > a, .ic-step.is-done > span { color: var(--text); }
-.ic-step.is-done .ic-step-num { background: var(--green); color: var(--black); }
+.ic-step.is-done .ic-step-num { background: var(--green-deep); color: var(--lime); }
 .ic-step.is-current > a, .ic-step.is-current > span { border-color: var(--black); background: var(--black); color: var(--white); }
-.ic-step.is-current .ic-step-num { background: var(--green); color: var(--black); }
+.ic-step.is-current .ic-step-num { background: var(--green-deep); color: var(--lime); box-shadow: 0 0 0 1px rgba(255, 255, 255, .22); }
 .ic-step > a:hover { border-color: var(--text); }
 
 .ic-hero { padding: 28px 22px; border: 1px solid var(--border-dark); border-radius: 20px; background: radial-gradient(ellipse 60% 90% at 100% 0%, color-mix(in srgb, var(--white) 6%, transparent), transparent 70%), var(--black); color: var(--white); }
@@ -989,12 +999,7 @@ main:has(> .hero) {
   --green: var(--lime); --green-edge: color-mix(in srgb, var(--lime) 55%, var(--ink));
   --text: var(--heading); --muted-light: var(--muted); --muted-dark: var(--on-dark-body);
   --amber: var(--star); --border-light: var(--divider);
-  /* Deep green and pale green bands (service pages). No other hues. */
-  --green-deep: #10331A;    /* chips (with a lime glyph), small labels, icons on light */
-  --band: #EEF4E4;          /* pale green section band */
-  --band-border: #DCE6CC;   /* 1px border of white boxes on a band */
-  --tint: #F5F8EF;          /* box fill on a white section */
-  --tint-border: #E3EBD6;   /* 1px border of tinted boxes */
+  /* --green-deep, --band, --band-border, --tint and --tint-border live in :root (top of this file). */
 }
 
 /* Sections: one light background, 1px dividers; pricing is the dark section. */
@@ -1165,7 +1170,9 @@ main:has(> .hero) .ot-text h3 { margin: 0 0 14px; color: #0B0C0E; font-size: cla
 main:has(> .hero) .ot-text .offer-fix { margin-bottom: 18px; }
 main:has(> .hero) .ot-text .offer-bullets { margin-bottom: 24px; }
 main:has(> .hero) .ot-text .offer-bullets li { padding-block: 10px; }
-.ot-caption { margin: 12px 0 0 6px; color: #5F636A; font-size: 13px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+/* "Example": inside the panel, bottom-right corner, small and muted. */
+.ot-panel { position: relative; }
+.ot-caption { position: absolute; right: 18px; bottom: 14px; z-index: 2; margin: 0; color: #4A4E55; font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; pointer-events: none; }
 
 
 /* Under 1100px the dashboard moves below the text, still cropped by the right edge. */
@@ -1437,7 +1444,7 @@ main:has(> .hero) .hero-boxes span { font-size: 11.5px; letter-spacing: .06em; }
 
 /* Home hero, calmer: shorter gradient, and the visual frame (HeroVisualFrame.tsx) owns position, crop,
    dimming and all fades, so the picture inside (HeroVisual.tsx) can be swapped for an image or video. */
-main:has(> .hero) > section.hero { min-height: 980px; background-image: linear-gradient(180deg, #0B0C0E 0%, #0B0C0E 54%, #10331A 61%, #2E7D2B 67%, #7DBB3A 72%, #C9EB86 78%, #EEF8CE 86%, #FFFFFF 94%); }
+main:has(> .hero) > section.hero { min-height: 980px; background-image: linear-gradient(180deg, #0B0C0E 0%, #0B0C0E 54%, #10331A 61%, #1F4A27 67%, #4A7339 72%, #A7C28C 78%, #E6EFD9 86%, #FFFFFF 94%); }
 main:has(> .hero) > section.hero .hero-boxes { padding-top: 120px; }
 .hv-frame { position: absolute; z-index: 1; top: 0; right: 0; left: calc(50% + 150px); height: 600px; overflow: hidden; filter: brightness(.92); -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 7%, #000 35%, transparent 90%), linear-gradient(90deg, transparent 0, #000 14%); -webkit-mask-composite: source-in; mask-image: linear-gradient(180deg, transparent 0, #000 7%, #000 35%, transparent 90%), linear-gradient(90deg, transparent 0, #000 14%); mask-composite: intersect; }
 .hv-frame-inner { width: 900px; height: 100%; }
@@ -1461,7 +1468,7 @@ main:has(> .hero) > section.hero .hero-boxes { padding-top: 120px; }
 .ot-tabbar { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 0 0 28px; }
 .ot-tabbar .ot-tabs { margin: 0; padding: 6px 6px 14px; }
 .ot-tab { position: relative; }
-.ot-progress { position: absolute; left: 6px; right: 6px; bottom: -9px; height: 3px; border-radius: 999px; background: #C6F135; transform: scaleX(0); transform-origin: left; animation-name: ot-progress; animation-timing-function: linear; animation-fill-mode: forwards; }
+.ot-progress { position: absolute; left: -1px; right: -1px; bottom: -4px; height: 3px; border-radius: 0 0 3px 3px; background: #C6F135; transform: scaleX(0); transform-origin: left; animation-name: ot-progress; animation-timing-function: linear; animation-fill-mode: forwards; }
 .ot-progress.is-paused { animation-play-state: paused; }
 @keyframes ot-progress { to { transform: scaleX(1); } }
 .ot-next { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 6px; min-height: 40px; margin-bottom: 8px; padding: 0 16px; border: 1px solid #E3E3DF; border-radius: 999px; background: #FFFFFF; color: #0B0C0E; font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; transition: border-color .15s ease; }
@@ -1486,7 +1493,7 @@ main:has(> .hero) > section.hero .hero-boxes { padding-top: 120px; }
    right ("Example"), and four jump boxes on the pale end of the gradient (so there is no empty green band).
    Then: Why it matters, What you get, How it works, Who it's for / What this is not, the plan card, FAQ, CTA.
    Headings are solid colours. Lime is only a background (buttons, ticks, blocks), never text on light. */
-main:has(> .hero) > section.hero.svc-hero { display: flex; flex-direction: column; min-height: 880px; padding: 72px 0 48px; background-image: linear-gradient(180deg, #0B0C0E 0%, #0B0C0E 54%, #10331A 61%, #2E7D2B 67%, #7DBB3A 72%, #C9EB86 78%, #EEF8CE 86%, #FFFFFF 94%); background-size: auto; }
+main:has(> .hero) > section.hero.svc-hero { display: flex; flex-direction: column; min-height: 880px; padding: 72px 0 48px; background-image: linear-gradient(180deg, #0B0C0E 0%, #0B0C0E 54%, #10331A 61%, #1F4A27 67%, #4A7339 72%, #A7C28C 78%, #E6EFD9 86%, #FFFFFF 94%); background-size: auto; }
 .svc-hero-grid { position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 1fr) 480px; align-items: center; gap: 64px; }
 .svc-hero.is-wide .svc-hero-grid { grid-template-columns: minmax(0, 1fr) 600px; gap: 48px; }
 main:has(> .hero) > section.svc-hero .hero-copy { max-width: 600px; }
@@ -1587,26 +1594,31 @@ main:has(> .hero) .svc-plan h2 { margin: 0 0 20px; text-align: left; }
   .svc-visual .mg-typing { display: none; }
 }
 
-/* Service page colours (tokens in the light-system block above). Sections between the hero and the closing CTA
-   alternate by position: even = pale green band, odd = white, so an extra section (Get Found's custom website
-   offer) keeps the rhythm. Boxes on a band are white with a --band-border; boxes on white are --tint with a
-   --tint-border. Round chips are deep green with a lime glyph. Small labels are deep green. The hero, the plan
-   card and the closing CTA are unchanged. Scoped to main:has(> .svc-hero): the home page is untouched. */
-main:has(> .svc-hero) > section:not(.hero, .final-cta) { border-top: 0; }
-main:has(> .svc-hero) > section:not(.hero, .final-cta):nth-of-type(even) { --box: #FFFFFF; --box-border: var(--band-border); background: var(--band); }
-main:has(> .svc-hero) > section:not(.hero, .final-cta):nth-of-type(odd) { --box: var(--tint); --box-border: var(--tint-border); background: #FFFFFF; }
-main:has(> .svc-hero) :is(.svc-why-grid > li, .svc-group, .how-steps li, .svc-fit-col, .svc-fit-col.is-not, .faq-list details) { border: 1px solid var(--box-border); background: var(--box); }
-main:has(> .svc-hero) .faq-list details[open] { border-color: var(--green-deep); }
+/* Colour system on the home page and the service pages (tokens in :root). Sections after the hero alternate by
+   position: even = pale green band, odd = white, so pages with an extra section keep the rhythm; the closing CTA's
+   outer background follows the same rule (its black card is unchanged). Boxes on a band are white with a
+   --band-border; boxes on white are --tint with a --tint-border. Round chips are deep green with a lime glyph.
+   Small labels on light are deep green. Lime is never text on a light background. The hero is unchanged. */
+main:has(> .hero) > section:not(.hero) { border-top: 0; }
+main:has(> .hero) > section:not(.hero):nth-of-type(even) { --box: #FFFFFF; --box-border: var(--band-border); background: var(--band); }
+main:has(> .hero) > section:not(.hero):nth-of-type(odd) { --box: var(--tint); --box-border: var(--tint-border); background: #FFFFFF; }
+main:has(> .hero) :is(.svc-why-grid > li, .svc-group, .how-steps li, .svc-fit-col, .svc-fit-col.is-not, .faq-list details, .ot-panel) { border: 1px solid var(--box-border); background: var(--box); }
+main:has(> .hero) .about-section .about-panel { border-color: var(--box-border); background: var(--box); }
+main:has(> .hero) .faq-list details[open] { border-color: var(--green-deep); }
+/* Tabs: inactive tabs are white boxes; the example area keeps its ruled texture on the band colour. */
+main:has(> .hero) .ot-tab:not([aria-selected="true"]) { border-color: var(--box-border); background: #FFFFFF; }
+main:has(> .hero) .ot-graphic { background: var(--band); }
 /* Chips: deep green, lime glyph. */
-main:has(> .svc-hero) :is(.svc-tick, .svc-cross, .svc-num, .how-step-number) { background: var(--green-deep); color: var(--lime); }
+main:has(> .hero) :is(.svc-tick, .svc-cross, .svc-num, .how-step-number, .offer-bullets li > span, .about-principles li > span, .ot-icon) { background: var(--green-deep); color: var(--lime); }
 .svc-num { display: grid; place-items: center; justify-self: start; width: 36px; height: 36px; border-radius: 50%; font-family: var(--font-oswald), sans-serif; font-size: 17px; font-weight: 700; line-height: 1; }
-main:has(> .svc-hero) .svc-why-grid > li::before { display: none; }
-/* Small labels. */
-main:has(> .svc-hero) :is(.svc-kicker, .how-heading .kicker, .faq-heading .kicker) { color: var(--green-deep); }
-main:has(> .svc-hero) .svc-section .svc-group h3 { color: var(--green-deep); -webkit-text-fill-color: var(--green-deep); }
+main:has(> .hero) .svc-why-grid > li::before { display: none; }
+/* Small labels on light sections (the closing CTA's label is on black and stays as it is). */
+main:has(> .hero) :is(.svc-kicker, .how-heading .kicker, .faq-heading .kicker, .pricing-home .kicker, .about-copy .kicker) { color: var(--green-deep); }
+main:has(> .hero) .about-panel .about-copy > p.kicker { color: var(--green-deep); }
+main:has(> .hero) .svc-section .svc-group h3 { color: var(--green-deep); -webkit-text-fill-color: var(--green-deep); }
 /* FAQ: deep green plus/minus on a white circle. */
-main:has(> .svc-hero) .faq-list summary span, main:has(> .svc-hero) .faq-list details[open] summary span { border: 1px solid var(--box-border); background: #FFFFFF; }
-main:has(> .svc-hero) .faq-list summary span::before, main:has(> .svc-hero) .faq-list summary span::after { top: 12px; left: 7px; background: var(--green-deep); }
+main:has(> .hero) .faq-list summary span, main:has(> .hero) .faq-list details[open] summary span { border: 1px solid var(--box-border); background: #FFFFFF; }
+main:has(> .hero) .faq-list summary span::before, main:has(> .hero) .faq-list summary span::after { top: 12px; left: 7px; background: var(--green-deep); }
 /* Service "How it works": 3 or 4 steps; an optional status line under them. */
 .how-steps.is-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 main:has(> .hero) .how-steps.is-4 li { padding: 40px 26px 44px; }
