@@ -5,13 +5,14 @@ import { includedLines } from '../../lib/included-lines';
 import { nigeriaNote, plans, type Plan } from '../../lib/pricing-config';
 import { FAQ, type FaqItem } from './FAQ';
 import { FinalCTA } from './FinalCTA';
-import { HowItWorks } from './HowItWorks';
+import { HowItWorks, type HowStep } from './HowItWorks';
 import { ContactTrigger } from './InteractionTriggers';
 import { PlanCard } from './Pricing';
 import { SiteShell } from './SiteShell';
 
 // One template for the four service pages (/get-found, /get-more-reviews, /convert-enquiries, /complete-system).
-// Sections, in order: hero with an example graphic, Why it matters, What you get, How it works,
+// Sections, in order: hero with an example graphic, Why it matters, What you get, (optional extra section),
+// How it works (the service's own steps),
 // Who it's for / What this is not, the plan card, FAQ, closing call to action.
 // Plans, prices, terms and the "What you get" items come from lib/pricing-config.ts; the line under each item
 // comes from lib/included-lines.ts. Nothing about a plan is restated by hand. The hero uses the class "hero"
@@ -35,6 +36,8 @@ export type ServicePageProps = {
   wide?: boolean; // hero visual is the three graphics together (Complete system)
   why: { title: string; text: string }[]; // 3 to 4 blocks
   included: IncludedGroup[]; // every feature of the plan (or of the plans it bundles), grouped
+  afterIncluded?: ReactNode; // an extra section right after "What you get" (Get Found: the custom website offer)
+  how: { title: string; steps: HowStep[]; note?: string }; // what happens for the business's customers, 3 or 4 steps
   forWho: string[];
   notThis: string[];
   faqs: FaqItem[]; // 6 to 8; also published as FAQPage structured data, from the same text
@@ -74,7 +77,7 @@ const jumpLinks = [
   { title: 'Questions', line: 'Short answers', href: '#faq' },
 ];
 
-export function ServicePage({ planId, kicker, title, description, visual, wide = false, why, included, forWho, notThis, faqs, closingHeading }: ServicePageProps) {
+export function ServicePage({ planId, kicker, title, description, visual, wide = false, why, included, afterIncluded, how, forWho, notThis, faqs, closingHeading }: ServicePageProps) {
   const plan = planById(planId);
   checkIncluded(plan, included);
   const faqData = {
@@ -154,7 +157,9 @@ export function ServicePage({ planId, kicker, title, description, visual, wide =
         </div>
       </section>
 
-      <HowItWorks />
+      {afterIncluded}
+
+      <HowItWorks title={how.title} steps={how.steps} note={how.note} />
 
       <section className="svc-section svc-fit" aria-labelledby="svc-fit-title">
         <div className="container">

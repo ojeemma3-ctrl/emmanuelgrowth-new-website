@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { CustomWebsiteCard } from '../../components/home/CustomWebsiteCard';
 import { FoundCard } from '../../components/home/OfferCards';
 import { ServicePage } from '../../components/home/ServicePage';
 import { plans } from '../../lib/pricing-config';
@@ -30,6 +31,20 @@ export default function GetFoundPage() {
         { title: 'Set up for you', features: ['A simple one-page landing page (not a full website)', 'Call, WhatsApp and booking buttons'] },
         { title: 'Every month', features: ['Google Business Profile set up, improved and checked each month', 'Up to 3 update requests a month, done within 2 working days'] },
       ]}
+      afterIncluded={(
+        <section className="svc-section svc-custom" aria-label="Custom websites">
+          <div className="container"><CustomWebsiteCard heading="Need more than a landing page?" as="h2" /></div>
+        </section>
+      )}
+      how={{
+        title: 'How Get Found works',
+        steps: [
+          { title: 'Customers find you', text: 'When someone searches nearby, they find your Google profile, set up and improved with the right details.' },
+          { title: 'They see who you are', text: 'Your one-page landing page shows who you are, what you offer and how to reach you.' },
+          { title: 'One tap to get in touch', text: 'Call, WhatsApp and booking buttons let them contact you or book straight away.' },
+          { title: 'Kept up to date', text: 'We check your Google profile every month and handle up to 3 update requests, done within 2 working days.' },
+        ],
+      }}
       forWho={[
         plan.forWho,
         'Businesses with no website, or only a social media page.',

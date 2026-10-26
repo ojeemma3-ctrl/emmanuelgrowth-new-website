@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { CONTACT_TOPICS } from '../../lib/check-config';
 import { nigeriaNote, plans, type Plan, pricingCopy, setupFeeText, showEarlyClientNote } from '../../lib/pricing-config';
+import { CustomWebsiteCard } from './CustomWebsiteCard';
 import { ContactTrigger } from './InteractionTriggers';
 import { Arrow } from './shared';
 
@@ -72,8 +72,8 @@ function HomePricing() {
         <div className="ph-grid">
           {plans.map((plan) => <PlanCard plan={plan} key={plan.id} />)}
         </div>
+        <div className="ph-custom"><CustomWebsiteCard /></div>
         <p className="ph-note">{usagePlans}: {lowerFirst(setupFeeText)}. AI and messaging usage is billed separately, based on how many messages you receive. Prices are in euros. {nigeriaNote}</p>
-        <p className="ph-note ph-note-website">Need a full custom website, 5 to 10 pages? <ContactTrigger className="ph-note-link" topic={CONTACT_TOPICS.websiteImprovements}>Tell me what you need</ContactTrigger> and I will quote it.</p>
       </div>
     </section>
   );

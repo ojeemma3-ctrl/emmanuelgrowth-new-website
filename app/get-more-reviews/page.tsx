@@ -32,6 +32,16 @@ export default function GetMoreReviewsPage() {
         { title: 'Ongoing', features: ['Help replying to new reviews'] },
         { title: 'Reports', features: ['A short monthly summary'] },
       ]}
+      // TODO(owner): how customers are added after a job, and which channel sends the request, are not stated here yet.
+      how={{
+        title: 'How Get More Reviews works',
+        steps: [
+          { title: 'A job is finished', text: 'After each job, your customer gets a short, friendly message asking for an honest review.' },
+          { title: 'One tap to review', text: 'The message takes them straight to your Google or Trustpilot page.' },
+          { title: 'Help with replies', text: 'When new reviews arrive, we help you write clear, polite replies.' },
+          { title: 'A short monthly summary', text: 'Once a month, you get a short summary so you can see how your reviews are going.' },
+        ],
+      }}
       forWho={[
         plan.forWho,
         'Businesses that finish jobs, visits or stays and want more customers to say how it went.',

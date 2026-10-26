@@ -1342,10 +1342,6 @@ main:has(> .hero) .is-featured .ph-name { border-color: #26282B; background: #1C
 .is-featured .ph-details:hover { color: #FFFFFF; }
 .ph-card.is-featured :is(.ph-button, .ph-details):focus-visible { outline-color: #C6F135; }
 .ph-note { max-width: 760px; margin: 40px auto 0; color: #5F636A; font-size: 13px; line-height: 1.6; text-align: center; }
-.ph-note.ph-note-website { margin-top: 8px; }
-.ph-note-link { padding: 0; border: 0; background: none; color: #0B0C0E; font: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
-.ph-note-link:hover { text-decoration-thickness: 2px; }
-.ph-note-link:focus-visible { outline: 2px solid #0B0C0E; outline-offset: 2px; border-radius: 2px; }
 
 @media (max-width: 1199px) {
   .ph-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 36px; }
@@ -1591,17 +1587,15 @@ main:has(> .hero) .svc-plan h2 { margin: 0 0 20px; text-align: left; }
   .svc-visual .mg-typing { display: none; }
 }
 
-/* Service page colours (tokens in the light-system block above). Sections after the hero alternate: pale green
-   band, white, band, white... (Why it matters, What you get, How it works, Who it's for, Price, FAQ). Boxes on a band
-   are white with a --band-border; boxes on white are --tint with a --tint-border. Round chips are deep green with a
-   lime glyph. Small labels are deep green. The hero, the plan card and the closing CTA are unchanged.
-   Scoped to main:has(> .svc-hero), so the home page (same How it works and FAQ components) is untouched. */
-main:has(> .svc-hero) > section:is(.svc-why, .how-section, .svc-plan) { border-top: 0; background: var(--band); }
-main:has(> .svc-hero) > section:is(.svc-included, .svc-fit, .faq-section) { border-top: 0; background: #FFFFFF; }
-/* Boxes on a band: white. */
-main:has(> .svc-hero) :is(.svc-why-grid > li, .how-steps li) { border: 1px solid var(--band-border); background: #FFFFFF; }
-/* Boxes on white: tint. */
-main:has(> .svc-hero) :is(.svc-group, .svc-fit-col, .svc-fit-col.is-not, .faq-list details) { border: 1px solid var(--tint-border); background: var(--tint); }
+/* Service page colours (tokens in the light-system block above). Sections between the hero and the closing CTA
+   alternate by position: even = pale green band, odd = white, so an extra section (Get Found's custom website
+   offer) keeps the rhythm. Boxes on a band are white with a --band-border; boxes on white are --tint with a
+   --tint-border. Round chips are deep green with a lime glyph. Small labels are deep green. The hero, the plan
+   card and the closing CTA are unchanged. Scoped to main:has(> .svc-hero): the home page is untouched. */
+main:has(> .svc-hero) > section:not(.hero, .final-cta) { border-top: 0; }
+main:has(> .svc-hero) > section:not(.hero, .final-cta):nth-of-type(even) { --box: #FFFFFF; --box-border: var(--band-border); background: var(--band); }
+main:has(> .svc-hero) > section:not(.hero, .final-cta):nth-of-type(odd) { --box: var(--tint); --box-border: var(--tint-border); background: #FFFFFF; }
+main:has(> .svc-hero) :is(.svc-why-grid > li, .svc-group, .how-steps li, .svc-fit-col, .svc-fit-col.is-not, .faq-list details) { border: 1px solid var(--box-border); background: var(--box); }
 main:has(> .svc-hero) .faq-list details[open] { border-color: var(--green-deep); }
 /* Chips: deep green, lime glyph. */
 main:has(> .svc-hero) :is(.svc-tick, .svc-cross, .svc-num, .how-step-number) { background: var(--green-deep); color: var(--lime); }
@@ -1610,10 +1604,34 @@ main:has(> .svc-hero) .svc-why-grid > li::before { display: none; }
 /* Small labels. */
 main:has(> .svc-hero) :is(.svc-kicker, .how-heading .kicker, .faq-heading .kicker) { color: var(--green-deep); }
 main:has(> .svc-hero) .svc-section .svc-group h3 { color: var(--green-deep); -webkit-text-fill-color: var(--green-deep); }
-/* FAQ: deep green plus/minus on a white circle (the rows are tinted). */
-main:has(> .svc-hero) .faq-list summary span, main:has(> .svc-hero) .faq-list details[open] summary span { border: 1px solid var(--tint-border); background: #FFFFFF; }
-main:has(> .svc-hero) .faq-list summary span::before, main:has(> .svc-hero) .faq-list summary span::after { background: var(--green-deep); }
-main:has(> .svc-hero) .faq-list summary span::before, main:has(> .svc-hero) .faq-list summary span::after { top: 12px; left: 7px; }
+/* FAQ: deep green plus/minus on a white circle. */
+main:has(> .svc-hero) .faq-list summary span, main:has(> .svc-hero) .faq-list details[open] summary span { border: 1px solid var(--box-border); background: #FFFFFF; }
+main:has(> .svc-hero) .faq-list summary span::before, main:has(> .svc-hero) .faq-list summary span::after { top: 12px; left: 7px; background: var(--green-deep); }
+/* Service "How it works": 3 or 4 steps; an optional status line under them. */
+.how-steps.is-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+main:has(> .hero) .how-steps.is-4 li { padding: 40px 26px 44px; }
+main:has(> .hero) .how-steps.is-4 h3 { font-size: 22px; line-height: 28px; }
+.how-note { margin: 28px auto 0; max-width: 620px; color: #3A3D42; font-size: 15px; line-height: 1.6; text-align: center; }
+@media (max-width: 1099px) { .how-steps.is-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .how-steps.is-4::before { display: none; } }
+@media (max-width: 767px) { .how-steps.is-4 { grid-template-columns: minmax(0, 1fr); } }
+
+/* Custom website offer (CustomWebsiteCard.tsx): full-width white card, deep green chip, black button.
+   Under the home pricing cards, and as its own section after "What you get" on /get-found. */
+.cw-card { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 24px; padding: 28px 32px; border: 1px solid #E3E3DF; border-radius: 22px; background: #FFFFFF; color: #0B0C0E; box-shadow: 0 24px 40px -30px rgba(11, 12, 14, .25); }
+main:has(> .svc-hero) .cw-card { border-color: var(--band-border); }
+.cw-chip { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; background: #10331A; color: #C6F135; }
+.cw-chip svg { display: block; }
+main:has(> .hero) .cw-title, main:has(> .hero) .svc-section h2.cw-title { max-width: none; margin: 0 0 6px; background: none; color: #0B0C0E; -webkit-text-fill-color: #0B0C0E; font-family: var(--font-oswald), sans-serif; font-size: 28px; font-weight: 700; line-height: 1.15; text-align: left; }
+.cw-copy p { margin: 0; color: #3A3D42; font-size: 16px; line-height: 1.55; }
+.cw-button { white-space: nowrap; }
+.ph-custom { margin-top: 36px; }
+main:has(> .hero) > section.svc-custom { padding: 72px 0; }
+@media (max-width: 767px) {
+  .cw-card { grid-template-columns: minmax(0, 1fr); justify-items: start; gap: 16px; padding: 24px 20px; }
+  .cw-button { width: 100%; justify-content: center; white-space: normal; }
+  main:has(> .hero) .cw-title, main:has(> .hero) .svc-section h2.cw-title { font-size: 24px; }
+  main:has(> .hero) > section.svc-custom { padding: 48px 0; }
+}
 
 /* Home hero: the short line under the button (muted, readable on the dark part). */
 main:has(> .hero) > section.hero .hero-cta-note { margin: 16px 0 0; color: #A1A3A5; font-size: 14px; line-height: 1.5; }

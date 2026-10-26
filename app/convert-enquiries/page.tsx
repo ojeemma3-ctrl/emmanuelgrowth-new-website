@@ -32,6 +32,15 @@ export default function ConvertEnquiriesPage() {
         { title: 'Set up for you', features: ['One inbox for WhatsApp, Instagram, Facebook and website chat', 'Booking links'] },
         { title: 'Every day', features: ['An AI first reply and follow-up'] },
       ]}
+      how={{
+        title: 'How Convert Enquiries works',
+        steps: [
+          { title: 'A message arrives', text: 'Enquiries from WhatsApp, Instagram, Facebook and website chat land in one inbox.' },
+          { title: 'A quick first reply', text: 'An AI sends a first reply and a follow-up, so the customer isn’t left waiting. You can step in at any time.' },
+          { title: 'The customer books', text: 'Booking links let them pick a time without back-and-forth messages.' },
+        ],
+        note: earlyAccess ? 'Convert Enquiries is in early access. Join the waitlist to hear when it opens for your business.' : undefined,
+      }}
       forWho={[
         plan.forWho,
         'Businesses that get messages on several apps.',

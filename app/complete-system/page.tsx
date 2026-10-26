@@ -43,6 +43,15 @@ export default function CompleteSystemPage() {
         const id = plans.find((p) => feature === `Everything in ${p.name}`)!.id;
         return { title: feature, features: featuresOf(id) };
       })}
+      how={{
+        title: 'How the Complete system works',
+        steps: [
+          { title: 'Found', text: 'Customers find your improved Google profile and landing page, and contact you in one tap.' },
+          { title: 'Answered', text: 'Their messages land in one inbox and get an AI first reply, a follow-up and a booking link.' },
+          { title: 'Reviewed', text: 'After the job, they get a friendly request with one tap to your Google or Trustpilot page.' },
+        ],
+        note: earlyAccess ? 'The Complete system is in early access. Join the waitlist to hear when it opens for your business.' : undefined,
+      }}
       forWho={[
         plan.forWho,
         'Businesses that want customers to find them, reach them and review them, without managing three tools.',

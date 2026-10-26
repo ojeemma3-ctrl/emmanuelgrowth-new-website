@@ -75,6 +75,12 @@
 - "What this is not" states only what the project confirms (for example: no guaranteed rankings; we never
   write, buy or fake reviews; AI handles first steps and people stay in control; TikTok isn't included).
 - Early access and the waitlist come from the plan's status in the config. No start date is shown.
+- "How it works" on each service page shows that service's own steps (what happens for the business's customers),
+  built only from the plan's items; the generic three steps stay on the home page only.
+- Custom website offer: a visible block (CustomWebsiteCard.tsx) under the home pricing cards and as its own
+  section after "What you get" on /get-found. Its button opens the contact box with "Website improvements".
+  No price is shown. Not on other pages.
+- Service page sections alternate band / white by position, so an extra section keeps the rhythm.
 - FAQ answers come from the config, docs and CLAUDE.md; unknown facts stay general with a TODO(owner).
   FAQPage structured data is built from the same text as the page.
 
