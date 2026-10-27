@@ -1,5 +1,5 @@
 // Small motion graphics for the tabbed problem section on the home page. Built in code (HTML/CSS/SVG).
-// Every name and number is example data; the panel has an "Example" caption. Each graphic is aria-hidden
+// Every name and number is example data (one invented hotel). Each graphic is aria-hidden
 // with a one-sentence screen-reader description.
 // Animation: CSS keyframes only. `mg-at-N` makes an element appear in time slot N (700ms apart) of a 9.6s
 // loop: 400ms fade and 8px rise, hold, fade out, restart. See the "Motion graphics" block in globals.css.
@@ -28,22 +28,48 @@ const Check = () => (
   <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m3.5 8.5 3 3 6-7" /></svg>
 );
 
+// Get Found runs its own longer loop (gf-* keyframes in globals.css): the Google search, then the landing page.
+// The tab's progress bar uses this length.
+export const FOUND_LOOP_MS = 11200;
+
 export function FoundCard() {
   return (
-    <Graphic description="Example: a search for “hotel near me” shows Harbour Hotel in the city centre, rated 4.6 from 1,204 reviews, with Call, Directions and Book a room buttons, found on Google.">
-      <div className="mg-found">
-        <div className="mg-search mg-at-0"><span className="mg-typed">hotel near me</span></div>
-        <div className="mg-card mg-result mg-at-2">
-          <p className="mg-title">Harbour Hotel</p>
-          <p className="mg-muted">Hotel · City centre</p>
-          <p className="mg-rating"><b>4.6</b> <span className="mg-stars">★★★★★</span> <span className="mg-muted">(1,204)</span></p>
-          <div className="mg-pills">
-            <span className="is-dark mg-at-3">Call</span>
-            <span className="mg-at-4">Directions</span>
-            <span className="mg-at-5">Book a room</span>
+    <Graphic description="Example: a search for “hotel near me” shows Harbour Hotel in the city centre, rated 4.6 from 1,204 reviews, found on Google. Then its one-page landing page appears: Rooms in the city centre, open every day, free parking, breakfast included, with Call, WhatsApp and Book a room buttons.">
+      <div className="mg-found-stage">
+        <div className="mg-found mg-phase-search">
+          <div className="mg-search gf-s0"><span className="mg-typed gf-typed">hotel near me</span></div>
+          <div className="mg-card mg-result gf-s2">
+            <p className="mg-title">Harbour Hotel</p>
+            <p className="mg-muted">Hotel · City centre</p>
+            <p className="mg-rating"><b>4.6</b> <span className="mg-stars">★★★★★</span> <span className="mg-muted">(1,204)</span></p>
+            <div className="mg-pills">
+              <span className="is-dark gf-s3">Call</span>
+              <span className="gf-s4">Directions</span>
+              <span className="gf-s5">Book a room</span>
+            </div>
           </div>
+          <span className="mg-chip mg-found-chip gf-s6">Found on Google</span>
         </div>
-        <span className="mg-chip mg-found-chip mg-at-6">Found on Google</span>
+        <div className="mg-found mg-phase-page">
+          <div className="mg-card mg-lp gf-p0">
+            <div className="mg-lp-bar"><i /><i /><i /><span /></div>
+            <p className="mg-lp-head">Harbour Hotel</p>
+            <div className="mg-lp-body">
+              <p className="mg-lp-line">Rooms in the city centre</p>
+              <ul className="mg-lp-details">
+                <li><Check />Open every day</li>
+                <li><Check />Free parking</li>
+                <li><Check />Breakfast included</li>
+              </ul>
+              <div className="mg-pills">
+                <span className="is-dark gf-p1">Call</span>
+                <span className="gf-p2">WhatsApp</span>
+                <span className="gf-p3">Book a room</span>
+              </div>
+            </div>
+          </div>
+          <span className="mg-chip mg-found-chip gf-p4">Your landing page</span>
+        </div>
       </div>
     </Graphic>
   );

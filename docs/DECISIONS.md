@@ -49,7 +49,20 @@
 - The Complete system has its own page, /complete-system; its status (early access, waitlist) comes from
   lib/pricing-config.ts. No launch date is promised.
 - Service pages: primary action is the free visibility check, secondary is a free personal review (contact box).
-- Example visuals use one invented hotel, Harbour Hotel, always labelled Example. No real brands.
+- Example visuals use one invented hotel, Harbour Hotel. No real brands. The home hero dashboard and the
+  service page heroes show a visible "Example" label; the home tab graphics do not (since 27 Oct 2026). Every
+  graphic's screen-reader text starts with "Example:".
+
+## Home tabs section (27 Oct 2026)
+- Headlines without quotation marks. No "Example" label in the tab panel.
+- The panel always has the tallest tab's height (invisible copies of all three texts share its grid cell), so it
+  never jumps; text and graphic are vertically centred in their halves with equal padding.
+- No hard line between the white text half and the band-coloured graphic half: a ~110px horizontal fade (vertical
+  on phones), and the ruled texture fades in too.
+- Get Found graphic: the Google search, then a one-page landing page card for Harbour Hotel (Rooms in the city
+  centre; Open every day, Free parking, Breakfast included; Call, WhatsApp, Book a room; "Your landing page").
+  Its loop is 11.2s (FOUND_LOOP_MS in OfferCards.tsx) and its tab's progress bar uses the same length; the other
+  tabs stay at 9.6s. Reduced motion shows only the finished landing page. The service page hero uses the same graphic.
 - The home hero visual sits in HeroVisualFrame (position, crop, fades); replace HeroVisual with an image or video
   without touching the frame.
 - WhatsApp number: one setting, OWNER.whatsapp in lib/check-config.ts.

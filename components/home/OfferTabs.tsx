@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import { ContactTrigger } from './InteractionTriggers';
+import { FOUND_LOOP_MS } from './OfferCards';
 import { Arrow } from './shared';
 
 export type OfferTab = { id: string; number: string; name: string; problem: string; fix: string; bullets: string[]; graphic: ReactNode };
@@ -17,9 +18,26 @@ const CheckIcon = () => (
   <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m3.5 8.5 3 3 6-7" /></svg>
 );
 
-// Length of one motion-graphic loop (matches the 9.6s keyframes in globals.css). The progress bar under
-// the active tab fills over this time, then the next tab opens.
-const LOOP_MS = 9600;
+// Length of one motion-graphic loop: 9.6s (mg-* keyframes in globals.css), Get Found 11.2s (gf-* keyframes).
+// The progress bar under the active tab fills over this time, then the next tab opens.
+const LOOP_MS: Record<string, number> = { 'get-found': FOUND_LOOP_MS };
+const loopMs = (id: string) => LOOP_MS[id] ?? 9600;
+
+// One tab's text half. `sizer` copies are invisible and inert: all three sit in the same grid cell as the
+// visible panel so the panel always takes the tallest tab's height and never jumps when the tab changes.
+function TabText({ item, sizer = false }: { item: OfferTab; sizer?: boolean }) {
+  return (
+    <div className="ot-text">
+      <span className="ot-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">{icons[item.id]}</svg></span>
+      <h3 id={sizer ? undefined : `${item.id}-title`}>{item.problem}</h3>
+      <p className="offer-fix">{item.fix}</p>
+      <ul className="offer-bullets">
+        {item.bullets.map((b) => <li key={b}><span aria-hidden="true"><CheckIcon /></span>{b}</li>)}
+      </ul>
+      {sizer ? <span className="button button-dark">Fix this problem <Arrow /></span> : <ContactTrigger className="button button-dark">Fix this problem <Arrow /></ContactTrigger>}
+    </div>
+  );
+}
 
 // Three tabs, one panel. The first tab is selected by default. Arrow keys, Home and End move between tabs.
 // Links to #get-found, #convert-enquiries and #get-more-reviews (the tab ids) select that tab.
@@ -122,7 +140,7 @@ export function OfferTabs({ items }: { items: OfferTab[] }) {
                 <span
                   className={`ot-progress${paused ? ' is-paused' : ''}`}
                   key={`${active}-${playKey}`}
-                  style={{ animationDuration: `${LOOP_MS}ms` }}
+                  style={{ animationDuration: `${loopMs(tab.id)}ms` }}
                   onAnimationEnd={() => select(nextIndex, { user: false })}
                   aria-hidden="true"
                 />
@@ -147,19 +165,16 @@ export function OfferTabs({ items }: { items: OfferTab[] }) {
         onFocus={() => setHolding(true)}
         onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setHolding(false); }}
       >
-        <div className={`ot-fade is-${direction}`} key={item.id}>
-          <div className="ot-text">
-            <span className="ot-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">{icons[item.id]}</svg></span>
-            <h3 id={`${item.id}-title`}>&ldquo;{item.problem}&rdquo;</h3>
-            <p className="offer-fix">{item.fix}</p>
-            <ul className="offer-bullets">
-              {item.bullets.map((b) => <li key={b}><span aria-hidden="true"><CheckIcon /></span>{b}</li>)}
-            </ul>
-            <ContactTrigger className="button button-dark">Fix this problem <Arrow /></ContactTrigger>
+        {items.map((tab) => (
+          <div className="ot-fade ot-sizer" key={`sizer-${tab.id}`} aria-hidden="true" inert>
+            <TabText item={tab} sizer />
+            <div className="ot-graphic" />
           </div>
+        ))}
+        <div className={`ot-fade is-${direction}`} key={item.id}>
+          <TabText item={item} />
           <div className={`ot-graphic${paused ? ' is-paused' : ''}`} key={playKey}>{item.graphic}</div>
         </div>
-        <p className="ot-caption">Example</p>
       </div>
     </>
   );

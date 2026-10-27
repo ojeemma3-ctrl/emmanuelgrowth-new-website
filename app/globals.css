@@ -1170,9 +1170,7 @@ main:has(> .hero) .ot-text h3 { margin: 0 0 14px; color: #0B0C0E; font-size: cla
 main:has(> .hero) .ot-text .offer-fix { margin-bottom: 18px; }
 main:has(> .hero) .ot-text .offer-bullets { margin-bottom: 24px; }
 main:has(> .hero) .ot-text .offer-bullets li { padding-block: 10px; }
-/* "Example": inside the panel, bottom-right corner, small and muted. */
 .ot-panel { position: relative; }
-.ot-caption { position: absolute; right: 18px; bottom: 14px; z-index: 2; margin: 0; color: #4A4E55; font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; pointer-events: none; }
 
 
 /* Under 1100px the dashboard moves below the text, still cropped by the right edge. */
@@ -1297,6 +1295,55 @@ main:has(> .hero) .ot-text .offer-bullets li { padding-block: 10px; }
 @keyframes mg-type { 0%, 3.13% { width: 0; } 13.54%, 100% { width: 14ch; } }
 @keyframes mg-typing { 0%, 7.29% { opacity: 0; } 9.38%, 13.02% { opacity: 1; } 14.58%, 100% { opacity: 0; } }
 @keyframes mg-dot { 0%, 100% { transform: translateY(0); opacity: .45; } 50% { transform: translateY(-2px); opacity: 1; } }
+
+/* Get Found graphic, two phases on one 11.2s loop (FOUND_LOOP_MS in OfferCards.tsx): the Google search, which
+   slides out to the left, then a one-page landing page card. Both phases share one grid cell so nothing moves the
+   layout. Same 400ms fade and 8px rise as the other graphics. Reduced motion: only the finished landing page. */
+.mg-found-stage { display: grid; width: 100%; }
+.mg-found-stage > .mg-found { grid-area: 1 / 1; align-self: center; }
+.mg-lp { justify-self: center; width: 92%; overflow: hidden; }
+.mg-lp-bar { display: flex; align-items: center; gap: 5px; padding: 8px 12px; border-bottom: 1px solid #E7E7E2; background: #F7F7F4; }
+.mg-lp-bar i { width: 7px; height: 7px; border-radius: 50%; background: #D6D6D0; }
+.mg-lp-bar span { flex: 1; height: 10px; margin-left: 8px; border-radius: 999px; background: #ECECE7; }
+.mg-lp-head { padding: 10px 16px; background: #0B0C0E; color: #FFFFFF; font-size: 15px; font-weight: 700; }
+.mg-lp-body { padding: 14px 16px 16px; }
+.mg-lp-line { font-size: 14px; font-weight: 600; }
+.mg-lp-details { display: grid; gap: 4px; margin: 8px 0 0; padding: 0; list-style: none; color: #3A3D42; font-size: 12.5px; }
+.mg-lp-details li { display: flex; align-items: center; gap: 6px; }
+.mg-lp-details svg { flex: 0 0 auto; width: 11px; height: 11px; color: #10331A; }
+.mg-lp .mg-pills { margin-top: 12px; }
+.mg-phase-page .mg-found-chip { margin-top: -4px; }
+@media (max-width: 479px) {
+  .mg-lp { width: 100%; }
+  .mg-lp .mg-pills span { padding: 6px 11px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mg-phase-search { display: none; }
+}
+@keyframes gf-s0 { 0%, 0.00% { opacity: 0; transform: translateY(8px); } 3.57%, 47.32% { opacity: 1; transform: none; } 50.89%, 100% { opacity: 0; transform: translateX(-16px); } }
+.gf-s0 { animation: gf-s0 11.2s linear infinite both; }
+@keyframes gf-s2 { 0%, 12.50% { opacity: 0; transform: translateY(8px); } 16.07%, 47.32% { opacity: 1; transform: none; } 50.89%, 100% { opacity: 0; transform: translateX(-16px); } }
+.gf-s2 { animation: gf-s2 11.2s linear infinite both; }
+@keyframes gf-s3 { 0%, 18.75% { opacity: 0; transform: translateY(8px); } 22.32%, 47.32% { opacity: 1; transform: none; } 50.89%, 100% { opacity: 0; transform: none; } }
+.gf-s3 { animation: gf-s3 11.2s linear infinite both; }
+@keyframes gf-s4 { 0%, 25.00% { opacity: 0; transform: translateY(8px); } 28.57%, 47.32% { opacity: 1; transform: none; } 50.89%, 100% { opacity: 0; transform: none; } }
+.gf-s4 { animation: gf-s4 11.2s linear infinite both; }
+@keyframes gf-s5 { 0%, 31.25% { opacity: 0; transform: translateY(8px); } 34.82%, 47.32% { opacity: 1; transform: none; } 50.89%, 100% { opacity: 0; transform: none; } }
+.gf-s5 { animation: gf-s5 11.2s linear infinite both; }
+@keyframes gf-s6 { 0%, 37.50% { opacity: 0; transform: translateY(8px); } 41.07%, 47.32% { opacity: 1; transform: none; } 50.89%, 100% { opacity: 0; transform: translateX(-16px); } }
+.gf-s6 { animation: gf-s6 11.2s linear infinite both; }
+@keyframes gf-p0 { 0%, 52.68% { opacity: 0; transform: translateY(8px); } 56.25%, 92.86% { opacity: 1; transform: none; } 96.43%, 100% { opacity: 0; transform: none; } }
+.gf-p0 { animation: gf-p0 11.2s linear infinite both; }
+@keyframes gf-p1 { 0%, 58.93% { opacity: 0; transform: translateY(8px); } 62.50%, 92.86% { opacity: 1; transform: none; } 96.43%, 100% { opacity: 0; transform: none; } }
+.gf-p1 { animation: gf-p1 11.2s linear infinite both; }
+@keyframes gf-p2 { 0%, 65.18% { opacity: 0; transform: translateY(8px); } 68.75%, 92.86% { opacity: 1; transform: none; } 96.43%, 100% { opacity: 0; transform: none; } }
+.gf-p2 { animation: gf-p2 11.2s linear infinite both; }
+@keyframes gf-p3 { 0%, 71.43% { opacity: 0; transform: translateY(8px); } 75.00%, 92.86% { opacity: 1; transform: none; } 96.43%, 100% { opacity: 0; transform: none; } }
+.gf-p3 { animation: gf-p3 11.2s linear infinite both; }
+@keyframes gf-p4 { 0%, 77.68% { opacity: 0; transform: translateY(8px); } 81.25%, 92.86% { opacity: 1; transform: none; } 96.43%, 100% { opacity: 0; transform: none; } }
+.gf-p4 { animation: gf-p4 11.2s linear infinite both; }
+@keyframes gf-type { 0%, 3.13% { width: 0; } 13.39%, 100% { width: 14ch; } }
+.gf-typed { animation-name: gf-type; animation-duration: 11.2s; }
 
 @media (max-width: 899px) {
   .ot-graphic { min-height: 0; height: 340px; padding: 20px 16px; }
@@ -1607,7 +1654,23 @@ main:has(> .hero) .about-section .about-panel { border-color: var(--box-border);
 main:has(> .hero) .faq-list details[open] { border-color: var(--green-deep); }
 /* Tabs: inactive tabs are white boxes; the example area keeps its ruled texture on the band colour. */
 main:has(> .hero) .ot-tab:not([aria-selected="true"]) { border-color: var(--box-border); background: #FFFFFF; }
-main:has(> .hero) .ot-graphic { background: var(--band); }
+/* Panel: the visible tab and three invisible copies (OfferTabs.tsx) share one grid cell, so the panel height is
+   the tallest tab's and never jumps. Text and graphic are each vertically centred in their half. */
+.ot-panel { display: grid; }
+.ot-panel > .ot-fade { grid-area: 1 / 1; }
+.ot-panel > .ot-sizer { visibility: hidden; animation: none; pointer-events: none; }
+.ot-fade > .ot-text { align-self: center; padding: 48px 56px; }
+.ot-fade > .ot-graphic { align-self: stretch; }
+/* No hard edge between the halves: the band fades in over about 110px, and so does the ruled texture. */
+main:has(> .hero) .ot-graphic { background: linear-gradient(90deg, rgba(238, 244, 228, 0) 0, var(--band) 110px); }
+main:has(> .hero) .ot-graphic::before { -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, #000 40%, transparent 100%), linear-gradient(90deg, transparent 0, #000 160px); -webkit-mask-composite: source-in; mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, #000 40%, transparent 100%), linear-gradient(90deg, transparent 0, #000 160px); mask-composite: intersect; }
+@media (max-width: 899px) {
+  .ot-panel > .ot-fade { grid-template-rows: minmax(0, 1fr) auto; }
+  .ot-fade > .ot-text { align-self: center; padding: 32px; }
+  main:has(> .hero) .ot-graphic { background: linear-gradient(180deg, rgba(238, 244, 228, 0) 0, var(--band) 100px); }
+  main:has(> .hero) .ot-graphic::before { -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, #000 40%, transparent 100%), linear-gradient(180deg, transparent 0, #000 140px); mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, #000 40%, transparent 100%), linear-gradient(180deg, transparent 0, #000 140px); }
+}
+@media (max-width: 767px) { .ot-fade > .ot-text { padding: 28px 24px; } }
 /* Chips: deep green, lime glyph. */
 main:has(> .hero) :is(.svc-tick, .svc-cross, .svc-num, .how-step-number, .offer-bullets li > span, .about-principles li > span, .ot-icon) { background: var(--green-deep); color: var(--lime); }
 .svc-num { display: grid; place-items: center; justify-self: start; width: 36px; height: 36px; border-radius: 50%; font-family: var(--font-oswald), sans-serif; font-size: 17px; font-weight: 700; line-height: 1; }
