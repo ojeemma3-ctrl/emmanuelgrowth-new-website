@@ -36,6 +36,17 @@
 - Retention: contact form and visibility check details are kept for 24 months after our last contact, then
   deleted; anyone can ask for deletion sooner. Set by the owner.
 
+## Framework and testing (27 Oct 2026)
+- vinext 1.3.1 with React 19.3.1, react-server-dom-webpack 19.3.1 and @vitejs/plugin-rsc 0.5.38, all pinned
+  exactly; package-lock.json is committed so Cloudflare builds the same versions. vinext 1.0.0-beta.3 shipped a
+  production bundle where Link imported navigateClientSide from a chunk that did not export it, so links between
+  pages did nothing on the live site.
+- `npm run smoke -- <url>` crawls every page at 1440px and 390px with real clicks (links, contact box, tabs,
+  menu, FAQ) and fails on a wrong URL, a page that doesn't render or any console error. Run it on the Cloudflare
+  preview before merging to main.
+- Local production check: `npm run build`, then `npx vite preview --port 4173` (runs the Worker in workerd).
+  `vinext start` runs on Node and can't load cloudflare:workers.
+
 ## Infrastructure
 - Google Cloud project "Emmanuel Growth" on a free trial (about 90 days from 18 Oct 2026).
 - Two keys, restricted to Places API (New) and PageSpeed Insights. €5 budget alert.
