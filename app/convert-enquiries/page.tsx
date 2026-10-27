@@ -10,7 +10,7 @@ const earlyAccess = plan.status === 'early-access';
 
 export const metadata: Metadata = serviceMetadata(
   '/convert-enquiries',
-  'Convert Enquiries: One Inbox and a Quick First Reply | Emmanuel Growth',
+  'Convert Enquiries: One Inbox, Quick Replies | Emmanuel Growth',
   'WhatsApp, Instagram, Facebook and website chat in one inbox, with an AI first reply, follow-up and booking links. In early access.',
 );
 

@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
+import { pageMetadata } from '../../lib/service-metadata';
 import Link from 'next/link';
 import { LegalPage } from '../../components/legal/LegalPage';
 
-export const metadata: Metadata = {
-  title: 'Privacy Policy | Emmanuel Growth',
-  description: 'How Emmanuel Growth handles personal information when you use this website or contact the business.',
-  alternates: { canonical: '/privacy-policy' },
-};
+export const metadata: Metadata = pageMetadata(
+  '/privacy-policy',
+  'Privacy Policy | Emmanuel Growth',
+  'How Emmanuel Growth handles personal information when you use this website or contact the business.',
+);
 
 export default function PrivacyPolicyPage() {
   return (

@@ -3,6 +3,7 @@ import { Inter, Oswald } from 'next/font/google';
 import { AnalyticsConsent } from '../components/analytics/AnalyticsConsent';
 import { RouteTransition } from '../components/RouteTransition';
 import { getGaMeasurementId, getGoogleSiteVerification } from '../lib/analytics';
+import { SHARE_IMAGE } from '../lib/service-metadata';
 import './globals.css';
 
 const inter = Inter({
@@ -34,22 +35,14 @@ export const metadata: Metadata = {
     title: 'Get Found. Convert More Enquiries. Get More Reviews.',
     description:
       'Practical marketing systems that help businesses get found online, respond to enquiries faster and stay connected with their customers.',
-    // public/og.png is 1672x941 (not 1200x630); the real size is stated so previews crop correctly.
-    images: [
-      {
-        url: '/og.png',
-        width: 1672,
-        height: 941,
-        alt: 'Emmanuel Growth',
-      },
-    ],
+    images: [SHARE_IMAGE],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Get Found. Convert More Enquiries. Get More Reviews.',
     description:
       'Practical marketing systems that help businesses get found online, respond to enquiries faster and stay connected with their customers.',
-    images: ['/og.png'],
+    images: [SHARE_IMAGE.url],
   },
   icons: {
     icon: [{ url: '/favicon.svg', type: 'image/svg+xml' }],

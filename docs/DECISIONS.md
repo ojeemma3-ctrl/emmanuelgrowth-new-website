@@ -47,6 +47,14 @@
 - Local production check: `npm run build`, then `npx vite preview --port 4173` (runs the Worker in workerd).
   `vinext start` runs on Node and can't load cloudflare:workers.
 
+## SEO (27 Oct 2026)
+- Only emmanuelgrowth.com and www.emmanuelgrowth.com are indexable. Any other host (*.workers.dev, previews,
+  local) gets "X-Robots-Tag: noindex, nofollow" and a robots.txt that disallows everything (proxy.ts).
+- Share image: public/og.jpg, 1200x630, about 95 KB (SHARE_IMAGE in lib/service-metadata.ts). The old 1672x941
+  og.png is in _archive/public/.
+- Every public page has its own title, description, canonical and Open Graph / Twitter tags (pageMetadata).
+  The 404 page (app/not-found.tsx) is noindex with a neutral title and no canonical or share tags.
+
 ## Infrastructure
 - Google Cloud project "Emmanuel Growth" on a free trial (about 90 days from 18 Oct 2026).
 - Two keys, restricted to Places API (New) and PageSpeed Insights. €5 budget alert.

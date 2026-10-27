@@ -11,7 +11,7 @@ const earlyAccess = plan.status === 'early-access';
 
 export const metadata: Metadata = serviceMetadata(
   '/complete-system',
-  'Complete System: Get Found, Enquiries and Reviews Together | Emmanuel Growth',
+  'Complete System: Found, Answered, Reviewed | Emmanuel Growth',
   'Get Found, Convert Enquiries and Get More Reviews set up as one system, so a search can become an enquiry, a booking and then a review. In early access.',
 );
 

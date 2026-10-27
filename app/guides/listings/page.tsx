@@ -1,13 +1,14 @@
 import type { Metadata } from 'next';
+import { pageMetadata } from '../../../lib/service-metadata';
 import { TalkLink } from '../../../components/guides/TalkLink';
 import { LegalPage } from '../../../components/legal/LegalPage';
 import { LISTINGS_BY_COUNTRY, listingsFor, type CountryCode } from '../../../lib/listings-by-country';
 
-export const metadata: Metadata = {
-  title: 'Where Your Business Details Should Match | Emmanuel Growth',
-  description: 'Why your business name, address and phone should match across Google, Apple, Bing, Facebook and local directories, and where to check them.',
-  alternates: { canonical: '/guides/listings' },
-};
+export const metadata: Metadata = pageMetadata(
+  '/guides/listings',
+  'Where Your Business Details Should Match | Emmanuel Growth',
+  'Why your business name, address and phone should match across Google, Apple, Bing, Facebook and local directories, and where to check them.',
+);
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 const first = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);

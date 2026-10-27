@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
+import { pageMetadata } from '../../lib/service-metadata';
 import { LegalPage } from '../../components/legal/LegalPage';
 
-export const metadata: Metadata = {
-  title: 'Terms of Use | Emmanuel Growth',
-  description: 'The terms that apply when visitors use the Emmanuel Growth website.',
-  alternates: { canonical: '/terms-of-use' },
-};
+export const metadata: Metadata = pageMetadata(
+  '/terms-of-use',
+  'Terms of Use | Emmanuel Growth',
+  'The terms that apply when visitors use the Emmanuel Growth website.',
+);
 
 export default function TermsOfUsePage() {
   return (

@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
+import { pageMetadata } from '../../lib/service-metadata';
 import Link from 'next/link';
 import { LegalPage } from '../../components/legal/LegalPage';
 
-export const metadata: Metadata = {
-  title: 'Cookie Policy | Emmanuel Growth',
-  description: 'How Emmanuel Growth uses cookies and similar browser storage, including optional Google Analytics.',
-  alternates: { canonical: '/cookie-policy' },
-};
+export const metadata: Metadata = pageMetadata(
+  '/cookie-policy',
+  'Cookie Policy | Emmanuel Growth',
+  'How Emmanuel Growth uses cookies and similar browser storage, including optional Google Analytics.',
+);
 
 export default function CookiePolicyPage() {
   return (
