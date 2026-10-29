@@ -68,9 +68,9 @@ export default function CompleteSystemPage() {
         { question: 'Can I start with one service and add the others?', answer: 'Yes. You can start with one service and add the others later.' },
         { question: 'Do I get everything in each plan?', answer: 'Yes. Everything listed under What you get on this page is included.' },
         ...(earlyAccess ? [
-          { question: 'Is it available now?', answer: 'The Complete system is in early access. Use “Join the waitlist” and tell us a little about your business.' },
+          { question: 'Is it available now?', answer: 'The Complete system is in early access. Use “Join the waitlist” and tell me a little about your business.' },
           // TODO(owner): add a start date only once it is decided.
-          { question: 'When does it start?', answer: 'We haven’t set a start date yet. Join the waitlist and we’ll let you know.' },
+          { question: 'When does it start?', answer: 'I haven’t set a start date yet. Join the waitlist and I’ll let you know.' },
         ] : []),
         { question: 'How does pricing work?', answer: `${plan.price} ${plan.period.replace('/month', 'a month').replace(' + ', ' plus ')}. ${plan.finePrint.join(' ')}` },
       ]}

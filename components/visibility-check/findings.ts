@@ -71,7 +71,7 @@ function buildArea(id: AreaId, results: RuleResult[], line: (status: Status) => 
 }
 
 function couldntCheck(id: AreaId, line: string, found: string[]): Area {
-  return { id, title: areaTitles[id], status: 'Couldn’t check', line, found, results: [], extra: [], why: 'We only report on what we could actually check.', fix: 'You can run the check again later.', fixes: [] };
+  return { id, title: areaTitles[id], status: 'Couldn’t check', line, found, results: [], extra: [], why: 'The report only covers what the check could actually look at.', fix: 'You can run the check again later.', fixes: [] };
 }
 
 // Google business profile
@@ -80,7 +80,7 @@ export function profileArea(profile: Profile | null, social: string | null): Are
     return {
       id: 'profile', title: areaTitles.profile, status: 'Problem', results: [], extra: [],
       line: 'No Google business profile was selected for this check.',
-      found: ['You told us your business isn’t listed on Google, so there was no profile to check.'],
+      found: ['You said your business isn’t listed on Google, so there was no profile to check.'],
       why: 'A Google business profile is how many local customers find you on Google Search and Maps.',
       fix: 'Create or claim your free Google business profile.',
       fixes: [{ key: 'gbp', text: 'Create or claim your free Google business profile', area: 'profile', severity: 2, priority: 0, effort: 4, label: 'Fix first' }],
@@ -140,7 +140,7 @@ export function competitorArea(profile: Profile | null, outcome: Outcome<{ rows:
       ? `Couldn’t compare: your Google category is very general. You have ${formatCount(own)} reviews.`
       : reason === 'failed'
         ? `Couldn’t compare: the nearby search didn’t respond. You have ${formatCount(own)} reviews.`
-        : `Couldn’t compare: we found fewer than 3 similar businesses nearby. You have ${formatCount(own)} reviews.`);
+        : `Couldn’t compare: the check found fewer than 3 similar businesses nearby. You have ${formatCount(own)} reviews.`);
   }
   const results: RuleResult[] = [
     countResult,
@@ -190,16 +190,16 @@ export function websiteArea(outcome: Outcome<WebsiteReport>, hasWebsite: boolean
     };
   }
   if (outcome.state === 'waiting' || outcome.state === 'skipped') return null;
-  if (outcome.state === 'failed') return couldntCheck('website', 'We couldn’t run the website checks this time.', ['The website check didn’t complete.']);
+  if (outcome.state === 'failed') return couldntCheck('website', 'The website checks couldn’t run this time.', ['The website check didn’t complete.']);
   const site = outcome.data;
   if (!site.reachable) {
     if (site.error || (site.status && BLOCKED_STATUSES.has(site.status))) {
-      return { ...couldntCheck('website', 'We couldn’t load your website for this check. Some sites block automated visits.', [`Result: ${site.error ? site.error.replace(/_/g, ' ') : `status ${site.status}`}`]), pageTested: site.url };
+      return { ...couldntCheck('website', 'Your website couldn’t be loaded for this check. Some sites block automated visits.', [`Result: ${site.error ? site.error.replace(/_/g, ' ') : `status ${site.status}`}`]), pageTested: site.url };
     }
     return {
       id: 'website', title: areaTitles.website, status: 'Problem', line: 'Your website returned an error page.', results: [], extra: [], pageTested: site.url,
       found: [`Result: status ${site.status}`],
-      why: 'If the page shows an error for us, it may show one for some customers too.',
+      why: 'If the page shows an error to the check, it may show one for some customers too.',
       fix: 'Check your website address is correct and that the home page loads on a phone.',
       fixes: [{ key: 'site-error', text: 'Check your website address and that the home page loads', area: 'website', severity: 2, priority: 0, effort: 4, label: 'Fix first' }],
     };
@@ -224,12 +224,12 @@ export function contactArea(site: WebsiteReport | null, profile: Profile | null 
   const phoneAsText = googlePhone ? site.textPhones.some((p) => phonesMatch(p, googlePhone)) : false;
   const ways = [site.telLinks && `${site.telLinks} tap-to-call`, site.whatsappLinks && `${site.whatsappLinks} WhatsApp`, site.bookingLinks && `${site.bookingLinks} booking`].filter(Boolean);
   const formOnly = !ways.length && site.hasContactForm;
-  const FORM_ONLY = 'We found a contact form, but no one-tap way to call, message or book.';
+  const FORM_ONLY = 'The check found a contact form, but no one-tap way to call, message or book.';
   const missing = formOnly
-    ? `${FORM_ONLY} Links added by scripts may not be visible to our check.`
-    : 'We didn’t find a tap-to-call, WhatsApp or booking link on the page tested. Links added by scripts may not be visible to our check.';
+    ? `${FORM_ONLY} Links added by scripts may not be visible to the check.`
+    : 'The check didn’t find a tap-to-call, WhatsApp or booking link on the page tested. Links added by scripts may not be visible to the check.';
   const results = [result('contact-links', ways.length ? 'Good' : 'Needs attention', ways.length ? `${ways.join(', ')} link${ways.length === 1 ? '' : 's'} on the page tested` : `${missing}${phoneAsText ? ' Your phone number does appear as plain text on the page.' : ''}`)];
-  const area = buildArea('contact', results, (status) => (status === 'Good' ? 'Customers can reach you in one tap from your website.' : formOnly ? FORM_ONLY : 'We found no one-tap way to call, message or book.'));
+  const area = buildArea('contact', results, (status) => (status === 'Good' ? 'Customers can reach you in one tap from your website.' : formOnly ? FORM_ONLY : 'The check found no one-tap way to call, message or book.'));
   area.pageTested = site.finalUrl;
   area.extra.push(`Email links: ${site.mailtoLinks}`, `Contact form: ${site.hasContactForm ? 'found' : 'not found'}`, `Social links: ${site.socialLinks.length ? site.socialLinks.join(', ') : 'none found'}`);
   return area;

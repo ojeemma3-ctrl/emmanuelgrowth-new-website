@@ -394,7 +394,7 @@ export function ResultView({ check, ticket, headingRef, onCompare, restored = fa
   // Keyword rerun when the nearby comparison couldn't run (inside the Reviews card).
   const compareForm = profile && onCompare && (skippedReason === 'generic_category' || skippedReason === 'too_few' || skippedReason === 'failed') ? (
     <form className="ic-compare-form" onSubmit={async (e) => { e.preventDefault(); if (!keyword.trim()) return; setComparing(true); await onCompare(keyword.trim()); setComparing(false); }}>
-      <p>{skippedReason === 'generic_category' ? 'Couldn’t compare: your Google category is very general.' : skippedReason === 'failed' ? 'Couldn’t compare: the nearby search didn’t respond.' : 'Couldn’t compare: we found fewer than 3 similar businesses nearby.'} Tell us what you do and we’ll search for similar businesses near you.</p>
+      <p>{skippedReason === 'generic_category' ? 'Couldn’t compare: your Google category is very general.' : skippedReason === 'failed' ? 'Couldn’t compare: the nearby search didn’t respond.' : 'Couldn’t compare: the check found fewer than 3 similar businesses nearby.'} Type what you do to search for similar businesses near you.</p>
       <label htmlFor="ic-keyword">What do you do? (for example plumber, spa, restaurant)</label>
       <div className="ic-compare-row">
         <div className="ic-field"><Icon name="search" /><input id="ic-keyword" value={keyword} onChange={(e) => setKeyword(e.target.value)} maxLength={40} autoComplete="off" /></div>
@@ -404,8 +404,8 @@ export function ResultView({ check, ticket, headingRef, onCompare, restored = fa
   ) : null;
 
   const noWebsiteText = check.social
-    ? [`${profile ? `Your Google profile links to ${check.social}, not a website.` : `The address you gave is a ${check.social} page, not a website.`} ${check.social} can be a good place to show your work, so we skipped the website checks and speed test rather than test ${check.social}’s own site.`]
-    : ['We didn’t find a website for this business, so the website checks were skipped.'];
+    ? [`${profile ? `Your Google profile links to ${check.social}, not a website.` : `The address you gave is a ${check.social} page, not a website.`} ${check.social} can be a good place to show your work, so the website checks and speed test were skipped rather than testing ${check.social}’s own site.`]
+    : ['No website was found for this business, so the website checks were skipped.'];
   noWebsiteText.push('Customers can still find you on Google Maps. A website helps by giving Google and AI assistants a page to read about your services and location, and by giving customers one place to see your work, prices and contact options. It may also make it easier for people who find you elsewhere to get in touch.');
 
   const unavailable = (id: CardId, title: string, icon: IconName, line: string, label: string): Card => ({ id, title, icon, status: 'Couldn’t check', statusLabel: label, line, rows: [], details: [], text: [] });
@@ -450,11 +450,11 @@ export function ResultView({ check, ticket, headingRef, onCompare, restored = fa
         ? { id: 'reviews', title: 'Reviews', icon: 'star', ...fromArea(byId.reviews), extra: <>{nearby}{compareForm}</> }
         : { ...unavailable('reviews', 'Reviews', 'star', '', ''), waiting: true },
     websiteCard(),
-    siteCard('contact', 'Contact', 'phone', byId.contact, 'There’s no website to check for contact buttons.', 'We couldn’t read your website for contact links.'),
+    siteCard('contact', 'Contact', 'phone', byId.contact, 'There’s no website to check for contact buttons.', 'Your website couldn’t be read for contact links.'),
     !profile
       ? unavailable('consistency', 'Consistency', 'building', 'There’s no Google profile to compare your details with.', 'No profile')
-      : withListings(siteCard('consistency', 'Consistency', 'building', byId.consistency, 'There’s no website to compare with your Google profile.', 'We couldn’t read your website to compare your details.')),
-    siteCard('ai', 'AI readiness', 'spark', byId.search, 'AI assistants have no website of yours to read.', 'We couldn’t read your website for these signals.'),
+      : withListings(siteCard('consistency', 'Consistency', 'building', byId.consistency, 'There’s no website to compare with your Google profile.', 'Your website couldn’t be read to compare your details.')),
+    siteCard('ai', 'AI readiness', 'spark', byId.search, 'AI assistants have no website of yours to read.', 'Your website couldn’t be read for these signals.'),
   ];
 
   // Problem and Needs attention areas start open; Good and unchecked areas start closed.
@@ -558,7 +558,7 @@ export function ResultView({ check, ticket, headingRef, onCompare, restored = fa
           <Ring passed={passed} total={allResults.length} />
           <div>
             <p><strong className="ic-num">{passed} of {allResults.length} checks passed</strong>{allDone ? '' : ' so far'}</p>
-            <p className="ic-score-note">Counts only the checks we could run automatically.</p>
+            <p className="ic-score-note">Counts only the checks that could run automatically.</p>
           </div>
         </div>
       </header>
@@ -592,7 +592,7 @@ export function ResultView({ check, ticket, headingRef, onCompare, restored = fa
                 </li>
               ))}
             </ol>
-          ) : <p>We didn’t find anything urgent in these checks.</p>
+          ) : <p>Nothing urgent came up in these checks.</p>
         ) : (
           <div className="ic-fix-cards" aria-hidden="true">
             {[0, 1, 2].map((i) => <div className="ic-fix-card ic-fix-skel" key={i}><div className="ic-skel ic-skel-chip" /><div className="ic-skel ic-skel-row" /><div className="ic-skel ic-skel-line" /></div>)}

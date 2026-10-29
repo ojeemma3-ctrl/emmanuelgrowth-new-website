@@ -57,12 +57,12 @@ export default function ConvertEnquiriesPage() {
         // TODO(owner): confirm whether the owner also gets an alert for new enquiries, and how.
         { question: 'Does it reply for me, or alert me?', answer: 'It sends an AI first reply and a follow-up. Every conversation is in one inbox, so you can read it and step in at any time.' },
         ...(earlyAccess ? [
-          { question: 'What does early access mean?', answer: 'Convert Enquiries isn’t fully open yet. Join the waitlist and tell us a little about your business, and we’ll be in touch.' },
+          { question: 'What does early access mean?', answer: 'Convert Enquiries isn’t fully open yet. Join the waitlist and tell me a little about your business, and I’ll be in touch.' },
           // TODO(owner): add a start date only once it is decided.
-          { question: 'When does it start?', answer: 'We haven’t set a start date yet. Join the waitlist and we’ll let you know.' },
+          { question: 'When does it start?', answer: 'I haven’t set a start date yet. Join the waitlist and I’ll let you know.' },
         ] : []),
         // TODO(owner): confirm what a client needs to set up (accounts, access, website chat).
-        { question: 'What do I need to set it up?', answer: 'Access to the accounts you use for messages, such as WhatsApp, Instagram and Facebook, and to your website for the chat. We do the setup with you.' },
+        { question: 'What do I need to set it up?', answer: 'Access to the accounts you use for messages, such as WhatsApp, Instagram and Facebook, and to your website for the chat. I do the setup with you.' },
         { question: 'How is it priced?', answer: `${plan.price} ${plan.period.replace('/month', 'a month').replace(' + ', ' plus ')}. ${plan.finePrint.join(' ')}` },
         { question: 'Do I need the other services too?', answer: 'No. You can start with one service and add the others later.' },
       ]}

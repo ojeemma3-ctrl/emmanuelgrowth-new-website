@@ -11,7 +11,7 @@ export function FinalCTA({ heading = 'See where your business can win more custo
       <div className="container final-cta-panel">
         <p className="kicker">A simple place to start</p>
         <h2>{heading}</h2>
-        <p>Tell us what is happening. We will look at how customers find you and contact you, and show you the best place to start.</p>
+        <p>Tell me what is happening. I will look at how customers find you and contact you, and show you the best place to start.</p>
         <div className="button-row">
           <Link className="button button-growth" href="/visibility-check">Get a free visibility check <Arrow /></Link>
           <ContactTrigger className="button button-ghost" topic={CONTACT_TOPICS.personalReview}>Get a free personal review</ContactTrigger>

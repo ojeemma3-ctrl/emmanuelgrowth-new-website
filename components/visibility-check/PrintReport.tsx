@@ -24,7 +24,7 @@ function Rows({ rows }: { rows: RuleResult[] }) {
   if (!rows.length) return null;
   return (
     <table className="icp-rows">
-      <thead><tr><th scope="col">Check</th><th scope="col">What we found</th><th scope="col">Status</th></tr></thead>
+      <thead><tr><th scope="col">Check</th><th scope="col">What the check found</th><th scope="col">Status</th></tr></thead>
       <tbody>
         {rows.map(({ rule, status, value }) => (
           <tr key={rule.id}>
@@ -117,7 +117,7 @@ export function PrintReport({ business, address, today, cards, fixes, passed, to
   const checked = [
     profile.rows.length ? `Google business profile: read from Google Maps on ${today}.` : null,
     nearby ? `Nearby businesses: one Google Maps search for “${nearby.query}”, compared by review count.` : null,
-    website.pageTested ? `Website: the page tested was ${domainOf(website.pageTested)}, read on ${today}. Links added by scripts may not be visible to our check.` : null,
+    website.pageTested ? `Website: the page tested was ${domainOf(website.pageTested)}, read on ${today}. Links added by scripts may not be visible to the check.` : null,
     speed.length ? `Mobile speed: Google PageSpeed Insights, tested on ${longDate(speedTestedAt) ?? today}. Scores can vary between tests.` : null,
     reviews.rows.length ? ruleById['reviews-recent'].measured : null,
   ].filter((x): x is string => Boolean(x));
@@ -160,7 +160,7 @@ export function PrintReport({ business, address, today, cards, fixes, passed, to
             <Ring passed={passed} total={total} />
             <div>
               <p className="icp-cover-score">{passed} of {total} checks passed</p>
-              <p className="icp-cover-counts">Counts only the checks we could run automatically.</p>
+              <p className="icp-cover-counts">Counts only the checks that could run automatically.</p>
               {inShort.length ? <p className="icp-cover-short">{inShort.map(([label, text]) => <span key={label}><strong>{label}:</strong> {text}. </span>)}</p> : null}
             </div>
           </div>
@@ -178,7 +178,7 @@ export function PrintReport({ business, address, today, cards, fixes, passed, to
           <Ring passed={passed} total={total} />
           <div>
             <p className="icp-score-big">{passed} of {total} checks passed</p>
-            <p>Counts only the checks we could run automatically.</p>
+            <p>Counts only the checks that could run automatically.</p>
           </div>
         </div>
         <section className="icp-block">
@@ -187,7 +187,7 @@ export function PrintReport({ business, address, today, cards, fixes, passed, to
             <ol className="icp-top">
               {fixes.map((f, i) => <li key={f.key}><span className="icp-num">{i + 1}</span><span>{f.text}</span>{f.priority ? <em>{f.priority}</em> : null}</li>)}
             </ol>
-          ) : <p>We didn’t find anything urgent in these checks.</p>}
+          ) : <p>Nothing urgent came up in these checks.</p>}
           <p className="icp-muted">Details and who can help are on the last page.</p>
         </section>
         <section className="icp-block">
@@ -271,7 +271,7 @@ export function PrintReport({ business, address, today, cards, fixes, passed, to
                 );
               })}
             </ol>
-          ) : <p>We didn’t find anything urgent in these checks.</p>}
+          ) : <p>Nothing urgent came up in these checks.</p>}
         </section>
         <section className="icp-block icp-reach">
           <h3>How to reach me</h3>
@@ -283,7 +283,7 @@ export function PrintReport({ business, address, today, cards, fixes, passed, to
           <ul className="icp-list">{checked.map((c) => <li key={c}>{c}</li>)}</ul>
           <p><strong>Not checked here.</strong> These need a person to look at, so this automated check doesn’t cover them: {notChecked.join(', ')}.</p>
         </section>
-        <p className="icp-foot">Thresholds are our baseline; Google publishes no minimums.</p>
+        <p className="icp-foot">Thresholds are this check’s baseline; Google publishes no minimums.</p>
       </section>
     </div>
   );

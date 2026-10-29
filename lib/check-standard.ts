@@ -41,7 +41,7 @@ export type Rule = {
   note?: string;
 };
 
-export const BASELINE_LABEL = 'Our baseline. Google publishes no minimum.';
+export const BASELINE_LABEL = 'This check’s baseline. Google publishes no minimum.';
 
 // Numbers used by the rules. Change them here.
 export const limits = {
@@ -135,7 +135,7 @@ export const rules: Rule[] = [
   // Reviews
   {
     id: 'reviews-count', area: 'reviews', displayName: 'Review count compared with nearby businesses', technicalName: null, mode: 'automatic', baseline: true,
-    measured: 'Your Google review count compared with the typical (median) count of nearby businesses with the same Google category. Only compared when your category is specific and we find at least 3 of them.',
+    measured: 'Your Google review count compared with the typical (median) count of nearby businesses with the same Google category. Only compared when your category is specific and the check finds at least 3 of them.',
     thresholds: { good: 'At or above the typical count', attention: 'Under half of the typical count', problem: 'Under a quarter of the typical count, or fewer than 10 reviews' },
     why: 'Customers often compare a few local options side by side, and reviews are one of the first things they see.',
     priority: 'Fix first', effort: 'A few minutes after each job', action: 'Ask every happy customer for a Google review', issue: 'reviews',
@@ -228,7 +228,7 @@ export const rules: Rule[] = [
     thresholds: { good: 'Present with all seven details', attention: 'Present but missing details, or not present' },
     why: 'Structured data spells out your business details in a format search engines and AI assistants read directly.',
     priority: 'Next', effort: 'About an hour', action: 'Add LocalBusiness structured data with your full details',
-    note: 'We don’t recommend adding review or AggregateRating markup about your own business. FAQ markup is optional.',
+    note: 'I don’t recommend adding review or AggregateRating markup about your own business. FAQ markup is optional.',
   },
   {
     id: 'search-ai-crawlers', area: 'search', displayName: 'AI assistants can read the site', technicalName: 'AI crawler rules in robots.txt', mode: 'automatic', baseline: true,

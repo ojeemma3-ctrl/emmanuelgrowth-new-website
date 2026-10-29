@@ -42,7 +42,7 @@ export default function GetFoundPage() {
           { title: 'Customers find you', text: 'When someone searches nearby, they find your Google profile, set up and improved with the right details.' },
           { title: 'They see who you are', text: 'Your one-page landing page shows who you are, what you offer and how to reach you.' },
           { title: 'One tap to get in touch', text: 'Call, WhatsApp and booking buttons let them contact you or book straight away.' },
-          { title: 'Kept up to date', text: 'We check your Google profile every month and handle up to 3 update requests, done within 2 working days.' },
+          { title: 'Kept up to date', text: 'I check your Google profile every month and handle up to 3 update requests, done within 2 working days.' },
         ],
       }}
       forWho={[
@@ -57,17 +57,17 @@ export default function GetFoundPage() {
         'Not unlimited changes. Up to 3 update requests a month.',
       ]}
       faqs={[
-        { question: 'What do you actually change?', answer: 'We set up a simple one-page landing page, set up and improve your Google Business Profile and check it each month, and add call, WhatsApp and booking buttons. You can also send up to 3 update requests a month, done within 2 working days.' },
+        { question: 'What do you actually change?', answer: 'I set up a simple one-page landing page, set up and improve your Google Business Profile and check it each month, and add call, WhatsApp and booking buttons. You can also send up to 3 update requests a month, done within 2 working days.' },
         { question: 'Is this a full website?', answer: 'No. It is a simple one-page landing page that gives customers your key details and contact buttons. If you need a custom website with 5 to 10 pages, tell me what you need and I will quote it as a separate project.' },
         // TODO(owner): decide "What happens to my landing page if I cancel?" and add it here. Not shown on the page until then.
-        { question: 'Do you guarantee a top Google ranking?', answer: 'No. Nobody can guarantee a ranking on Google. We make your details clear, correct and easy to act on, which helps the customers who do find you.' },
-        { question: 'How long before I notice a difference?', answer: 'It varies. It depends on your area, the businesses near you and how people search. We check your Google profile every month to keep it correct.' },
+        { question: 'Do you guarantee a top Google ranking?', answer: 'No. Nobody can guarantee a ranking on Google. I make your details clear, correct and easy to act on, which helps the customers who do find you.' },
+        { question: 'How long before I notice a difference?', answer: 'It varies. It depends on your area, the businesses near you and how people search. I check your Google profile every month to keep it correct.' },
         // TODO(owner): confirm the exact list of what you need from a new Get Found client.
-        { question: 'What do you need from me?', answer: 'Basic details about your business, such as what you offer, your opening times and a few photos, and access to your Google Business Profile so we can set it up.' },
+        { question: 'What do you need from me?', answer: 'Basic details about your business, such as what you offer, your opening times and a few photos, and access to your Google Business Profile so I can set it up.' },
         { question: 'Do I need a website already?', answer: 'No. Get Found includes a simple one-page landing page. If you already have a website, the free visibility check shows whether to improve it or start fresh.' },
         // TODO(owner): confirm any notice period after the minimum term.
         { question: 'Is there a contract or minimum term?', answer: `Yes. ${plan.finePrint.join(' ')} After that you can cancel.` },
-        { question: 'What happens after the free check?', answer: 'You get your report on screen and can save it as a PDF. If you want, ask for a free personal review and we will talk it through. There is no obligation.' },
+        { question: 'What happens after the free check?', answer: 'You get your report on screen and can save it as a PDF. If you want, ask for a free personal review and I will talk it through with you. There is no obligation.' },
       ]}
       closingHeading="Make it easy for local customers to find you."
     />

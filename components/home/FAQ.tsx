@@ -15,7 +15,7 @@ export type FaqItem = { question: string; answer: string };
 const faqs: FaqItem[] = [
   {
     question: 'What is the free visibility check?',
-    answer: 'We look at how customers find you online, how they get in touch and what happens after. You get a short, plain-English list of what to fix first. There is no cost for the check.',
+    answer: 'It looks at how customers find you online, how they get in touch and what happens after. You get a short, plain-English list of what to fix first. There is no cost for the check.',
   },
   {
     question: 'Do I need all three services?',
@@ -23,19 +23,19 @@ const faqs: FaqItem[] = [
   },
   {
     question: 'Do I need to be good with technology?',
-    answer: 'No. We set everything up for you and show you how it works. Day to day, it should feel simple.',
+    answer: 'No. I set everything up for you and show you how it works. Day to day, it should feel simple.',
   },
   {
     question: 'Can you work with my existing website?',
-    answer: 'Often, yes. During the visibility check we look at what you already have and tell you whether to improve it or start fresh.',
+    answer: 'Often, yes. The visibility check looks at what you already have, and I tell you whether to improve it or start fresh.',
   },
   {
     question: 'How long does setup take?',
-    answer: 'It depends on what you need. After the visibility check we give you a clear plan and timeline before anything starts.',
+    answer: 'It depends on the service. After your free check I will tell you a clear timeframe before you decide.',
   },
   {
     question: 'What happens after the free check?',
-    answer: 'You get your report on screen and can save it as a PDF. If you want, ask for a free personal review and we will talk it through. There is no obligation.',
+    answer: 'You get your report on screen and can save it as a PDF. If you want, ask for a free personal review and I will talk it through with you. There is no obligation.',
   },
   {
     question: 'Can I cancel?',

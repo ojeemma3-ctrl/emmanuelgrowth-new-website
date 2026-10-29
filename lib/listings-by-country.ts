@@ -87,4 +87,4 @@ export function listingsGuideHref(country?: string | null, categoryType?: string
   return `/guides/listings${query ? `?${query}` : ''}`;
 }
 
-export const LISTINGS_LINE = 'Your name, address and phone should also match on other listings customers use (Apple, Bing, Facebook and local directories). We can’t check those automatically.';
+export const LISTINGS_LINE = 'Your name, address and phone should also match on other listings customers use (Apple, Bing, Facebook and local directories). The check can’t look at those automatically.';

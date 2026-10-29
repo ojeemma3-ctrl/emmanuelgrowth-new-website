@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { CookieSettingsButton } from '../analytics/CookieSettingsButton';
 import { getGaMeasurementId } from '../../lib/analytics';
+import { contactEmail } from './content';
 import { WhatsAppFloat, whatsappReviewHref } from './WhatsAppFloat';
 
 export function Footer() {
@@ -30,6 +31,7 @@ export function Footer() {
           <Link href="/#faq">FAQ</Link>
           <Link href="/#about">About</Link>
           {whatsappReviewHref ? <a href={whatsappReviewHref} target="_blank" rel="noreferrer">WhatsApp</a> : null}
+          <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
         </nav>
         <nav className="footer-col footer-legal" aria-label="Legal information">
           <p className="footer-title">Legal</p>

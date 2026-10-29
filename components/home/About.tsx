@@ -3,9 +3,9 @@ import Link from 'next/link';
 import { Arrow } from './shared';
 
 const principles = [
-  'We start with the business problem, not the software.',
-  'We use simple tools that fit how you already work.',
-  'We keep checking and improving once it is live.',
+  'I start with the business problem, not the software.',
+  'I use simple tools that fit how you already work.',
+  'I keep checking and improving once it is live.',
 ];
 
 const CheckIcon = () => (
@@ -28,7 +28,7 @@ export function About() {
         <div className="about-copy">
           <p className="kicker">About Emmanuel Growth</p>
           <h2>Simple marketing systems for <em>real</em> businesses.</h2>
-          <p>Emmanuel Growth combines practical sales and marketing experience with modern tools. We start with the business problem. Then we use the right system to help solve it.</p>
+          <p>Emmanuel Growth combines practical sales and marketing experience with modern tools. I start with the business problem. Then I use the right system to help solve it.</p>
           <ul className="about-principles">
             {principles.map((item) => <li key={item}><span aria-hidden="true"><CheckIcon /></span>{item}</li>)}
           </ul>

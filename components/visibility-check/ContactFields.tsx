@@ -53,7 +53,7 @@ export function checkPhone(raw: string, country: Country): { error: string } | {
   const length = international ? validatePhoneNumberLength(text) : validatePhoneNumberLength(text, country.code);
   if (length === 'TOO_SHORT') return { error: international ? 'That number looks too short.' : `That number looks too short for ${country.name}.` };
   if (length === 'TOO_LONG') return { error: international ? 'That number looks too long.' : `That number looks too long for ${country.name}.` };
-  if (length === 'INVALID_COUNTRY') return { error: 'We don’t recognise that country code. Choose your country from the list instead.' };
+  if (length === 'INVALID_COUNTRY') return { error: 'That country code isn’t recognised. Choose your country from the list instead.' };
   try {
     const phone = international ? parsePhoneNumberWithError(text) : parsePhoneNumberWithError(text, country.code);
     if (!phone.isValid()) {
@@ -71,14 +71,14 @@ export function checkContact(state: ContactState): ContactCheck {
   if (state.channel === 'whatsapp') {
     const result = checkPhone(state.phone, state.country);
     if ('error' in result) return { ok: false, field: 'whatsapp', error: result.error };
-    if (!state.consent) return { ok: false, field: 'consent', error: 'Please tick the box so we can contact you about your check.' };
+    if (!state.consent) return { ok: false, field: 'consent', error: 'Please tick the box so I can contact you about your check.' };
     return { ok: true, contact: { channel: 'whatsapp', whatsapp: result.e164, tips: state.tips }, country: result.country };
   }
   const value = state.email.trim();
   if (!value || !EMAIL.test(value)) {
     return { ok: false, field: 'email', error: value ? 'That email address doesn’t look right. Check it, for example you@yourbusiness.com.' : 'Please enter your email address.' };
   }
-  if (!state.consent) return { ok: false, field: 'consent', error: 'Please tick the box so we can contact you about your check.' };
+  if (!state.consent) return { ok: false, field: 'consent', error: 'Please tick the box so I can contact you about your check.' };
   return { ok: true, contact: { channel: 'email', email: value, tips: state.tips } };
 }
 
@@ -120,7 +120,7 @@ export function ContactFields({ value, onChange, error }: {
             invalid={fieldError?.field === 'whatsapp'}
             describedBy={fieldError?.field === 'whatsapp' ? errorId : 'ic-contact-phone-hint'}
           />
-          <p className="ic-hint" id="ic-contact-phone-hint">We’ll use this only to contact you about your visibility check. Include your country code.</p>
+          <p className="ic-hint" id="ic-contact-phone-hint">I’ll use this only to contact you about your visibility check. Include your country code.</p>
         </div>
       ) : (
         <div>
@@ -140,7 +140,7 @@ export function ContactFields({ value, onChange, error }: {
               aria-describedby={fieldError?.field === 'email' ? errorId : 'ic-contact-email-hint'}
             />
           </div>
-          <p className="ic-hint" id="ic-contact-email-hint">We’ll use this only to contact you about your visibility check.</p>
+          <p className="ic-hint" id="ic-contact-email-hint">I’ll use this only to contact you about your visibility check.</p>
         </div>
       )}
       {fieldError ? <p className="ic-field-error" id={errorId} role="alert"><Icon name="alert" size={16} />{fieldError.message}</p> : null}

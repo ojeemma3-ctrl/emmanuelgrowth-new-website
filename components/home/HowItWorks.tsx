@@ -8,15 +8,15 @@ export type HowStep = { title: string; text: string };
 const homeSteps: HowStep[] = [
   {
     title: 'Free visibility check',
-    text: 'We look at how customers find you, how they contact you and what happens after they do.',
+    text: 'I look at how customers find you, how they contact you and what happens after they do.',
   },
   {
-    title: 'We set it up',
-    text: 'We fix the gaps we find: your online presence, your replies and your review requests.',
+    title: 'I set it up',
+    text: 'I fix the gaps I find: your online presence, your replies and your review requests.',
   },
   {
     title: 'More customers, less chasing',
-    text: 'Everything keeps working in the background, and we check in to keep improving it.',
+    text: 'Everything keeps working in the background, and I check in to keep improving it.',
   },
 ];
 

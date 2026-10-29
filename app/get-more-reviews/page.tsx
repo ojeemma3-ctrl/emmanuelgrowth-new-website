@@ -18,7 +18,7 @@ export default function GetMoreReviewsPage() {
       planId="get-more-reviews"
       kicker="Service 03 · Get More Reviews"
       title="Turn happy customers into honest reviews."
-      description="After every job, your customer gets a friendly message with one tap to your Google or Trustpilot page. We help you reply, and send a short summary each month."
+      description="After every job, your customer gets a friendly message with one tap to your Google or Trustpilot page. I help you reply, and send a short summary each month."
       visual={<ReviewsCard />}
       why={[
         { title: 'People read reviews before they choose', text: 'Many customers look at reviews before they call, book or visit. Recent reviews show that people are still happy with your work today.' },
@@ -38,7 +38,7 @@ export default function GetMoreReviewsPage() {
         steps: [
           { title: 'A job is finished', text: 'After each job, your customer gets a short, friendly message asking for an honest review.' },
           { title: 'One tap to review', text: 'The message takes them straight to your Google or Trustpilot page.' },
-          { title: 'Help with replies', text: 'When new reviews arrive, we help you write clear, polite replies.' },
+          { title: 'Help with replies', text: 'When new reviews arrive, I help you write clear, polite replies.' },
           { title: 'A short monthly summary', text: 'Once a month, you get a short summary so you can see how your reviews are going.' },
         ],
       }}
@@ -48,21 +48,21 @@ export default function GetMoreReviewsPage() {
         'Owners who want review requests sent every time, without having to remember.',
       ]}
       notThis={[
-        'We never write, buy or fake reviews.',
+        'I never write, buy or fake reviews.',
         'No promise of positive reviews. Customers are asked for honest feedback.',
-        'Not a way to remove reviews you don’t like. We help you reply to them instead.',
+        'Not a way to remove reviews you don’t like. I help you reply to them instead.',
         `No long contract. ${plan.finePrint.join(' ')}`,
       ]}
       faqs={[
-        { question: 'Do you write or buy reviews?', answer: 'No, never. We don’t write, buy or fake reviews. Your customers are asked for an honest review, in their own words.' },
+        { question: 'Do you write or buy reviews?', answer: 'No, never. I don’t write, buy or fake reviews. Your customers are asked for an honest review, in their own words.' },
         // TODO(owner): confirm how customers are added after a job (for example, you share their details, or it connects to your booking tool).
-        { question: 'Who gets asked for a review?', answer: 'Your customers, after each job. Before we start, we agree with you how a finished job leads to a review request.' },
-        { question: 'What if I get a bad review?', answer: 'It can happen to any business. We help you write a calm, polite reply, which future customers will see too.' },
+        { question: 'Who gets asked for a review?', answer: 'Your customers, after each job. Before I start, I agree with you how a finished job leads to a review request.' },
+        { question: 'What if I get a bad review?', answer: 'It can happen to any business. I help you write a calm, polite reply, which future customers will see too.' },
         { question: 'Which review sites does it cover?', answer: 'Google or Trustpilot. The message gives your customer one tap to your review page.' },
         // TODO(owner): confirm the channels for review requests (text message, WhatsApp, email) and add them here.
-        { question: 'How are customers asked?', answer: 'With a short, friendly message after each job that links straight to your review page. We agree with you the best way to reach your customers.' },
+        { question: 'How are customers asked?', answer: 'With a short, friendly message after each job that links straight to your review page. I agree with you the best way to reach your customers.' },
         // TODO(owner): confirm what the owner does day to day (for example, marking a job as done).
-        { question: 'What do I do day to day?', answer: 'Very little. Review requests go out after each job, we help you reply to new reviews, and you get a short summary each month.' },
+        { question: 'What do I do day to day?', answer: 'Very little. Review requests go out after each job, I help you reply to new reviews, and you get a short summary each month.' },
         // TODO(owner): confirm any notice period when cancelling.
         { question: 'Can I cancel?', answer: `Yes. ${plan.finePrint.join(' ')}` },
       ]}

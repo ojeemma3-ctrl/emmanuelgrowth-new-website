@@ -51,14 +51,14 @@ export function ContactModal() {
             <span className="contact-number">02</span>
             <div>
               <h3>Email Emmanuel</h3>
-              <p>Send a direct email and we will get back to you.</p>
+              <p>Send a direct email and I will get back to you.</p>
               <a className="contact-email" href={mailHref}>{contactEmail}</a>
             </div>
             <a className="button button-outline" href={mailHref}>Email Emmanuel <Arrow /></a>
           </article>
           <article className="contact-option contact-form-option">
             <span className="contact-number">03</span>
-            <div><h3>Send a quick message</h3><p>Leave your details and we will get back to you.</p></div>
+            <div><h3>Send a quick message</h3><p>Leave your details and I will get back to you.</p></div>
             <form className="quick-message-form" onSubmit={handleQuickMessageSubmit}>
               <label htmlFor="contact-name">Name</label>
               <input id="contact-name" name="name" autoComplete="name" required />

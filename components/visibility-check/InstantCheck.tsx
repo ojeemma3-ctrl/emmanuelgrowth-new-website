@@ -30,15 +30,15 @@ export type CheckState = {
 };
 
 const errorText: Record<string, string> = {
-  daily_cap: 'We’ve reached today’s limit for free checks. Please come back tomorrow.',
+  daily_cap: 'Today’s limit for free checks has been reached. Please come back tomorrow.',
   ip_limit: 'You’ve reached today’s limit for free checks. Please come back tomorrow.',
-  not_configured: 'The automatic check isn’t switched on yet. Please message us on WhatsApp instead.',
+  not_configured: 'The automatic check isn’t switched on yet. Please message me on WhatsApp instead.',
   verification: 'Please complete the verification and try again.',
   bad_website: 'That website address can’t be checked. Please check it and try again.',
   invalid: 'Please check the form and try again.',
   keyword: 'For “What do you do?”, please use a few words with letters and numbers only, for example plumber or hair salon.',
   expired: 'This check has expired. Please start again.',
-  consent: 'Please tick the box so we can contact you about your check.',
+  consent: 'Please tick the box so I can contact you about your check.',
   email: 'That email address doesn’t look right. Please check it.',
   whatsapp: 'That WhatsApp number doesn’t look right. Please check it and the country.',
   upstream: 'Google didn’t respond just now. Please try again in a minute.',
@@ -195,7 +195,7 @@ export function InstantCheck() {
       setPreview(data.place);
       setContactState((st) => withBusinessCountry(st, data.place?.countryCode));
     }
-    else setError(errorText[data.error ?? ''] ?? 'We couldn’t load that business. Please try again.');
+    else setError(errorText[data.error ?? ''] ?? 'That business couldn’t be loaded. Please try again.');
   };
 
   const onUnavailable = useCallback(() => {
@@ -296,7 +296,7 @@ export function InstantCheck() {
       <header className="ic-hero">
         <p className="ic-hero-label">Step 1 of 3 · Your business</p>
         <h1>See how your business shows up online.</h1>
-        <p>Find your business and we’ll run automated checks of your public Google profile and website, then show you the top fixes in plain words. Your report appears on this page, and you can save it as a PDF.</p>
+        <p>Find your business to run automated checks of your public Google profile and website, then see the top fixes in plain words. Your report appears on this page, and you can save it as a PDF.</p>
         {check && isFinished(check) ? (
           <div className="ic-resume">
             <button className="button button-dark" type="button" onClick={showResults}>Back to your results for {check.businessName} <Arrow /></button>
@@ -325,7 +325,7 @@ export function InstantCheck() {
         ) : (
           <fieldset className="ic-manual">
             <legend>Your business</legend>
-            {searchUnavailable ? <p className="ic-hint">Business search isn’t available right now, so please enter your details. We’ll still check your website.</p> : null}
+            {searchUnavailable ? <p className="ic-hint">Business search isn’t available right now, so please enter your details. The check will still look at your website.</p> : null}
             <div className="ic-grid-2">
               <div>
                 <label htmlFor="ic-name">Business name</label>
@@ -344,7 +344,7 @@ export function InstantCheck() {
 
         <label htmlFor="ic-what">What do you do? (optional)</label>
         <div className="ic-field"><Icon name="search" /><input id="ic-what" name="keyword" type="text" maxLength={40} autoComplete="off" aria-describedby="ic-what-hint" /></div>
-        <p className="ic-hint" id="ic-what-hint">For example plumber, hair salon or restaurant. We use it to compare you with similar businesses nearby.</p>
+        <p className="ic-hint" id="ic-what-hint">For example plumber, hair salon or restaurant. The check uses it to compare you with similar businesses nearby.</p>
         <div className="ic-honeypot" aria-hidden="true">
           <label htmlFor="ic-company-url">Leave this empty</label>
           <input id="ic-company-url" name="company_url" tabIndex={-1} autoComplete="off" />
@@ -357,7 +357,7 @@ export function InstantCheck() {
         <button className="button button-growth ic-submit" type="submit" disabled={submitting} aria-disabled={submitting}>
           {submitting ? 'Starting your check…' : 'Show my report'} <Arrow />
         </button>
-        <p className="vc-note">Automated checks of public information only. We don’t store the Google data or page content we look at. <Link href="/privacy-policy">Privacy policy</Link></p>
+        <p className="vc-note">Automated checks of public information only. I don’t store the Google data or page content the check looks at. <Link href="/privacy-policy">Privacy policy</Link></p>
       </form>
     </div>
   );
